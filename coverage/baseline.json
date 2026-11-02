@@ -1,0 +1,17 @@
+{
+  "repo": "discord/discord-api-spec",
+  "commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+  "files": [
+    {
+      "path": "specs/openapi.json",
+      "sha256": "281a2bff563d77a19e51fc3bf8bbe3ebcef28e3dc86684ae395b06ac51ba7484",
+      "operation_count": 250
+    },
+    {
+      "path": "specs/openapi_preview.json",
+      "sha256": "68347dd0519e47946471a81456d95aec18c08665debe1f324ba8af53ce79cbfa",
+      "operation_count": 250
+    }
+  ],
+  "retrieved_at": "2026-11-02T17:56:36.927Z"
+}
