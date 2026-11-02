@@ -244,6 +244,109 @@ it.each([
     },
     desc: "recurrence_rule by_weekday out of range",
   },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+      recurrence_rule: {
+        start: "2026-11-05T18:00:00.000Z",
+        frequency: 1,
+        by_n_weekday: [{ n: 6, day: 1 }],
+      },
+    },
+    desc: "recurrence_rule by_n_weekday n out of range (>5)",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+      recurrence_rule: {
+        start: "2026-11-05T18:00:00.000Z",
+        frequency: 1,
+        by_month: [13],
+      },
+    },
+    desc: "recurrence_rule by_month out of range (>12)",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+      recurrence_rule: {
+        start: "2026-11-05T18:00:00.000Z",
+        frequency: 1,
+        by_month_day: [32],
+      },
+    },
+    desc: "recurrence_rule by_month_day out of range (>31)",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+      recurrence_rule: {
+        start: "2026-11-05T18:00:00.000Z",
+        frequency: 1,
+        by_year_day: [366],
+      },
+    },
+    desc: "recurrence_rule by_year_day out of range (>365)",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+      recurrence_rule: {
+        start: "2026-11-05T18:00:00.000Z",
+        frequency: 1,
+        interval: 0,
+      },
+    },
+    desc: "recurrence_rule interval out of range (<1)",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+      recurrence_rule: {
+        start: "2026-11-05T18:00:00.000Z",
+        frequency: 1,
+        count: 0,
+      },
+    },
+    desc: "recurrence_rule count out of range (<1)",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+      entity_metadata: {
+        location: "a".repeat(101),
+      },
+    },
+    desc: "entity_metadata location too long (>100)",
+  },
 ])("validates input: $desc", async ({ input }) => {
   const { client, makeRequest } = await harness({ policy });
   const result = await client.callTool({

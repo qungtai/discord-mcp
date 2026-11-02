@@ -2,7 +2,7 @@ import { type RESTGetAPIGuildScheduledEventsResult, Routes } from "discord-api-t
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { guildScheduledEvent } from "./mem-events-schemas.js";
+import { guildScheduledEvent } from "./schemas.js";
 
 export const listGuildScheduledEvents = defineTool({
   name: "discord_list_guild_scheduled_events",

@@ -20,7 +20,6 @@ const EVENT = {
   privacy_level: 2,
   status: 1,
   entity_type: 3,
-  // Extra fields and nulls to verify lenient output parsing (M1)
   extra_field: "ignored",
   entity_metadata: { location: null, extra_nested: 123 },
   recurrence_rule: {
@@ -31,7 +30,7 @@ const EVENT = {
   },
 };
 
-it("gets a scheduled event with query parameters and parses lenient output", async () => {
+it("gets a scheduled event with query parameters and strips extra fields in lenient output", async () => {
   const { client, request } = await harness({ policy, respond: () => EVENT });
   const result = await client.callTool({
     name: "discord_get_guild_scheduled_event",
@@ -41,11 +40,15 @@ it("gets a scheduled event with query parameters and parses lenient output", asy
   expect(request().url).toBe(
     "https://discord.com/api/v10/guilds/10/scheduled-events/100?with_user_count=true",
   );
-  expect(result.structuredContent).toMatchObject({
+  expect(result.structuredContent).toEqual({
     guild_scheduled_event: {
       id: "100",
       guild_id: "10",
       name: "Community Hangout",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      status: 1,
+      entity_type: 3,
       entity_metadata: { location: null },
       recurrence_rule: {
         start: "2026-11-05T18:00:00.000Z",
@@ -65,8 +68,22 @@ it("passes allowlist check for allowed guild", async () => {
     name: "discord_get_guild_scheduled_event",
     arguments: { guild_id: "10", guild_scheduled_event_id: "100" },
   });
-  expect(result.structuredContent).toMatchObject({
-    guild_scheduled_event: { id: "100" },
+  expect(result.structuredContent).toEqual({
+    guild_scheduled_event: {
+      id: "100",
+      guild_id: "10",
+      name: "Community Hangout",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      status: 1,
+      entity_type: 3,
+      entity_metadata: { location: null },
+      recurrence_rule: {
+        start: "2026-11-05T18:00:00.000Z",
+        frequency: 2,
+        by_month_day: [-5],
+      },
+    },
   });
 });
 

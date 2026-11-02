@@ -1,9 +1,7 @@
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { exceptionOverrideInput, guildScheduledEventException } from "./mem-events-schemas.js";
-
-type GuildScheduledEventExceptionResult = z.infer<typeof guildScheduledEventException>;
+import { exceptionOverrideInput, guildScheduledEventException } from "./schemas.js";
 
 export const updateGuildScheduledEventException = defineTool({
   name: "discord_update_guild_scheduled_event_exception",
@@ -24,7 +22,7 @@ export const updateGuildScheduledEventException = defineTool({
     guild_scheduled_event_exception: guildScheduledEventException,
   }),
   execute: async ({ guild_id, guild_scheduled_event_id, exception_id, ...body }, { discord }) => ({
-    guild_scheduled_event_exception: await discord<GuildScheduledEventExceptionResult>({
+    guild_scheduled_event_exception: await discord<z.infer<typeof guildScheduledEventException>>({
       method: "PATCH",
       route: `/guilds/${guild_id}/scheduled-events/${guild_scheduled_event_id}/exceptions/${exception_id}`,
       body,

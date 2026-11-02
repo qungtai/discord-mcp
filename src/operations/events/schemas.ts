@@ -9,6 +9,11 @@ import {
 import { z } from "zod/v4";
 import { member, snowflake, user } from "../schemas.js";
 
+// Enums for input schemas
+export const privacyLevelEnum = z.enum(GuildScheduledEventPrivacyLevel);
+export const entityTypeEnum = z.enum(GuildScheduledEventEntityType);
+export const statusEnum = z.enum(GuildScheduledEventStatus);
+
 // Strict input recurrence rule schema
 export const recurrenceRuleInput = z.strictObject({
   start: z.iso.datetime({ offset: true }).describe("Starting time of recurrence (ISO8601)"),
@@ -17,10 +22,10 @@ export const recurrenceRuleInput = z.strictObject({
     .nullable()
     .optional()
     .describe("Ending time of recurrence (ISO8601)"),
-  frequency: z.nativeEnum(GuildScheduledEventRecurrenceRuleFrequency),
+  frequency: z.enum(GuildScheduledEventRecurrenceRuleFrequency),
   interval: z.number().int().min(1).nullable().optional(),
   by_weekday: z
-    .array(z.nativeEnum(GuildScheduledEventRecurrenceRuleWeekday))
+    .array(z.enum(GuildScheduledEventRecurrenceRuleWeekday))
     .max(7)
     .nullable()
     .optional(),
@@ -28,17 +33,13 @@ export const recurrenceRuleInput = z.strictObject({
     .array(
       z.strictObject({
         n: z.number().int().min(1).max(5),
-        day: z.nativeEnum(GuildScheduledEventRecurrenceRuleWeekday),
+        day: z.enum(GuildScheduledEventRecurrenceRuleWeekday),
       }),
     )
     .max(7)
     .nullable()
     .optional(),
-  by_month: z
-    .array(z.nativeEnum(GuildScheduledEventRecurrenceRuleMonth))
-    .max(12)
-    .nullable()
-    .optional(),
+  by_month: z.array(z.enum(GuildScheduledEventRecurrenceRuleMonth)).max(12).nullable().optional(),
   by_month_day: z.array(z.number().int().min(-1).max(31)).max(33).nullable().optional(),
   by_year_day: z.array(z.number().int().min(-1).max(365)).max(367).nullable().optional(),
   count: z.number().int().min(1).nullable().optional(),
@@ -49,7 +50,7 @@ export const entityMetadataInput = z.strictObject({
   location: z.string().min(1).max(100).optional(),
 });
 
-// Shared exception input override fields (m2 deduplication)
+// Shared exception input override fields
 export const exceptionOverrideInput = {
   scheduled_start_time: z.iso
     .datetime({ offset: true })
@@ -64,7 +65,7 @@ export const exceptionOverrideInput = {
   is_canceled: z.boolean().nullable().optional().describe("Whether this occurrence is canceled"),
 };
 
-// Lenient output schemas (M1 lenient output principle, require IDs only)
+// Lenient output schemas
 export const entityMetadataOutput = z.object({
   location: z.string().nullish(),
 });
@@ -128,12 +129,7 @@ export const guildScheduledEvent = z.object({
   guild_scheduled_event_exceptions: z.array(guildScheduledEventException).optional(),
 });
 
-// Enums for input schemas (m5)
-export const privacyLevelEnum = z.nativeEnum(GuildScheduledEventPrivacyLevel);
-export const entityTypeEnum = z.nativeEnum(GuildScheduledEventEntityType);
-export const statusEnum = z.nativeEnum(GuildScheduledEventStatus);
-
-// Shared user list query parameters (m2 deduplication)
+// Shared user list query parameters
 export const userListQuery = {
   limit: z.number().int().min(1).max(100).optional(),
   with_member: z.boolean().optional(),
@@ -141,7 +137,7 @@ export const userListQuery = {
   after: snowflake.optional(),
 };
 
-// Shared pagination cursor computation for ascending user lists (M3 fix)
+// Shared pagination cursor computation for ascending user lists
 export function userPagingCursors(users: Array<{ user?: { id: string }; user_id?: string }>) {
   const last = users.at(-1);
   const lastId = last?.user?.id ?? last?.user_id ?? null;

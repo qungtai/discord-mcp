@@ -2,7 +2,7 @@ import type { RESTGetAPIGuildScheduledEventUsersResult } from "discord-api-types
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { guildScheduledEventUser, userListQuery, userPagingCursors } from "./mem-events-schemas.js";
+import { guildScheduledEventUser, userListQuery, userPagingCursors } from "./schemas.js";
 
 export const listGuildScheduledEventExceptionUsers = defineTool({
   name: "discord_list_guild_scheduled_event_exception_users",

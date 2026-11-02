@@ -14,14 +14,20 @@ const policy = new PPolicyEngine([], ["core", "messages", "events"], false);
 
 const FIRST_USER = {
   guild_scheduled_event_id: "100",
+  user_id: "40",
+  guild_scheduled_event_exception_id: "200",
+  response: 1,
   user: { id: "40", username: "bob" },
 };
 const SECOND_USER = {
   guild_scheduled_event_id: "100",
+  user_id: "50",
+  guild_scheduled_event_exception_id: "200",
+  response: 2,
   user: { id: "50", username: "alice" },
 };
 
-it("lists exception users with query parameters and paging cursor", async () => {
+it("lists exception users with query parameters, rich user fields, and paging cursor", async () => {
   const { client, request } = await harness({ policy, respond: () => [FIRST_USER, SECOND_USER] });
   const result = await client.callTool({
     name: "discord_list_guild_scheduled_event_exception_users",
@@ -44,10 +50,14 @@ it("lists exception users with query parameters and paging cursor", async () => 
   });
 });
 
-it("passes allowlist check for allowed guild", async () => {
+it("passes allowlist check for allowed guild and derives cursor from user_id when user is absent", async () => {
+  const userWithoutNestedUser = {
+    guild_scheduled_event_id: "100",
+    user_id: "40",
+  };
   const { client } = await harness({
     policy: new PPolicyEngine(["10"], ["events"], false),
-    respond: () => [FIRST_USER],
+    respond: () => [userWithoutNestedUser],
   });
   const result = await client.callTool({
     name: "discord_list_guild_scheduled_event_exception_users",
@@ -58,8 +68,27 @@ it("passes allowlist check for allowed guild", async () => {
     },
   });
   expect(result.structuredContent).toEqual({
-    users: [FIRST_USER],
+    users: [userWithoutNestedUser],
     next_after: "40",
+  });
+});
+
+it("returns next_after as null when user list is empty", async () => {
+  const { client } = await harness({
+    policy,
+    respond: () => [],
+  });
+  const result = await client.callTool({
+    name: "discord_list_guild_scheduled_event_exception_users",
+    arguments: {
+      guild_id: "10",
+      guild_scheduled_event_id: "100",
+      guild_scheduled_event_exception_id: "200",
+    },
+  });
+  expect(result.structuredContent).toEqual({
+    users: [],
+    next_after: null,
   });
 });
 

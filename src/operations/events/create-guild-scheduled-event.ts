@@ -8,7 +8,7 @@ import {
   guildScheduledEvent,
   privacyLevelEnum,
   recurrenceRuleInput,
-} from "./mem-events-schemas.js";
+} from "./schemas.js";
 
 export const createGuildScheduledEvent = defineTool({
   name: "discord_create_guild_scheduled_event",

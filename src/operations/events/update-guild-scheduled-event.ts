@@ -9,18 +9,16 @@ import {
   privacyLevelEnum,
   recurrenceRuleInput,
   statusEnum,
-} from "./mem-events-schemas.js";
+} from "./schemas.js";
 
 // Note on channel_id:
 // Discord accepts channel_id: null when transitioning an event to EXTERNAL (entity_type: 3).
 // However, the core scope validator (scopeIds in src/core/tool-registry.ts) strictly requires all
 // scoped values to be string | string[] (throwing internal error on null).
 // Until scopeIds is updated in core to skip null, channel_id is optional snowflake here.
-// To change to an external event, set entity_type: 3 and provide entity_metadata.location.
 export const updateGuildScheduledEvent = defineTool({
   name: "discord_update_guild_scheduled_event",
-  description:
-    "Modify a guild scheduled event. To clear channel or switch to external, set entity_type to EXTERNAL (3) with entity_metadata location.",
+  description: "Modify a guild scheduled event",
   operationIds: ["update_guild_scheduled_event"],
   toolset: "events",
   scope: {
