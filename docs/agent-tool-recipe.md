@@ -46,7 +46,7 @@ export const getChannel = defineTool({
 
 ## Effect, approval and idempotency
 - `effect`: `"read"` for GET only; `"write"` for additive changes (create, send, add); `"destructive"` for anything that replaces or removes state (update, overwrite, delete, remove); `"local_write"` for tools that write a local file, like downloads. Every effect except `"read"` is refused in read-only mode.
-- `approval` defaults to `effect === "destructive"`; such tools stay hidden and refused until the approval flow ships. Set `approval: false` only for non-additive changes that are safe without approval (editing the bot's own messages, renaming a channel), with a comment saying why. Keep the default for deletes of resources or other users' content, bulk operations, moderation, permission overwrites and role permission changes.
+- `approval` defaults to `effect === "destructive"`. Destructive tools ask the user for confirmation through MCP elicitation before executing. Set `approval: false` only for non-additive changes that are safe without approval (editing the bot's own messages, renaming a channel), with a comment saying why. Keep the default for deletes of resources or other users' content, bulk operations, moderation, permission overwrites and role permission changes.
 - `idempotent: true` only when repeating the call leaves the same end state (GET, PUT, most PATCH, DELETE). POST is usually `false`; the pipeline then reports an uncertain result instead of a retry.
 - Do not write previews or change summaries this wave.
 
