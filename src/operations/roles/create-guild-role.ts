@@ -1,7 +1,7 @@
 import { type RESTPostAPIGuildRoleResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { reason, snowflake } from "../schemas.js";
+import { permissionBits, reason, snowflake } from "../schemas.js";
 import { roleColors, roleResult } from "./schemas.js";
 
 export const createGuildRole = defineTool({
@@ -18,7 +18,7 @@ export const createGuildRole = defineTool({
   input: z.object({
     guild_id: snowflake,
     name: z.string().min(1).max(100).optional(),
-    permissions: z.string().optional(),
+    permissions: permissionBits.optional(),
     color: z.number().int().min(0).max(16777215).optional(),
     colors: roleColors.optional(),
     hoist: z.boolean().optional(),

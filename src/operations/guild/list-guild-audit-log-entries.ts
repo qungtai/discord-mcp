@@ -41,7 +41,7 @@ export const listGuildAuditLogEntries = defineTool({
     });
     const entries = res.audit_log_entries ?? [];
     return {
-      audit_log: res as unknown as { [x: string]: unknown },
+      audit_log: res,
       next_before: entries.at(-1)?.id ?? null,
       next_after: entries.at(0)?.id ?? null,
     };

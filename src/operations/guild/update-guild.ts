@@ -1,8 +1,4 @@
-import {
-  type RESTPatchAPIGuildJSONBody,
-  type RESTPatchAPIGuildResult,
-  Routes,
-} from "discord-api-types/v10";
+import { type RESTPatchAPIGuildResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
@@ -53,11 +49,11 @@ export const updateGuild = defineTool({
   }),
   output: z.object({ guild }),
   execute: async ({ guild_id, reason, ...body }, { discord }) => ({
-    guild: (await discord<RESTPatchAPIGuildResult>({
+    guild: await discord<RESTPatchAPIGuildResult>({
       method: "PATCH",
       route: Routes.guild(guild_id),
-      body: body as RESTPatchAPIGuildJSONBody,
+      body,
       reason,
-    })) as unknown as { id: string },
+    }),
   }),
 });

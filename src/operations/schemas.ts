@@ -4,6 +4,7 @@
 // a misspelled nested key fails instead of being dropped.
 import { AllowedMentionsTypes } from "discord-api-types/v10";
 import { z } from "zod/v4";
+import { PToolError } from "../core/tool-error.js";
 
 export const snowflake = z.string().regex(/^\d+$/, "Expected a Discord snowflake");
 
@@ -106,3 +107,44 @@ export const attachmentUpdate = z.strictObject({
 });
 // Sent as X-Audit-Log-Reason, never in the body.
 export const reason = z.string().max(512).optional().describe("Audit log reason");
+
+export const permissionBits = z.string().regex(/^\d+$/, "Expected a permission bitfield");
+export const rateLimitPerUser = z.number().int().min(0).max(21600);
+export const autoArchiveDuration = z.union([
+  z.literal(60),
+  z.literal(1440),
+  z.literal(4320),
+  z.literal(10080),
+]);
+export const threadTagSetting = z.enum(["match_all", "match_some"]);
+
+export interface SearchNotReady {
+  message?: string;
+  code?: number;
+  retry_after?: number;
+}
+
+// Discord answers 202 with this body, and without total_results, while it builds the search index.
+export function isSearchNotReady(res: unknown): res is SearchNotReady {
+  return typeof res === "object" && res !== null && !("total_results" in res);
+}
+export function throwSearchNotReady(body: SearchNotReady): never {
+  const retryAfter = body.retry_after ?? 5;
+  throw new PToolError(body.message ?? "Search index is not ready", {
+    category: "rate_limited",
+    retryable: true,
+    retryAfter,
+    discordCode: body.code,
+    remediation: `The search index is still being built; retry after ${retryAfter} seconds`,
+  });
+}
+// Search pages by offset; advance by the results returned so no page is skipped.
+export function searchNextOffset(
+  offset: number | undefined,
+  returned: number,
+  page: { has_more?: boolean; total_results?: number },
+): number | null {
+  const current = offset ?? 0;
+  const hasMore = page.has_more ?? (page.total_results ?? 0) > current + returned;
+  return hasMore ? current + returned : null;
+}

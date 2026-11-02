@@ -18,7 +18,7 @@ export const deleteGuildRole = defineTool({
     reason,
   }),
   output: z.object({
-    deleted: z.boolean(),
+    deleted: z.literal(true),
     guild_id: snowflake,
     role_id: snowflake,
   }),
@@ -28,6 +28,6 @@ export const deleteGuildRole = defineTool({
       route: Routes.guildRole(guild_id, role_id),
       reason,
     });
-    return { deleted: true, guild_id, role_id };
+    return { deleted: true as const, guild_id, role_id };
   },
 });

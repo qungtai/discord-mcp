@@ -78,7 +78,7 @@ it("handles 202 SearchIndexNotReady response by returning retryable rate_limited
   expect(errorOf(result)).toMatchObject({
     category: "rate_limited",
     retryable: true,
-    remediation: "Index not ready, retry after 3 seconds",
+    remediation: "The search index is still being built; retry after 3 seconds",
     message: "Search index not ready",
     retry_after: 3,
     discord_code: 110000,

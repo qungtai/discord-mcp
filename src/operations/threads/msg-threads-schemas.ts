@@ -8,15 +8,6 @@ import {
   snowflake,
 } from "../schemas.js";
 
-export const autoArchiveDuration = z.union([
-  z.literal(60),
-  z.literal(1440),
-  z.literal(4320),
-  z.literal(10080),
-]);
-
-export const rateLimitPerUser = z.number().int().min(0).max(21600);
-
 export const threadMetadata = z
   .looseObject({
     archived: z.boolean().optional(),

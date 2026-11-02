@@ -14,16 +14,12 @@ export const getGuildNewMemberWelcome = defineTool({
   input: z.object(guildIds),
   output: z.object({ new_member_welcome: newMemberWelcome.nullable() }),
   execute: async ({ guild_id }, { discord }) => {
-    const res = await discord<unknown>({
+    const res = await discord<z.infer<typeof newMemberWelcome> | null>({
       method: "GET",
       route: `/guilds/${guild_id}/new-member-welcome`,
     });
-    const isEmpty =
-      res == null ||
-      (res instanceof ArrayBuffer && res.byteLength === 0) ||
-      (typeof res === "object" && Object.keys(res).length === 0);
-    return {
-      new_member_welcome: isEmpty ? null : (res as z.infer<typeof newMemberWelcome>),
-    };
+    // Discord answers 204 with an empty body when the guild has no welcome settings.
+    const isEmpty = res === null || Object.keys(res).length === 0;
+    return { new_member_welcome: isEmpty ? null : res };
   },
 });

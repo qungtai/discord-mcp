@@ -13,12 +13,12 @@ export const addMyMessageReaction = defineTool({
   effect: "write",
   idempotent: true,
   input: z.object(reactionIds),
-  output: z.object({ added: z.boolean(), ...reactionIds }),
+  output: z.object({ added: z.literal(true), ...reactionIds }),
   execute: async (p, { discord }) => {
     await discord({
       method: "PUT",
       route: Routes.channelMessageOwnReaction(p.channel_id, p.message_id, p.emoji),
     });
-    return { added: true, ...p };
+    return { added: true as const, ...p };
   },
 });

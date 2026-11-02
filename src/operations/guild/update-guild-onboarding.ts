@@ -47,11 +47,11 @@ export const updateGuildOnboarding = defineTool({
   }),
   output: z.object({ onboarding }),
   execute: async ({ guild_id, reason, ...body }, { discord }) => ({
-    onboarding: (await discord<RESTPutAPIGuildOnboardingResult>({
+    onboarding: await discord<RESTPutAPIGuildOnboardingResult>({
       method: "PUT",
       route: Routes.guildOnboarding(guild_id),
       body,
       reason,
-    })) as unknown as { guild_id: string },
+    }),
   }),
 });

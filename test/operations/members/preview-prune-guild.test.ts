@@ -17,11 +17,11 @@ it("previews prune guild count with query parameters", async () => {
   });
   const result = await client.callTool({
     name: "discord_preview_prune_guild",
-    arguments: { guild_id: "123", days: 7, include_roles: "111,222" },
+    arguments: { guild_id: "123", days: 7, include_roles: ["111", "222"] },
   });
   expect(request()).toMatchObject({
     method: "GET",
-    url: "https://discord.com/api/v10/guilds/123/prune?days=7&include_roles=111%2C222",
+    url: "https://discord.com/api/v10/guilds/123/prune?days=7&include_roles=111&include_roles=222",
   });
   expect(result.structuredContent).toEqual({
     pruned: 42,

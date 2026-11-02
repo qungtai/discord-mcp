@@ -15,12 +15,12 @@ export const deleteMyMessageReaction = defineTool({
   approval: false,
   idempotent: true,
   input: z.object(reactionIds),
-  output: z.object({ deleted: z.boolean(), ...reactionIds }),
+  output: z.object({ deleted: z.literal(true), ...reactionIds }),
   execute: async (p, { discord }) => {
     await discord({
       method: "DELETE",
       route: Routes.channelMessageOwnReaction(p.channel_id, p.message_id, p.emoji),
     });
-    return { deleted: true, ...p };
+    return { deleted: true as const, ...p };
   },
 });

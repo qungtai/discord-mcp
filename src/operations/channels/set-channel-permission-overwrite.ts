@@ -1,9 +1,7 @@
 import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { reason, snowflake } from "../schemas.js";
-
-const bitfield = z.string().regex(/^\d+$/, "Expected a bitfield string");
+import { permissionBits, reason, snowflake } from "../schemas.js";
 
 export const setChannelPermissionOverwrite = defineTool({
   name: "discord_set_channel_permission_overwrite",
@@ -18,8 +16,8 @@ export const setChannelPermissionOverwrite = defineTool({
     channel_id: snowflake,
     overwrite_id: snowflake,
     type: z.literal([0, 1]).describe("0 for role, 1 for member"),
-    allow: bitfield.optional(),
-    deny: bitfield.optional(),
+    allow: permissionBits.optional(),
+    deny: permissionBits.optional(),
     reason,
   }),
   output: z.object({

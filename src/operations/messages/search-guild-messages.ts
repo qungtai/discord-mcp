@@ -1,8 +1,16 @@
 import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
-import { PToolError } from "../../core/tool-error.js";
 import { defineTool } from "../../core/tool-registry.js";
-import { channel, member, message, snowflake } from "../schemas.js";
+import {
+  channel,
+  isSearchNotReady,
+  message,
+  type SearchNotReady,
+  searchNextOffset,
+  snowflake,
+  throwSearchNotReady,
+} from "../schemas.js";
+import { threadMember } from "../threads/msg-threads-schemas.js";
 
 const sortingMode = z.enum(["relevance", "timestamp"]);
 const sortingOrder = z.enum(["asc", "desc"]);
@@ -29,14 +37,6 @@ const hasOption = z.enum([
 ]);
 const searchableEmbedType = z.enum(["image", "video", "gif", "sound", "article"]);
 
-const threadMember = z.looseObject({
-  id: snowflake,
-  user_id: snowflake,
-  join_timestamp: z.string().optional(),
-  flags: z.number().optional(),
-  member: member.optional(),
-});
-
 const outputSchema = z.object({
   messages: z.array(z.array(message)),
   total_results: z.number().int(),
@@ -47,13 +47,6 @@ const outputSchema = z.object({
   next_offset: z.number().int().nullable(),
 });
 type GuildSearchOutput = z.input<typeof outputSchema>;
-
-interface SearchIndexNotReady {
-  message?: string;
-  code?: number;
-  documents_indexed?: number;
-  retry_after?: number;
-}
 
 export const searchGuildMessages = defineTool({
   name: "discord_search_guild_messages",
@@ -93,27 +86,15 @@ export const searchGuildMessages = defineTool({
   }),
   output: outputSchema,
   execute: async ({ guild_id, ...query }, { discord }) => {
-    const response = await discord<Omit<GuildSearchOutput, "next_offset"> | SearchIndexNotReady>({
+    const response = await discord<Omit<GuildSearchOutput, "next_offset"> | SearchNotReady>({
       method: "GET",
       route: Routes.guildMessagesSearch(guild_id),
       query,
     });
-    if (!("total_results" in response)) {
-      throw new PToolError("Search index is not ready", {
-        category: "rate_limited",
-        retryable: true,
-        retryAfter: response.retry_after,
-        remediation: "The search index is still being built; retry after retry_after seconds",
-      });
-    }
-    const currentOffset = query.offset ?? 0;
-    const limit = query.limit ?? 25;
-    const count = response.messages?.length ?? 0;
-    const next_offset =
-      currentOffset + count < response.total_results ? currentOffset + limit : null;
+    if (isSearchNotReady(response)) throwSearchNotReady(response);
     return {
       ...response,
-      next_offset,
+      next_offset: searchNextOffset(query.offset, response.messages?.length ?? 0, response),
     };
   },
 });

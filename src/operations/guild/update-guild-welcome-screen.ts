@@ -29,11 +29,11 @@ export const updateGuildWelcomeScreen = defineTool({
   }),
   output: z.object({ welcome_screen: welcomeScreen }),
   execute: async ({ guild_id, reason, ...body }, { discord }) => ({
-    welcome_screen: (await discord<RESTPatchAPIGuildWelcomeScreenResult>({
+    welcome_screen: await discord<RESTPatchAPIGuildWelcomeScreenResult>({
       method: "PATCH",
       route: Routes.guildWelcomeScreen(guild_id),
       body,
       reason,
-    })) as unknown as { [x: string]: unknown },
+    }),
   }),
 });

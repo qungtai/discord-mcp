@@ -15,9 +15,9 @@ export const getGuildWelcomeScreen = defineTool({
   input: z.object(guildIds),
   output: z.object({ welcome_screen: welcomeScreen }),
   execute: async ({ guild_id }, { discord }) => ({
-    welcome_screen: (await discord<RESTGetAPIGuildWelcomeScreenResult>({
+    welcome_screen: await discord<RESTGetAPIGuildWelcomeScreenResult>({
       method: "GET",
       route: Routes.guildWelcomeScreen(guild_id),
-    })) as unknown as { [x: string]: unknown },
+    }),
   }),
 });

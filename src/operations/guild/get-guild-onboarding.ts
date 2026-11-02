@@ -15,9 +15,9 @@ export const getGuildOnboarding = defineTool({
   input: z.object(guildIds),
   output: z.object({ onboarding }),
   execute: async ({ guild_id }, { discord }) => ({
-    onboarding: (await discord<RESTGetAPIGuildOnboardingResult>({
+    onboarding: await discord<RESTGetAPIGuildOnboardingResult>({
       method: "GET",
       route: Routes.guildOnboarding(guild_id),
-    })) as unknown as { guild_id: string },
+    }),
   }),
 });

@@ -13,12 +13,12 @@ export const deleteAllMessageReactionsByEmoji = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object(reactionIds),
-  output: z.object({ deleted: z.boolean(), ...reactionIds }),
+  output: z.object({ deleted: z.literal(true), ...reactionIds }),
   execute: async (p, { discord }) => {
     await discord({
       method: "DELETE",
       route: Routes.channelMessageReaction(p.channel_id, p.message_id, p.emoji),
     });
-    return { deleted: true, ...p };
+    return { deleted: true as const, ...p };
   },
 });

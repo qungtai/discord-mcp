@@ -15,9 +15,9 @@ export const getGuildVanityUrl = defineTool({
   input: z.object(guildIds),
   output: z.object({ vanity_url: vanityUrl }),
   execute: async ({ guild_id }, { discord }) => ({
-    vanity_url: (await discord<RESTGetAPIGuildVanityUrlResult>({
+    vanity_url: await discord<RESTGetAPIGuildVanityUrlResult>({
       method: "GET",
       route: Routes.guildVanityUrl(guild_id),
-    })) as unknown as { [x: string]: unknown },
+    }),
   }),
 });

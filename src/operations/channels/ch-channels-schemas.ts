@@ -1,5 +1,7 @@
+import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
-import { channel, snowflake } from "../schemas.js";
+import type { DiscordRequestInit } from "../../core/ports.js";
+import { channel, permissionBits, snowflake } from "../schemas.js";
 
 export const channelResult = z.object({ channel });
 
@@ -15,28 +17,47 @@ export const channelTypeEnum = z.union([
 
 export const videoQualityModeEnum = z.union([z.literal(1), z.literal(2)]);
 
-export const threadAutoArchiveDurationEnum = z.union([
-  z.literal(60),
-  z.literal(1440),
-  z.literal(4320),
-  z.literal(10080),
-]);
-
 export const threadSortOrderEnum = z.union([z.literal(0), z.literal(1)]);
 
 export const forumLayoutEnum = z.union([z.literal(0), z.literal(1), z.literal(2)]);
 
-export const threadSearchTagSettingEnum = z.union([
-  z.literal("match_all"),
-  z.literal("match_some"),
-]);
-
 export const permissionOverwrite = z.strictObject({
   id: snowflake,
   type: z.union([z.literal(0), z.literal(1)]).nullish(),
-  allow: z.union([z.string(), z.number()]).nullish(),
-  deny: z.union([z.string(), z.number()]).nullish(),
+  allow: permissionBits.nullish(),
+  deny: permissionBits.nullish(),
 });
+
+// Both permission lookups take exactly one of guild_id or channel_id, and implicit only with a channel.
+export const permissionLookupShape = {
+  guild_id: snowflake.optional(),
+  channel_id: snowflake.optional(),
+  implicit: z.boolean().optional().describe("Include implicit @everyone permissions"),
+};
+export const exactlyOneScope = (input: { guild_id?: string; channel_id?: string }) =>
+  (input.guild_id === undefined) !== (input.channel_id === undefined);
+export const implicitNeedsChannel = (input: { channel_id?: string; implicit?: boolean }) =>
+  input.implicit === undefined || input.channel_id !== undefined;
+export function permissionLookupRequest(
+  target: "member" | "role",
+  id: string,
+  lookup: { guild_id?: string; channel_id?: string; implicit?: boolean },
+): DiscordRequestInit {
+  const query = lookup.implicit === undefined ? undefined : { implicit: lookup.implicit };
+  if (lookup.channel_id)
+    return {
+      method: "GET",
+      route: `${Routes.channel(lookup.channel_id)}/permissions/${target}/${id}`,
+      query,
+    };
+  // The input schema requires guild_id when channel_id is absent.
+  if (!lookup.guild_id) throw new Error("guild_id or channel_id is required");
+  return {
+    method: "GET",
+    route: `${Routes.guild(lookup.guild_id)}/permissions/${target}/${id}`,
+    query,
+  };
+}
 
 export const defaultReactionEmoji = z.strictObject({
   emoji_id: snowflake.nullish(),

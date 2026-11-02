@@ -24,10 +24,10 @@ export const updateGuildIncidentActions = defineTool({
   }),
   output: z.object({ incident_actions: incidentActions }),
   execute: async ({ guild_id, ...body }, { discord }) => ({
-    incident_actions: (await discord({
+    incident_actions: await discord({
       method: "PUT",
       route: `/guilds/${guild_id}/incident-actions`,
       body,
-    })) as unknown as { [x: string]: unknown },
+    }),
   }),
 });

@@ -15,9 +15,9 @@ export const getGuildPreview = defineTool({
   input: z.object(guildIds),
   output: z.object({ guild_preview: guildPreview }),
   execute: async ({ guild_id }, { discord }) => ({
-    guild_preview: (await discord<RESTGetAPIGuildPreviewResult>({
+    guild_preview: await discord<RESTGetAPIGuildPreviewResult>({
       method: "GET",
       route: Routes.guildPreview(guild_id),
-    })) as unknown as { id: string },
+    }),
   }),
 });

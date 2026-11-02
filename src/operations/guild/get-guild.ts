@@ -18,10 +18,10 @@ export const getGuild = defineTool({
   }),
   output: z.object({ guild }),
   execute: async ({ guild_id, with_counts }, { discord }) => ({
-    guild: (await discord<RESTGetAPIGuildResult>({
+    guild: await discord<RESTGetAPIGuildResult>({
       method: "GET",
       route: Routes.guild(guild_id),
       query: { with_counts },
-    })) as unknown as { id: string },
+    }),
   }),
 });
