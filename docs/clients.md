@@ -4,11 +4,8 @@ All examples run the built server with Node over stdio. Replace
 `/absolute/path` with the absolute path to your checkout's `dist/index.js`.
 Pass the bot token through the environment; never put it in a tool argument.
 
-The standard `npx -y @qungtai/discord-mcp@<version>` install path will be
-available after the first release. Until then, build from source.
-
-> Warning: never commit a real bot token. Prefer environment passthrough or a
-> secret store over plaintext tokens in shared config files.
+The standard `npx -y @qungtai/discord-mcp@<version>` install path will be available
+after the first release.
 
 ## Claude Code
 
@@ -19,7 +16,7 @@ available after the first release. Until then, build from source.
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "${DISCORD_TOKEN}"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -35,7 +32,7 @@ available after the first release. Until then, build from source.
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "${DISCORD_TOKEN}"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -50,7 +47,7 @@ command = "node"
 args = ["/absolute/path/dist/index.js"]
 
 [mcp_servers.discord.env]
-DISCORD_TOKEN = "${DISCORD_TOKEN}"
+DISCORD_TOKEN = "your-bot-token"
 ```
 
 ## Cursor
@@ -62,7 +59,7 @@ DISCORD_TOKEN = "${DISCORD_TOKEN}"
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "${DISCORD_TOKEN}"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -79,7 +76,7 @@ DISCORD_TOKEN = "${DISCORD_TOKEN}"
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "${DISCORD_TOKEN}"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
