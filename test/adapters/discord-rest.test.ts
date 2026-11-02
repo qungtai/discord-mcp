@@ -14,3 +14,19 @@ it("drops undefined query values (n1)", async () => {
     "https://discord.com/api/v10/channels/1/messages?limit=3",
   );
 });
+
+it("repeats keys for array query values and skips empty arrays", async () => {
+  const makeRequest = vi.fn<RESTOptions["makeRequest"]>(async () => json([]));
+  const adapter = new PDiscordRestAdapter("test-token", { rest: { makeRequest } });
+  await adapter.request(
+    {
+      method: "GET",
+      route: "/guilds/1/messages/search",
+      query: { author_id: ["10", "20"], channel_id: [] },
+    },
+    new AbortController().signal,
+  );
+  expect(makeRequest.mock.calls[0]?.[0]).toBe(
+    "https://discord.com/api/v10/guilds/1/messages/search?author_id=10&author_id=20",
+  );
+});

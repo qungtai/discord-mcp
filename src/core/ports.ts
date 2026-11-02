@@ -7,7 +7,7 @@ export interface DiscordRequestInit {
   method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   route: `/${string}`;
   // Undefined values are dropped, so a tool can pass its parsed input directly.
-  query?: Record<string, string | number | boolean | undefined>;
+  query?: Record<string, string | number | boolean | string[] | undefined>;
   body?: unknown;
   files?: RawFile[];
   reason?: string;

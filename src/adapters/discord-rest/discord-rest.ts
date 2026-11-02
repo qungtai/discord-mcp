@@ -62,8 +62,14 @@ const BY_STATUS: Record<number, [ErrorCategory, string]> = {
 };
 function toQuery(query: NonNullable<DiscordRequestInit["query"]>): URLSearchParams {
   const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(query))
-    if (value !== undefined) params.set(key, String(value));
+  for (const [key, value] of Object.entries(query)) {
+    if (value === undefined) continue;
+    if (Array.isArray(value)) {
+      for (const item of value) params.append(key, item);
+    } else {
+      params.set(key, String(value));
+    }
+  }
   return params;
 }
 function toToolError(error: unknown, cancelled: boolean): PToolError {
