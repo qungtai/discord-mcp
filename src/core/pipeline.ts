@@ -152,9 +152,9 @@ export class PToolPipeline {
         const targets = Object.entries(resources)
           .map(([k, v]) => `${k}=${v}`)
           .join(", ");
-        const message = redact(
-          `Approve ${name}?\nTargets: ${targets}\nArguments: ${JSON.stringify(parsed.data)}`,
-        );
+        const raw = `Approve ${name}?\nTargets: ${targets}\nArguments: ${JSON.stringify(parsed.data)}`;
+        const token = process.env.DISCORD_TOKEN;
+        const message = token ? raw.split(token).join("[redacted]") : raw;
         let approved: boolean;
         try {
           approved = await session.approve(message);

@@ -76,13 +76,13 @@ export async function harness(
     },
   );
   const server = createServer(pipeline);
+  const capabilities =
+    options.clientCapabilities ?? (options.onElicit ? { elicitation: {} } : undefined);
   const client = new Client(
     { name: "test", version: "1" },
-    options.clientCapabilities ? { capabilities: options.clientCapabilities } : undefined,
+    capabilities ? { capabilities } : undefined,
   );
-  if (options.onElicit) {
-    client.setRequestHandler(ElicitRequestSchema, options.onElicit);
-  }
+  if (options.onElicit) client.setRequestHandler(ElicitRequestSchema, options.onElicit);
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
   await client.listTools();
