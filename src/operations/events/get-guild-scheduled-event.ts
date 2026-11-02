@@ -1,8 +1,8 @@
-import { Routes } from "discord-api-types/v10";
+import { type RESTGetAPIGuildScheduledEventResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { type APIGuildScheduledEventData, guildScheduledEvent } from "./mem-events-schemas.js";
+import { guildScheduledEvent } from "./mem-events-schemas.js";
 
 export const getGuildScheduledEvent = defineTool({
   name: "discord_get_guild_scheduled_event",
@@ -21,12 +21,11 @@ export const getGuildScheduledEvent = defineTool({
   output: z.object({
     guild_scheduled_event: guildScheduledEvent,
   }),
-  execute: async ({ guild_id, guild_scheduled_event_id, ...query }, { discord }) => {
-    const event = await discord<APIGuildScheduledEventData>({
+  execute: async ({ guild_id, guild_scheduled_event_id, ...query }, { discord }) => ({
+    guild_scheduled_event: await discord<RESTGetAPIGuildScheduledEventResult>({
       method: "GET",
       route: Routes.guildScheduledEvent(guild_id, guild_scheduled_event_id),
       query,
-    });
-    return { guild_scheduled_event: event };
-  },
+    }),
+  }),
 });

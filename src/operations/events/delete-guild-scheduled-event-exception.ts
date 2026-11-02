@@ -22,16 +22,14 @@ export const deleteGuildScheduledEventException = defineTool({
     guild_scheduled_event_id: snowflake,
     exception_id: snowflake,
   }),
-  execute: async ({ guild_id, guild_scheduled_event_id, exception_id }, { discord }) => {
+  execute: async (ids, { discord }) => {
     await discord({
       method: "DELETE",
-      route: `/guilds/${guild_id}/scheduled-events/${guild_scheduled_event_id}/exceptions/${exception_id}`,
+      route: `/guilds/${ids.guild_id}/scheduled-events/${ids.guild_scheduled_event_id}/exceptions/${ids.exception_id}`,
     });
     return {
       deleted: true as const,
-      guild_id,
-      guild_scheduled_event_id,
-      exception_id,
+      ...ids,
     };
   },
 });

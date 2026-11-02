@@ -15,11 +15,12 @@ const policy = new PPolicyEngine([], ["core", "messages", "events"], false);
 const EVENT = {
   id: "100",
   guild_id: "10",
+  channel_id: "20",
   name: "Stage Talk",
   scheduled_start_time: "2026-11-05T18:00:00.000Z",
   privacy_level: 2,
   status: 1,
-  entity_type: 3,
+  entity_type: 1,
 };
 
 it("creates a guild scheduled event with exact literals and reason", async () => {
@@ -28,20 +29,22 @@ it("creates a guild scheduled event with exact literals and reason", async () =>
     name: "discord_create_guild_scheduled_event",
     arguments: {
       guild_id: "10",
+      channel_id: "20",
       name: "Stage Talk",
       privacy_level: 2,
       scheduled_start_time: "2026-11-05T18:00:00.000Z",
-      entity_type: 3,
+      entity_type: 1,
       reason: "Weekly community schedule",
     },
   });
   expect(request().method).toBe("POST");
   expect(request().url).toBe("https://discord.com/api/v10/guilds/10/scheduled-events");
   expect(JSON.parse(String(request().body))).toEqual({
+    channel_id: "20",
     name: "Stage Talk",
     privacy_level: 2,
     scheduled_start_time: "2026-11-05T18:00:00.000Z",
-    entity_type: 3,
+    entity_type: 1,
   });
   expect(new Headers(request().headers as HeadersInit).get("x-audit-log-reason")).toBe(
     "Weekly%20community%20schedule",
@@ -50,21 +53,58 @@ it("creates a guild scheduled event with exact literals and reason", async () =>
 });
 
 it("passes allowlist check for allowed guild and channel", async () => {
-  const { client } = await harness({
+  const { client, request } = await harness({
     policy: new PPolicyEngine(["10"], ["events"], false),
-    respond: () => EVENT,
+    makeRequest: async (url) => {
+      if (String(url).endsWith("/channels/20")) {
+        return json({ id: "20", guild_id: "10" });
+      }
+      return json(EVENT);
+    },
   });
   const result = await client.callTool({
     name: "discord_create_guild_scheduled_event",
     arguments: {
       guild_id: "10",
+      channel_id: "20",
       name: "Stage Talk",
       privacy_level: 2,
       scheduled_start_time: "2026-11-05T18:00:00.000Z",
-      entity_type: 3,
+      entity_type: 1,
     },
   });
   expect(result.structuredContent).toEqual({ guild_scheduled_event: EVENT });
+  expect(request(0).url).toBe("https://discord.com/api/v10/channels/20");
+  expect(request(1).url).toBe("https://discord.com/api/v10/guilds/10/scheduled-events");
+});
+
+it("denies allowlist check when channel belongs to a different unallowed guild", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine(["10"], ["events"], false),
+    makeRequest: async (url) => {
+      if (String(url).endsWith("/channels/20")) {
+        return json({ id: "20", guild_id: "999" });
+      }
+      return json(EVENT);
+    },
+  });
+  const result = await client.callTool({
+    name: "discord_create_guild_scheduled_event",
+    arguments: {
+      guild_id: "10",
+      channel_id: "20",
+      name: "Stage Talk",
+      privacy_level: 2,
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      entity_type: 1,
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "policy",
+    message: "Guild is not allowed",
+  });
+  // Channel was resolved, but POST to create event was blocked
+  expect(makeRequest).toHaveBeenCalledTimes(1);
 });
 
 it("denies allowlist check when guild is not allowed", async () => {
@@ -88,7 +128,7 @@ it("denies allowlist check when guild is not allowed", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("maps a 403 to permission with required ManageEvents", async () => {
+it("maps a 403 to permission with required ManageEvents, CreateEvents", async () => {
   const { client } = await harness({
     policy,
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
@@ -106,7 +146,7 @@ it("maps a 403 to permission with required ManageEvents", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
-    remediation: "Check the bot permissions; this tool needs ManageEvents",
+    remediation: "Check the bot permissions; this tool needs ManageEvents, CreateEvents",
   });
 });
 
@@ -129,4 +169,87 @@ it("maps a 404 to not_found", async () => {
     category: "not_found",
     status: 404,
   });
+});
+
+it.each([
+  {
+    input: {
+      guild_id: "10",
+      name: "",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+    },
+    desc: "empty name",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "a".repeat(101),
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+    },
+    desc: "name too long",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "not-a-datetime",
+      privacy_level: 2,
+      entity_type: 3,
+    },
+    desc: "bad start time",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 99,
+      entity_type: 3,
+    },
+    desc: "invalid privacy level",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 99,
+    },
+    desc: "invalid entity type",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+      entity_metadata: { extra: "field" },
+    },
+    desc: "strict entity_metadata violation",
+  },
+  {
+    input: {
+      guild_id: "10",
+      name: "Talk",
+      scheduled_start_time: "2026-11-05T18:00:00.000Z",
+      privacy_level: 2,
+      entity_type: 3,
+      recurrence_rule: { start: "2026-11-05T18:00:00.000Z", frequency: 1, by_weekday: [8] },
+    },
+    desc: "recurrence_rule by_weekday out of range",
+  },
+])("validates input: $desc", async ({ input }) => {
+  const { client, makeRequest } = await harness({ policy });
+  const result = await client.callTool({
+    name: "discord_create_guild_scheduled_event",
+    arguments: input as Record<string, unknown>,
+  });
+  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(makeRequest).not.toHaveBeenCalled();
 });

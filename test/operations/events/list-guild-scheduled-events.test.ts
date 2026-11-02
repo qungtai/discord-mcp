@@ -20,6 +20,14 @@ const EVENT = {
   privacy_level: 2,
   status: 1,
   entity_type: 3,
+  guild_scheduled_event_exceptions: [
+    {
+      event_id: "100",
+      event_exception_id: "201",
+      scheduled_start_time: "2026-11-06T18:00:00.000Z",
+      is_canceled: true,
+    },
+  ],
 };
 
 it("lists scheduled events with query parameters", async () => {
@@ -79,4 +87,16 @@ it("maps a 404 to not_found", async () => {
     category: "not_found",
     status: 404,
   });
+});
+
+it("validates input against schema violations", async () => {
+  const { client, makeRequest } = await harness({ policy });
+  const result = await client.callTool({
+    name: "discord_list_guild_scheduled_events",
+    arguments: { guild_id: "not-a-snowflake" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
 });

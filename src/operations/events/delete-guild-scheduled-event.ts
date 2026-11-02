@@ -1,4 +1,4 @@
-import { Routes } from "discord-api-types/v10";
+import { type RESTDeleteAPIGuildScheduledEventResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
@@ -22,16 +22,15 @@ export const deleteGuildScheduledEvent = defineTool({
     guild_id: snowflake,
     guild_scheduled_event_id: snowflake,
   }),
-  execute: async ({ guild_id, guild_scheduled_event_id, reason: auditReason }, { discord }) => {
-    await discord({
+  execute: async ({ reason: auditReason, ...ids }, { discord }) => {
+    await discord<RESTDeleteAPIGuildScheduledEventResult>({
       method: "DELETE",
-      route: Routes.guildScheduledEvent(guild_id, guild_scheduled_event_id),
+      route: Routes.guildScheduledEvent(ids.guild_id, ids.guild_scheduled_event_id),
       reason: auditReason,
     });
     return {
       deleted: true as const,
-      guild_id,
-      guild_scheduled_event_id,
+      ...ids,
     };
   },
 });

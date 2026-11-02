@@ -120,3 +120,17 @@ it("maps a 404 to not_found", async () => {
     status: 404,
   });
 });
+
+it("validates bad datetime input format", async () => {
+  const { client, makeRequest } = await harness({ policy });
+  const result = await client.callTool({
+    name: "discord_create_guild_scheduled_event_exception",
+    arguments: {
+      guild_id: "10",
+      guild_scheduled_event_id: "100",
+      original_scheduled_start_time: "bad-datetime",
+    },
+  });
+  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(makeRequest).not.toHaveBeenCalled();
+});

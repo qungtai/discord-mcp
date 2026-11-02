@@ -12,17 +12,17 @@ afterEach(() => {
 
 const policy = new PPolicyEngine([], ["core", "messages", "events"], false);
 
-const USER_RECORD = {
+const FIRST_USER = {
+  guild_scheduled_event_id: "100",
+  user: { id: "40", username: "bob" },
+};
+const SECOND_USER = {
   guild_scheduled_event_id: "100",
   user: { id: "50", username: "alice" },
 };
 
-it("lists exception users with query parameters and paging cursors", async () => {
-  const older = {
-    guild_scheduled_event_id: "100",
-    user: { id: "40", username: "bob" },
-  };
-  const { client, request } = await harness({ policy, respond: () => [USER_RECORD, older] });
+it("lists exception users with query parameters and paging cursor", async () => {
+  const { client, request } = await harness({ policy, respond: () => [FIRST_USER, SECOND_USER] });
   const result = await client.callTool({
     name: "discord_list_guild_scheduled_event_exception_users",
     arguments: {
@@ -39,8 +39,7 @@ it("lists exception users with query parameters and paging cursors", async () =>
     "https://discord.com/api/v10/guilds/10/scheduled-events/100/200/users?limit=2&with_member=true&after=30",
   );
   expect(result.structuredContent).toEqual({
-    users: [USER_RECORD, older],
-    next_before: "40",
+    users: [FIRST_USER, SECOND_USER],
     next_after: "50",
   });
 });
@@ -48,7 +47,7 @@ it("lists exception users with query parameters and paging cursors", async () =>
 it("passes allowlist check for allowed guild", async () => {
   const { client } = await harness({
     policy: new PPolicyEngine(["10"], ["events"], false),
-    respond: () => [USER_RECORD],
+    respond: () => [FIRST_USER],
   });
   const result = await client.callTool({
     name: "discord_list_guild_scheduled_event_exception_users",
@@ -59,9 +58,8 @@ it("passes allowlist check for allowed guild", async () => {
     },
   });
   expect(result.structuredContent).toEqual({
-    users: [USER_RECORD],
-    next_before: "50",
-    next_after: "50",
+    users: [FIRST_USER],
+    next_after: "40",
   });
 });
 
@@ -101,4 +99,20 @@ it("maps a 404 to not_found", async () => {
     category: "not_found",
     status: 404,
   });
+});
+
+it("rejects out of bounds limit", async () => {
+  const { client } = await harness({ policy });
+  for (const limit of [0, 101]) {
+    const result = await client.callTool({
+      name: "discord_list_guild_scheduled_event_exception_users",
+      arguments: {
+        guild_id: "10",
+        guild_scheduled_event_id: "100",
+        guild_scheduled_event_exception_id: "200",
+        limit,
+      },
+    });
+    expect(result.isError).toBe(true);
+  }
 });

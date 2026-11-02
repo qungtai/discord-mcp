@@ -88,3 +88,28 @@ it("maps a 404 to not_found", async () => {
     status: 404,
   });
 });
+
+it("rejects more than 10 exception IDs", async () => {
+  const { client } = await harness({ policy });
+  const result = await client.callTool({
+    name: "discord_count_guild_scheduled_event_users",
+    arguments: {
+      guild_id: "10",
+      guild_scheduled_event_id: "100",
+      guild_scheduled_event_exception_ids: [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+      ],
+    },
+  });
+  expect(result.isError).toBe(true);
+});

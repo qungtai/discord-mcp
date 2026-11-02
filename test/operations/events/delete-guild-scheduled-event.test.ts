@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import type { ToolFiles } from "../../../src/core/ports.js";
 import { PToolRegistry } from "../../../src/core/tool-registry.js";
-import { harness } from "../../support/harness.js";
+import { deleteGuildScheduledEvent } from "../../../src/operations/events/delete-guild-scheduled-event.js";
+import { errorOf, harness, json } from "../../support/harness.js";
 
 beforeEach(() => {
   vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -11,6 +11,12 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
+
+const approvalFreeRegistry = () => {
+  const registry = new PToolRegistry();
+  registry.register({ ...deleteGuildScheduledEvent, approval: false });
+  return registry;
+};
 
 const get = {
   guild_id: "10",
@@ -31,66 +37,91 @@ it("denies call when approval is required but unconfigured", async () => {
   });
 });
 
-it("passes allowlist check for allowed guild", async () => {
-  const { pipeline, makeRequest } = await harness({
-    policy: new PPolicyEngine(["10"], ["events"], false),
+it("deletes a guild scheduled event and sends reason", async () => {
+  const { client, request } = await harness({
+    registry: approvalFreeRegistry(),
+    policy: new PPolicyEngine([], ["events"], false),
+    respond: () => undefined,
   });
-  const result = await pipeline.call("discord_delete_guild_scheduled_event", get);
-  expect(result).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool requires approval support",
-    },
+  const result = await client.callTool({
+    name: "discord_delete_guild_scheduled_event",
+    arguments: get,
   });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
-it("denies allowlist check when guild is not allowed", async () => {
-  const { pipeline, makeRequest } = await harness({
-    policy: new PPolicyEngine(["999"], ["events"], false),
-  });
-  const result = await pipeline.call("discord_delete_guild_scheduled_event", get);
-  expect(result).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool requires approval support",
-    },
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
-it("maps tool execution when invoked directly via execute handler", async () => {
-  const registry = await PToolRegistry.load();
-  const tool = registry.get("discord_delete_guild_scheduled_event");
-  if (!tool) throw new Error("Tool not found");
-
-  const mockDiscord = vi.fn().mockResolvedValue(undefined);
-  const result = await tool.execute(
-    {
-      guild_id: "10",
-      guild_scheduled_event_id: "100",
-      reason: "Event cancelled",
-    },
-    {
-      discord: mockDiscord,
-      files: {} as ToolFiles,
-      signal: new AbortController().signal,
-      progress: async () => {},
-      log: async () => {},
-      correlationId: "test",
-      allowsGuild: () => true,
-    },
+  expect(request().method).toBe("DELETE");
+  expect(request().url).toBe("https://discord.com/api/v10/guilds/10/scheduled-events/100");
+  expect(new Headers(request().headers as HeadersInit).get("x-audit-log-reason")).toBe(
+    "Event%20cancelled",
   );
-  expect(mockDiscord).toHaveBeenCalledWith({
-    method: "DELETE",
-    route: "/guilds/10/scheduled-events/100",
-    reason: "Event cancelled",
-  });
-  expect(result).toEqual({
+  expect(result.structuredContent).toEqual({
     deleted: true,
     guild_id: "10",
     guild_scheduled_event_id: "100",
+  });
+});
+
+it("passes allowlist check for allowed guild", async () => {
+  const { client } = await harness({
+    registry: approvalFreeRegistry(),
+    policy: new PPolicyEngine(["10"], ["events"], false),
+    respond: () => undefined,
+  });
+  const result = await client.callTool({
+    name: "discord_delete_guild_scheduled_event",
+    arguments: { guild_id: "10", guild_scheduled_event_id: "100" },
+  });
+  expect(result.structuredContent).toEqual({
+    deleted: true,
+    guild_id: "10",
+    guild_scheduled_event_id: "100",
+  });
+});
+
+it("denies allowlist check when guild is not allowed", async () => {
+  const { client, makeRequest } = await harness({
+    registry: approvalFreeRegistry(),
+    policy: new PPolicyEngine(["999"], ["events"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_delete_guild_scheduled_event",
+    arguments: { guild_id: "10", guild_scheduled_event_id: "100" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "policy",
+    message: "Guild is not allowed",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it("maps a 403 to permission with required ManageEvents", async () => {
+  const { client } = await harness({
+    registry: approvalFreeRegistry(),
+    policy: new PPolicyEngine([], ["events"], false),
+    makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+  });
+  const result = await client.callTool({
+    name: "discord_delete_guild_scheduled_event",
+    arguments: { guild_id: "10", guild_scheduled_event_id: "100" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    remediation: "Check the bot permissions; this tool needs ManageEvents",
+  });
+});
+
+it("maps a 404 to not_found", async () => {
+  const { client } = await harness({
+    registry: approvalFreeRegistry(),
+    policy: new PPolicyEngine([], ["events"], false),
+    makeRequest: async () =>
+      json({ message: "Unknown Scheduled Event", code: 10070 }, { status: 404 }),
+  });
+  const result = await client.callTool({
+    name: "discord_delete_guild_scheduled_event",
+    arguments: { guild_id: "10", guild_scheduled_event_id: "100" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
   });
 });
