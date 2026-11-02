@@ -1,3 +1,4 @@
+import type { ResponseLike } from "@discordjs/rest";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
 import { PToolRegistry } from "../../../src/core/tool-registry.js";
@@ -40,7 +41,7 @@ it("deletes all reactions on a message with ManageMessages when approval is sati
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
-    respond: () => null,
+    makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
   });
   const result = await client.callTool({
     name: "discord_delete_all_message_reactions",
@@ -49,7 +50,7 @@ it("deletes all reactions on a message with ManageMessages when approval is sati
   const req = request();
   expect([req.method, req.url]).toEqual([
     "DELETE",
-    `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}/reactions`,
+    "https://discord.com/api/v10/channels/100/messages/200/reactions",
   ]);
   expect(result.structuredContent).toEqual({
     deleted: true,
@@ -58,7 +59,11 @@ it("deletes all reactions on a message with ManageMessages when approval is sati
   });
 });
 
-it("validates input strictly", async () => {
+it.each([
+  ["invalid channel_id", { channel_id: "invalid-id", message_id: messageId }],
+  ["invalid message_id", { channel_id: channelId, message_id: "invalid-id" }],
+  ["unknown extra property", { channel_id: channelId, message_id: messageId, extra: 1 }],
+])("validates input strictly: %s", async (_, args) => {
   const registry = new PToolRegistry();
   registry.register({ ...deleteAllMessageReactions, approval: false });
   const { client, makeRequest } = await harness({
@@ -67,7 +72,7 @@ it("validates input strictly", async () => {
   });
   const result = await client.callTool({
     name: "discord_delete_all_message_reactions",
-    arguments: { channel_id: "invalid-id", message_id: messageId },
+    arguments: args,
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
   expect(makeRequest).not.toHaveBeenCalled();
@@ -117,7 +122,12 @@ it("allows access under an allowed guild and denies under disallowed guild", asy
   const allowed = await harness({
     registry,
     policy: new PPolicyEngine(["500"], ["reactions"], false),
-    respond: () => ({ id: channelId, guild_id: "500" }),
+    makeRequest: async (url) => {
+      if (String(url).endsWith(`/channels/${channelId}`)) {
+        return json({ id: channelId, guild_id: "500" });
+      }
+      return new Response(null, { status: 204 }) as unknown as ResponseLike;
+    },
   });
   const allowedResult = await allowed.client.callTool({
     name: "discord_delete_all_message_reactions",
@@ -128,6 +138,12 @@ it("allows access under an allowed guild and denies under disallowed guild", asy
     channel_id: channelId,
     message_id: messageId,
   });
+  expect(allowed.request(0).method).toBe("GET");
+  expect(allowed.request(0).url).toBe(`https://discord.com/api/v10/channels/${channelId}`);
+  expect(allowed.request(1).method).toBe("DELETE");
+  expect(allowed.request(1).url).toBe(
+    "https://discord.com/api/v10/channels/100/messages/200/reactions",
+  );
 
   const denied = await harness({
     registry,
@@ -143,4 +159,6 @@ it("allows access under an allowed guild and denies under disallowed guild", asy
     message: "Guild is not allowed",
   });
   expect(denied.makeRequest).toHaveBeenCalledTimes(1);
+  expect(denied.request(0).method).toBe("GET");
+  expect(denied.request(0).url).toBe(`https://discord.com/api/v10/channels/${channelId}`);
 });

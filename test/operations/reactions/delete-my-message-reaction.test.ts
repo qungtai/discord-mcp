@@ -1,3 +1,4 @@
+import type { ResponseLike } from "@discordjs/rest";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
 import { errorOf, harness, json } from "../../support/harness.js";
@@ -14,10 +15,10 @@ const channelId = "100";
 const messageId = "200";
 const emoji = "👍";
 
-it("deletes own reaction from a message", async () => {
+it("deletes own reaction from a message without approval", async () => {
   const { client, request } = await harness({
     policy: new PPolicyEngine([], ["reactions"], false),
-    respond: () => null,
+    makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
   });
   const result = await client.callTool({
     name: "discord_delete_my_message_reaction",
@@ -26,7 +27,7 @@ it("deletes own reaction from a message", async () => {
   const req = request();
   expect([req.method, req.url]).toEqual([
     "DELETE",
-    `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}/reactions/${encodeURIComponent(emoji)}/@me`,
+    "https://discord.com/api/v10/channels/100/messages/200/reactions/%F0%9F%91%8D/@me",
   ]);
   expect(result.structuredContent).toEqual({
     deleted: true,
@@ -36,19 +37,38 @@ it("deletes own reaction from a message", async () => {
   });
 });
 
-it("validates input strictly", async () => {
+it("supports custom emoji", async () => {
+  const customEmoji = "party_blob:123456789";
+  const { client, request } = await harness({
+    policy: new PPolicyEngine([], ["reactions"], false),
+    makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
+  });
+  await client.callTool({
+    name: "discord_delete_my_message_reaction",
+    arguments: { channel_id: channelId, message_id: messageId, emoji: customEmoji },
+  });
+  expect(request().url).toBe(
+    "https://discord.com/api/v10/channels/100/messages/200/reactions/party_blob%3A123456789/@me",
+  );
+});
+
+it.each([
+  ["invalid channel_id", { channel_id: "invalid", message_id: messageId, emoji }],
+  ["empty emoji", { channel_id: channelId, message_id: messageId, emoji: "" }],
+  ["unknown extra property", { channel_id: channelId, message_id: messageId, emoji, extra: 1 }],
+])("validates input strictly: %s", async (_, args) => {
   const { client, makeRequest } = await harness({
     policy: new PPolicyEngine([], ["reactions"], false),
   });
   const result = await client.callTool({
     name: "discord_delete_my_message_reaction",
-    arguments: { channel_id: "invalid", message_id: messageId, emoji },
+    arguments: args,
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("maps 403 to permission error", async () => {
+it("maps 403 to permission error with ViewChannel and ReadMessageHistory", async () => {
   const { client } = await harness({
     policy: new PPolicyEngine([], ["reactions"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
@@ -61,6 +81,7 @@ it("maps 403 to permission error", async () => {
     category: "permission",
     status: 403,
     discord_code: 50013,
+    remediation: "Check the bot permissions; this tool needs ViewChannel, ReadMessageHistory",
   });
 });
 
@@ -82,7 +103,12 @@ it("maps 404 to not_found", async () => {
 it("allows access under an allowed guild and denies under disallowed guild", async () => {
   const allowed = await harness({
     policy: new PPolicyEngine(["500"], ["reactions"], false),
-    respond: () => ({ id: channelId, guild_id: "500" }),
+    makeRequest: async (url) => {
+      if (String(url).endsWith(`/channels/${channelId}`)) {
+        return json({ id: channelId, guild_id: "500" });
+      }
+      return new Response(null, { status: 204 }) as unknown as ResponseLike;
+    },
   });
   const allowedResult = await allowed.client.callTool({
     name: "discord_delete_my_message_reaction",
@@ -94,6 +120,12 @@ it("allows access under an allowed guild and denies under disallowed guild", asy
     message_id: messageId,
     emoji,
   });
+  expect(allowed.request(0).method).toBe("GET");
+  expect(allowed.request(0).url).toBe(`https://discord.com/api/v10/channels/${channelId}`);
+  expect(allowed.request(1).method).toBe("DELETE");
+  expect(allowed.request(1).url).toBe(
+    "https://discord.com/api/v10/channels/100/messages/200/reactions/%F0%9F%91%8D/@me",
+  );
 
   const denied = await harness({
     policy: new PPolicyEngine(["500"], ["reactions"], false),
@@ -108,4 +140,6 @@ it("allows access under an allowed guild and denies under disallowed guild", asy
     message: "Guild is not allowed",
   });
   expect(denied.makeRequest).toHaveBeenCalledTimes(1);
+  expect(denied.request(0).method).toBe("GET");
+  expect(denied.request(0).url).toBe(`https://discord.com/api/v10/channels/${channelId}`);
 });
