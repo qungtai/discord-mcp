@@ -1,7 +1,8 @@
-import { type RESTGetAPIChannelPinsResult, Routes } from "discord-api-types/v10";
+import { type RESTGetAPIChannelMessagesPinsResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { message, snowflake } from "../schemas.js";
+import { snowflake } from "../schemas.js";
+import { pinnedMessage } from "./msg-pins-schemas.js";
 
 export const listPins = defineTool({
   name: "discord_list_pins",
@@ -13,15 +14,25 @@ export const listPins = defineTool({
   effect: "read",
   idempotent: true,
   output: z.object({
-    messages: z.array(message),
+    items: z.array(pinnedMessage),
+    has_more: z.boolean(),
+    next_before: z.string().nullable(),
   }),
   input: z.object({
     channel_id: snowflake,
+    before: z.iso.datetime().optional(),
+    limit: z.number().int().min(1).max(50).optional(),
   }),
-  execute: async ({ channel_id }, { discord }) => ({
-    messages: await discord<RESTGetAPIChannelPinsResult>({
+  execute: async ({ channel_id, ...query }, { discord }) => {
+    const res = await discord<RESTGetAPIChannelMessagesPinsResult>({
       method: "GET",
-      route: Routes.channelPins(channel_id),
-    }),
-  }),
+      route: Routes.channelMessagesPins(channel_id),
+      query,
+    });
+    return {
+      items: res.items,
+      has_more: res.has_more,
+      next_before: res.has_more ? (res.items.at(-1)?.pinned_at ?? null) : null,
+    };
+  },
 });

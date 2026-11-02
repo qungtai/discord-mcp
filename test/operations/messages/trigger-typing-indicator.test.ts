@@ -61,19 +61,43 @@ it("blocks access when channel belongs to a disallowed guild", async () => {
 });
 
 it("maps a 403 to permission error", async () => {
-  const { pipeline } = await harness({
+  const { client } = await harness({
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
-  expect(
-    await pipeline.call("discord_trigger_typing_indicator", { channel_id: "1" }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "permission",
-      retryable: false,
-      status: 403,
-      discord_code: 50013,
-      remediation: "Check the bot permissions; this tool needs ViewChannel, SendMessages",
-    },
+  const result = await client.callTool({
+    name: "discord_trigger_typing_indicator",
+    arguments: { channel_id: "1" },
+  });
+  expect(errorOf(result)).toEqual({
+    category: "permission",
+    retryable: false,
+    status: 403,
+    discord_code: 50013,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
+    remediation: "Check the bot permissions; this tool needs ViewChannel, SendMessages",
+    tool: "discord_trigger_typing_indicator",
+    correlation_id: expect.any(String),
+    resource_ids: { channel_id: "1" },
+  });
+});
+
+it("maps a 404 to not_found error", async () => {
+  const { client } = await harness({
+    makeRequest: async () => json({ message: "Unknown Channel", code: 10003 }, { status: 404 }),
+  });
+  const result = await client.callTool({
+    name: "discord_trigger_typing_indicator",
+    arguments: { channel_id: "1" },
+  });
+  expect(errorOf(result)).toEqual({
+    category: "not_found",
+    retryable: false,
+    status: 404,
+    discord_code: 10003,
+    message: "Discord rejected the request (HTTP 404): Unknown Channel",
+    remediation: "Check the IDs in the request",
+    tool: "discord_trigger_typing_indicator",
+    correlation_id: expect.any(String),
+    resource_ids: { channel_id: "1" },
   });
 });

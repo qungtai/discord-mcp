@@ -23,7 +23,7 @@ it("pins a message in a channel with an audit reason", async () => {
     arguments: args,
   });
   const { url, method, headers } = request();
-  expect([method, url]).toEqual(["PUT", "https://discord.com/api/v10/channels/1/pins/2"]);
+  expect([method, url]).toEqual(["PUT", "https://discord.com/api/v10/channels/1/messages/pins/2"]);
   expect(new Headers(headers as HeadersInit).get("x-audit-log-reason")).toBe("important%20notice");
   expect(result.structuredContent).toEqual({
     pinned: true,
@@ -65,19 +65,43 @@ it("blocks access when channel belongs to a disallowed guild", async () => {
 });
 
 it("maps a 403 to permission error", async () => {
-  const { pipeline } = await harness({
+  const { client } = await harness({
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
-  expect(
-    await pipeline.call("discord_create_pin", { channel_id: "1", message_id: "2" }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "permission",
-      retryable: false,
-      status: 403,
-      discord_code: 50013,
-      remediation: "Check the bot permissions; this tool needs ViewChannel, ManageMessages",
-    },
+  const result = await client.callTool({
+    name: "discord_create_pin",
+    arguments: { channel_id: "1", message_id: "2" },
+  });
+  expect(errorOf(result)).toEqual({
+    category: "permission",
+    retryable: false,
+    status: 403,
+    discord_code: 50013,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
+    remediation: "Check the bot permissions; this tool needs ViewChannel, PinMessages",
+    tool: "discord_create_pin",
+    correlation_id: expect.any(String),
+    resource_ids: { channel_id: "1", message_id: "2" },
+  });
+});
+
+it("maps a 404 to not_found error", async () => {
+  const { client } = await harness({
+    makeRequest: async () => json({ message: "Unknown Message", code: 10008 }, { status: 404 }),
+  });
+  const result = await client.callTool({
+    name: "discord_create_pin",
+    arguments: { channel_id: "1", message_id: "2" },
+  });
+  expect(errorOf(result)).toEqual({
+    category: "not_found",
+    retryable: false,
+    status: 404,
+    discord_code: 10008,
+    message: "Discord rejected the request (HTTP 404): Unknown Message",
+    remediation: "Check the IDs in the request",
+    tool: "discord_create_pin",
+    correlation_id: expect.any(String),
+    resource_ids: { channel_id: "1", message_id: "2" },
   });
 });

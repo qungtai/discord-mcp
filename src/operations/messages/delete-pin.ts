@@ -10,8 +10,10 @@ export const deletePin = defineTool({
   operationIds: ["delete_pin", "deprecated_delete_pin"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },
-  permissions: ["ViewChannel", "ManageMessages"],
+  permissions: ["ViewChannel", "PinMessages"],
   effect: "destructive",
+  // Unpinning is reversible and removes no content, so it is safe without approval.
+  approval: false,
   idempotent: true,
   output: z.object({
     unpinned: z.literal(true),
@@ -25,7 +27,7 @@ export const deletePin = defineTool({
   execute: async ({ channel_id, message_id, reason }, { discord }) => {
     await discord<void>({
       method: "DELETE",
-      route: Routes.channelPin(channel_id, message_id),
+      route: Routes.channelMessagesPin(channel_id, message_id),
       reason,
     });
     return {

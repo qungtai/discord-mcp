@@ -10,7 +10,7 @@ export const createPin = defineTool({
   operationIds: ["create_pin", "deprecated_create_pin"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },
-  permissions: ["ViewChannel", "ManageMessages"],
+  permissions: ["ViewChannel", "PinMessages"],
   effect: "write",
   idempotent: true,
   output: z.object({
@@ -25,7 +25,7 @@ export const createPin = defineTool({
   execute: async ({ channel_id, message_id, reason }, { discord }) => {
     await discord<void>({
       method: "PUT",
-      route: Routes.channelPin(channel_id, message_id),
+      route: Routes.channelMessagesPin(channel_id, message_id),
       reason,
     });
     return {

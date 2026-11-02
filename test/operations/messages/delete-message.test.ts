@@ -15,6 +15,14 @@ afterEach(() => {
 const args = { channel_id: "1", message_id: "2", reason: "cleanup message" };
 const empty204 = () => new Response(null, { status: 204 }) as unknown as ResponseLike;
 
+async function unapprovedHarness(options: Parameters<typeof harness>[0] = {}) {
+  const base = (await PToolRegistry.load()).get("discord_delete_message");
+  if (!base) throw new Error("Missing tool");
+  const registry = new PToolRegistry();
+  registry.register({ ...base, approval: false });
+  return harness({ ...options, registry });
+}
+
 it("is gated pending approval support by default", async () => {
   const tool = (await PToolRegistry.load()).get("discord_delete_message");
   expect(tool?.effect).toBe("destructive");
@@ -34,13 +42,7 @@ it("is gated pending approval support by default", async () => {
 });
 
 it("deletes a message with an audit reason when approval is bypassed", async () => {
-  const base = (await PToolRegistry.load()).get("discord_delete_message");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-
-  const { client, request } = await harness({
-    registry,
+  const { client, request } = await unapprovedHarness({
     makeRequest: async () => empty204(),
   });
   const result = await client.callTool({
@@ -58,13 +60,7 @@ it("deletes a message with an audit reason when approval is bypassed", async () 
 });
 
 it("allows access under an allowed guild", async () => {
-  const base = (await PToolRegistry.load()).get("discord_delete_message");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-
-  const { client } = await harness({
-    registry,
+  const { client } = await unapprovedHarness({
     policy: new PPolicyEngine(["100"], ["core", "messages"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/channels/1")) return json({ id: "1", guild_id: "100" });
@@ -83,13 +79,7 @@ it("allows access under an allowed guild", async () => {
 });
 
 it("blocks access when channel belongs to a disallowed guild", async () => {
-  const base = (await PToolRegistry.load()).get("discord_delete_message");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-
-  const { client, makeRequest } = await harness({
-    registry,
+  const { client, makeRequest } = await unapprovedHarness({
     policy: new PPolicyEngine(["100"], ["core", "messages"], false),
     respond: () => ({ id: "1", guild_id: "200" }),
   });
@@ -102,13 +92,7 @@ it("blocks access when channel belongs to a disallowed guild", async () => {
 });
 
 it("blocks mutating call in read-only mode", async () => {
-  const base = (await PToolRegistry.load()).get("discord_delete_message");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-
-  const { client, makeRequest } = await harness({
-    registry,
+  const { client, makeRequest } = await unapprovedHarness({
     policy: new PPolicyEngine([], ["messages"], true),
   });
   const result = await client.callTool({
@@ -120,25 +104,43 @@ it("blocks mutating call in read-only mode", async () => {
 });
 
 it("maps a 403 to permission error", async () => {
-  const base = (await PToolRegistry.load()).get("discord_delete_message");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-
-  const { pipeline } = await harness({
-    registry,
+  const { client } = await unapprovedHarness({
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
-  expect(
-    await pipeline.call("discord_delete_message", { channel_id: "1", message_id: "2" }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "permission",
-      retryable: false,
-      status: 403,
-      discord_code: 50013,
-      remediation: "Check the bot permissions; this tool needs ViewChannel, ManageMessages",
-    },
+  const result = await client.callTool({
+    name: "discord_delete_message",
+    arguments: { channel_id: "1", message_id: "2" },
+  });
+  expect(errorOf(result)).toEqual({
+    category: "permission",
+    retryable: false,
+    status: 403,
+    discord_code: 50013,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
+    remediation: "Check the bot permissions; this tool needs ViewChannel, ManageMessages",
+    tool: "discord_delete_message",
+    correlation_id: expect.any(String),
+    resource_ids: { channel_id: "1", message_id: "2" },
+  });
+});
+
+it("maps a 404 to not_found error", async () => {
+  const { client } = await unapprovedHarness({
+    makeRequest: async () => json({ message: "Unknown Message", code: 10008 }, { status: 404 }),
+  });
+  const result = await client.callTool({
+    name: "discord_delete_message",
+    arguments: { channel_id: "1", message_id: "2" },
+  });
+  expect(errorOf(result)).toEqual({
+    category: "not_found",
+    retryable: false,
+    status: 404,
+    discord_code: 10008,
+    message: "Discord rejected the request (HTTP 404): Unknown Message",
+    remediation: "Check the IDs in the request",
+    tool: "discord_delete_message",
+    correlation_id: expect.any(String),
+    resource_ids: { channel_id: "1", message_id: "2" },
   });
 });

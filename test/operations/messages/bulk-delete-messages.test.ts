@@ -12,8 +12,16 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const args = { channel_id: "1", messages: ["10", "11"], reason: "cleanup batch" };
+const args = { channel_id: "1", message_ids: ["10", "11"], reason: "cleanup batch" };
 const empty204 = () => new Response(null, { status: 204 }) as unknown as ResponseLike;
+
+async function unapprovedHarness(options: Parameters<typeof harness>[0] = {}) {
+  const base = (await PToolRegistry.load()).get("discord_bulk_delete_messages");
+  if (!base) throw new Error("Missing tool");
+  const registry = new PToolRegistry();
+  registry.register({ ...base, approval: false });
+  return harness({ ...options, registry });
+}
 
 it("is gated pending approval support by default", async () => {
   const tool = (await PToolRegistry.load()).get("discord_bulk_delete_messages");
@@ -34,13 +42,7 @@ it("is gated pending approval support by default", async () => {
 });
 
 it("bulk deletes messages with an audit reason when approval is bypassed", async () => {
-  const base = (await PToolRegistry.load()).get("discord_bulk_delete_messages");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-
-  const { client, request } = await harness({
-    registry,
+  const { client, request } = await unapprovedHarness({
     makeRequest: async () => empty204(),
   });
   const result = await client.callTool({
@@ -57,18 +59,12 @@ it("bulk deletes messages with an audit reason when approval is bypassed", async
   expect(result.structuredContent).toEqual({
     deleted: true,
     channel_id: "1",
-    count: 2,
+    message_ids: ["10", "11"],
   });
 });
 
 it("allows access under an allowed guild", async () => {
-  const base = (await PToolRegistry.load()).get("discord_bulk_delete_messages");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-
-  const { client } = await harness({
-    registry,
+  const { client } = await unapprovedHarness({
     policy: new PPolicyEngine(["100"], ["core", "messages"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/channels/1")) return json({ id: "1", guild_id: "100" });
@@ -77,72 +73,100 @@ it("allows access under an allowed guild", async () => {
   });
   const result = await client.callTool({
     name: "discord_bulk_delete_messages",
-    arguments: { channel_id: "1", messages: ["10", "11"] },
+    arguments: { channel_id: "1", message_ids: ["10", "11"] },
   });
   expect(result.structuredContent).toEqual({
     deleted: true,
     channel_id: "1",
-    count: 2,
+    message_ids: ["10", "11"],
   });
 });
 
 it("blocks access when channel belongs to a disallowed guild", async () => {
-  const base = (await PToolRegistry.load()).get("discord_bulk_delete_messages");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-
-  const { client, makeRequest } = await harness({
-    registry,
+  const { client, makeRequest } = await unapprovedHarness({
     policy: new PPolicyEngine(["100"], ["core", "messages"], false),
     respond: () => ({ id: "1", guild_id: "200" }),
   });
   const result = await client.callTool({
     name: "discord_bulk_delete_messages",
-    arguments: { channel_id: "1", messages: ["10", "11"] },
+    arguments: { channel_id: "1", message_ids: ["10", "11"] },
   });
   expect(errorOf(result)).toMatchObject({ category: "policy", message: "Guild is not allowed" });
   expect(makeRequest).toHaveBeenCalledTimes(1);
 });
 
-it("fails validation if fewer than 2 messages are provided", async () => {
-  const base = (await PToolRegistry.load()).get("discord_bulk_delete_messages");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+it("fails validation if fewer than 2, duplicate, or more than 100 messages are provided", async () => {
+  const { client, makeRequest } = await unapprovedHarness();
 
-  const { client, makeRequest } = await harness({ registry });
-  const result = await client.callTool({
+  const fewer = await client.callTool({
     name: "discord_bulk_delete_messages",
-    arguments: { channel_id: "1", messages: ["10"] },
+    arguments: { channel_id: "1", message_ids: ["10"] },
   });
-  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(errorOf(fewer)).toMatchObject({
+    category: "validation",
+    message: "Invalid input: message_ids: Bulk delete requires at least 2 messages",
+  });
+
+  const dupes = await client.callTool({
+    name: "discord_bulk_delete_messages",
+    arguments: { channel_id: "1", message_ids: ["10", "10"] },
+  });
+  expect(errorOf(dupes)).toMatchObject({
+    category: "validation",
+    message: "Invalid input: message_ids: Message IDs must be unique",
+  });
+
+  const over100 = Array.from({ length: 101 }, (_, i) => String(i + 1));
+  const tooMany = await client.callTool({
+    name: "discord_bulk_delete_messages",
+    arguments: { channel_id: "1", message_ids: over100 },
+  });
+  expect(errorOf(tooMany)).toMatchObject({
+    category: "validation",
+    message: "Invalid input: message_ids: Bulk delete cannot exceed 100 messages",
+  });
+
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
 it("maps a 403 to permission error", async () => {
-  const base = (await PToolRegistry.load()).get("discord_bulk_delete_messages");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-
-  const { pipeline } = await harness({
-    registry,
+  const { client } = await unapprovedHarness({
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
-  expect(
-    await pipeline.call("discord_bulk_delete_messages", {
-      channel_id: "1",
-      messages: ["10", "11"],
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "permission",
-      retryable: false,
-      status: 403,
-      discord_code: 50013,
-      remediation: "Check the bot permissions; this tool needs ViewChannel, ManageMessages",
-    },
+  const result = await client.callTool({
+    name: "discord_bulk_delete_messages",
+    arguments: { channel_id: "1", message_ids: ["10", "11"] },
+  });
+  expect(errorOf(result)).toEqual({
+    category: "permission",
+    retryable: false,
+    status: 403,
+    discord_code: 50013,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
+    remediation: "Check the bot permissions; this tool needs ViewChannel, ManageMessages",
+    tool: "discord_bulk_delete_messages",
+    correlation_id: expect.any(String),
+    resource_ids: { channel_id: "1", message_ids: "10,11" },
+  });
+});
+
+it("maps a 404 to not_found error", async () => {
+  const { client } = await unapprovedHarness({
+    makeRequest: async () => json({ message: "Unknown Channel", code: 10003 }, { status: 404 }),
+  });
+  const result = await client.callTool({
+    name: "discord_bulk_delete_messages",
+    arguments: { channel_id: "1", message_ids: ["10", "11"] },
+  });
+  expect(errorOf(result)).toEqual({
+    category: "not_found",
+    retryable: false,
+    status: 404,
+    discord_code: 10003,
+    message: "Discord rejected the request (HTTP 404): Unknown Channel",
+    remediation: "Check the IDs in the request",
+    tool: "discord_bulk_delete_messages",
+    correlation_id: expect.any(String),
+    resource_ids: { channel_id: "1", message_ids: "10,11" },
   });
 });
