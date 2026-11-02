@@ -12,6 +12,8 @@ export const createGuildRole = defineTool({
   scope: { guild: "guild_id" },
   permissions: ["ManageRoles"],
   effect: "write",
+  // Permission bits in a new role are a privilege escalation and need a prompt.
+  approval: true,
   idempotent: false,
   input: z.object({
     guild_id: snowflake,

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { acceptElicitation, errorOf, harness, json } from "../../support/harness.js";
 
 beforeEach(() => {
   vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -28,9 +28,26 @@ const CREATED_ROLE = {
   tags: {},
 };
 
-it("creates a guild role with optional fields and reason", async () => {
+it("refuses to create a role when the client cannot ask for approval", async () => {
+  const { client, makeRequest } = await harness({ policy, clientCapabilities: {} });
+  const result = await client.callTool({
+    name: "discord_create_guild_role",
+    arguments: { guild_id: "123", name: "Admin", permissions: "8" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "policy",
+    message: "This tool needs approval but the client does not support elicitation",
+    remediation:
+      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it("creates a guild role with optional fields and reason after the client accepts approval", async () => {
+  const onElicit = vi.fn(acceptElicitation);
   const { client, request } = await harness({
     policy,
+    onElicit,
     respond: () => CREATED_ROLE,
   });
   const result = await client.callTool({
@@ -47,6 +64,7 @@ it("creates a guild role with optional fields and reason", async () => {
       reason: "special members",
     },
   });
+  expect(onElicit).toHaveBeenCalledTimes(1);
   expect(result.structuredContent).toEqual({ role: CREATED_ROLE });
   const { url, method, body, headers } = request();
   expect([method, url]).toEqual(["POST", "https://discord.com/api/v10/guilds/123/roles"]);

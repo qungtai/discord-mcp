@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { acceptElicitation, errorOf, harness, json } from "../../support/harness.js";
 
 beforeEach(() => {
   vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -10,9 +10,29 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it("adds a role to a guild member with reason", async () => {
+it("refuses to add a role when the client cannot ask for approval", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["members"], false),
+    clientCapabilities: {},
+  });
+  const result = await client.callTool({
+    name: "discord_add_guild_member_role",
+    arguments: { guild_id: "123", user_id: "456", role_id: "789" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "policy",
+    message: "This tool needs approval but the client does not support elicitation",
+    remediation:
+      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it("adds a role to a guild member with reason after the client accepts approval", async () => {
+  const onElicit = vi.fn(acceptElicitation);
   const { client, request } = await harness({
     policy: new PPolicyEngine([], ["members"], false),
+    onElicit,
     respond: () => null,
   });
   const result = await client.callTool({
@@ -24,6 +44,7 @@ it("adds a role to a guild member with reason", async () => {
       reason: "Granted VIP",
     },
   });
+  expect(onElicit).toHaveBeenCalledTimes(1);
   const req = request();
   expect(req.method).toBe("PUT");
   expect(req.url).toBe("https://discord.com/api/v10/guilds/123/members/456/roles/789");
@@ -111,11 +132,11 @@ it("handles 403 missing permissions error", async () => {
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   expect(
-    await pipeline.call("discord_add_guild_member_role", {
-      guild_id: "123",
-      user_id: "456",
-      role_id: "789",
-    }),
+    await pipeline.call(
+      "discord_add_guild_member_role",
+      { guild_id: "123", user_id: "456", role_id: "789" },
+      { approve: async () => true },
+    ),
   ).toMatchObject({
     ok: false,
     error: {
@@ -133,11 +154,11 @@ it("handles 404 error", async () => {
     makeRequest: async () => json({ message: "Unknown Role", code: 10011 }, { status: 404 }),
   });
   expect(
-    await pipeline.call("discord_add_guild_member_role", {
-      guild_id: "123",
-      user_id: "456",
-      role_id: "789",
-    }),
+    await pipeline.call(
+      "discord_add_guild_member_role",
+      { guild_id: "123", user_id: "456", role_id: "789" },
+      { approve: async () => true },
+    ),
   ).toMatchObject({
     ok: false,
     error: {
