@@ -1,0 +1,5703 @@
+{
+  "repo": "discord/discord-api-spec",
+  "commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+  "generated_at": "2026-11-02T17:37:55.490Z",
+  "total_operations": 250,
+  "operations": [
+    {
+      "capability_id": "delete_applications__application_id__commands__command_id",
+      "operation_id": "delete_application_command",
+      "method": "DELETE",
+      "path": "/applications/{application_id}/commands/{command_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_applications__application_id__emojis__emoji_id",
+      "operation_id": "delete_application_emoji",
+      "method": "DELETE",
+      "path": "/applications/{application_id}/emojis/{emoji_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_applications__application_id__entitlements__entitlement_id",
+      "operation_id": "delete_entitlement",
+      "method": "DELETE",
+      "path": "/applications/{application_id}/entitlements/{entitlement_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.entitlements"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_applications__application_id__guilds__guild_id__commands__command_id",
+      "operation_id": "delete_guild_application_command",
+      "method": "DELETE",
+      "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id",
+      "operation_id": "get_application",
+      "method": "GET",
+      "path": "/applications/{application_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__activity_instances__instance_id",
+      "operation_id": "applications_get_activity_instance",
+      "method": "GET",
+      "path": "/applications/{application_id}/activity-instances/{instance_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__commands",
+      "operation_id": "list_application_commands",
+      "method": "GET",
+      "path": "/applications/{application_id}/commands",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__commands__command_id",
+      "operation_id": "get_application_command",
+      "method": "GET",
+      "path": "/applications/{application_id}/commands/{command_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__emojis",
+      "operation_id": "list_application_emojis",
+      "method": "GET",
+      "path": "/applications/{application_id}/emojis",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__emojis__emoji_id",
+      "operation_id": "get_application_emoji",
+      "method": "GET",
+      "path": "/applications/{application_id}/emojis/{emoji_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__entitlements",
+      "operation_id": "get_entitlements",
+      "method": "GET",
+      "path": "/applications/{application_id}/entitlements",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.entitlements"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__entitlements__entitlement_id",
+      "operation_id": "get_entitlement",
+      "method": "GET",
+      "path": "/applications/{application_id}/entitlements/{entitlement_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.entitlements"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__guilds__guild_id__commands",
+      "operation_id": "list_guild_application_commands",
+      "method": "GET",
+      "path": "/applications/{application_id}/guilds/{guild_id}/commands",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__guilds__guild_id__commands__command_id",
+      "operation_id": "get_guild_application_command",
+      "method": "GET",
+      "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__guilds__guild_id__commands__command_id__permissions",
+      "operation_id": "get_guild_application_command_permissions",
+      "method": "GET",
+      "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.permissions.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__guilds__guild_id__commands_permissions",
+      "operation_id": "list_guild_application_command_permissions",
+      "method": "GET",
+      "path": "/applications/{application_id}/guilds/{guild_id}/commands/permissions",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.permissions.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__application_id__role_connections_metadata",
+      "operation_id": "get_application_role_connections_metadata",
+      "method": "GET",
+      "path": "/applications/{application_id}/role-connections/metadata",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_applications__me",
+      "operation_id": "get_my_application",
+      "method": "GET",
+      "path": "/applications/@me",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_applications__application_id",
+      "operation_id": "update_application",
+      "method": "PATCH",
+      "path": "/applications/{application_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_applications__application_id__commands__command_id",
+      "operation_id": "update_application_command",
+      "method": "PATCH",
+      "path": "/applications/{application_id}/commands/{command_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_applications__application_id__emojis__emoji_id",
+      "operation_id": "update_application_emoji",
+      "method": "PATCH",
+      "path": "/applications/{application_id}/emojis/{emoji_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_applications__application_id__guilds__guild_id__commands__command_id",
+      "operation_id": "update_guild_application_command",
+      "method": "PATCH",
+      "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_applications__me",
+      "operation_id": "update_my_application",
+      "method": "PATCH",
+      "path": "/applications/@me",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_applications__application_id__attachment",
+      "operation_id": "upload_application_attachment",
+      "method": "POST",
+      "path": "/applications/{application_id}/attachment",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "activities.invites.write",
+            "activities.read",
+            "activities.write",
+            "applications.builds.read",
+            "applications.builds.upload",
+            "applications.commands",
+            "applications.commands.permissions.update",
+            "applications.commands.update",
+            "applications.entitlements",
+            "applications.store.update",
+            "bot",
+            "connections",
+            "dm_channels.read",
+            "email",
+            "gdm.join",
+            "guilds",
+            "guilds.join",
+            "guilds.members.read",
+            "identify",
+            "messages.read",
+            "openid",
+            "relationships.read",
+            "role_connections.write",
+            "rpc",
+            "rpc.activities.write",
+            "rpc.notifications.read",
+            "rpc.screenshare.read",
+            "rpc.screenshare.write",
+            "rpc.video.read",
+            "rpc.video.write",
+            "rpc.voice.read",
+            "rpc.voice.write",
+            "voice",
+            "webhook.incoming"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_applications__application_id__commands",
+      "operation_id": "create_application_command",
+      "method": "POST",
+      "path": "/applications/{application_id}/commands",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_applications__application_id__emojis",
+      "operation_id": "create_application_emoji",
+      "method": "POST",
+      "path": "/applications/{application_id}/emojis",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_applications__application_id__entitlements",
+      "operation_id": "create_entitlement",
+      "method": "POST",
+      "path": "/applications/{application_id}/entitlements",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_applications__application_id__entitlements__entitlement_id__consume",
+      "operation_id": "consume_entitlement",
+      "method": "POST",
+      "path": "/applications/{application_id}/entitlements/{entitlement_id}/consume",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.entitlements"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_applications__application_id__guilds__guild_id__commands",
+      "operation_id": "create_guild_application_command",
+      "method": "POST",
+      "path": "/applications/{application_id}/guilds/{guild_id}/commands",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_applications__application_id__commands",
+      "operation_id": "bulk_set_application_commands",
+      "method": "PUT",
+      "path": "/applications/{application_id}/commands",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_applications__application_id__guilds__guild_id__commands",
+      "operation_id": "bulk_set_guild_application_commands",
+      "method": "PUT",
+      "path": "/applications/{application_id}/guilds/{guild_id}/commands",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_applications__application_id__guilds__guild_id__commands__command_id__permissions",
+      "operation_id": "set_guild_application_command_permissions",
+      "method": "PUT",
+      "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "applications.commands.permissions.update"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_applications__application_id__role_connections_metadata",
+      "operation_id": "update_application_role_connections_metadata",
+      "method": "PUT",
+      "path": "/applications/{application_id}/role-connections/metadata",
+      "group": "applications",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id",
+      "operation_id": "delete_channel",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__messages__message_id",
+      "operation_id": "delete_message",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__messages__message_id__reactions",
+      "operation_id": "delete_all_message_reactions",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__messages__message_id__reactions__emoji_name",
+      "operation_id": "delete_all_message_reactions_by_emoji",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__messages__message_id__reactions__emoji_name___user_id",
+      "operation_id": "delete_user_message_reaction",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/{user_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__messages__message_id__reactions__emoji_name___me",
+      "operation_id": "delete_my_message_reaction",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/@me",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__messages_pins__message_id",
+      "operation_id": "delete_pin",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/pins/{message_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__permissions__overwrite_id",
+      "operation_id": "delete_channel_permission_overwrite",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/permissions/{overwrite_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__pins__message_id",
+      "operation_id": "deprecated_delete_pin",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/pins/{message_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__recipients__user_id",
+      "operation_id": "delete_group_dm_user",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/recipients/{user_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__thread_members__user_id",
+      "operation_id": "delete_thread_member",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/thread-members/{user_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_channels__channel_id__thread_members__me",
+      "operation_id": "leave_thread",
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/thread-members/@me",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id",
+      "operation_id": "get_channel",
+      "method": "GET",
+      "path": "/channels/{channel_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__invites",
+      "operation_id": "list_channel_invites",
+      "method": "GET",
+      "path": "/channels/{channel_id}/invites",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__messages",
+      "operation_id": "list_messages",
+      "method": "GET",
+      "path": "/channels/{channel_id}/messages",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": []
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__messages__message_id",
+      "operation_id": "get_message",
+      "method": "GET",
+      "path": "/channels/{channel_id}/messages/{message_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__messages__message_id__reactions__emoji_name",
+      "operation_id": "list_message_reactions_by_emoji",
+      "method": "GET",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__messages_pins",
+      "operation_id": "list_pins",
+      "method": "GET",
+      "path": "/channels/{channel_id}/messages/pins",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__permissions_member__user_id",
+      "operation_id": "get_channel_member_permissions",
+      "method": "GET",
+      "path": "/channels/{channel_id}/permissions/member/{user_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__permissions_role__role_id",
+      "operation_id": "get_channel_role_permissions",
+      "method": "GET",
+      "path": "/channels/{channel_id}/permissions/role/{role_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__pins",
+      "operation_id": "deprecated_list_pins",
+      "method": "GET",
+      "path": "/channels/{channel_id}/pins",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__polls__message_id__answers__answer_id",
+      "operation_id": "get_answer_voters",
+      "method": "GET",
+      "path": "/channels/{channel_id}/polls/{message_id}/answers/{answer_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__thread_members",
+      "operation_id": "list_thread_members",
+      "method": "GET",
+      "path": "/channels/{channel_id}/thread-members",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__thread_members__user_id",
+      "operation_id": "get_thread_member",
+      "method": "GET",
+      "path": "/channels/{channel_id}/thread-members/{user_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__threads_archived_private",
+      "operation_id": "list_private_archived_threads",
+      "method": "GET",
+      "path": "/channels/{channel_id}/threads/archived/private",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__threads_archived_public",
+      "operation_id": "list_public_archived_threads",
+      "method": "GET",
+      "path": "/channels/{channel_id}/threads/archived/public",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__threads_search",
+      "operation_id": "thread_search",
+      "method": "GET",
+      "path": "/channels/{channel_id}/threads/search",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__users__me_threads_archived_private",
+      "operation_id": "list_my_private_archived_threads",
+      "method": "GET",
+      "path": "/channels/{channel_id}/users/@me/threads/archived/private",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_channels__channel_id__webhooks",
+      "operation_id": "list_channel_webhooks",
+      "method": "GET",
+      "path": "/channels/{channel_id}/webhooks",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_channels__channel_id",
+      "operation_id": "update_channel",
+      "method": "PATCH",
+      "path": "/channels/{channel_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_channels__channel_id__messages__message_id",
+      "operation_id": "update_message",
+      "method": "PATCH",
+      "path": "/channels/{channel_id}/messages/{message_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__followers",
+      "operation_id": "follow_channel",
+      "method": "POST",
+      "path": "/channels/{channel_id}/followers",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__invites",
+      "operation_id": "create_channel_invite",
+      "method": "POST",
+      "path": "/channels/{channel_id}/invites",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__messages",
+      "operation_id": "create_message",
+      "method": "POST",
+      "path": "/channels/{channel_id}/messages",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__messages__message_id__crosspost",
+      "operation_id": "crosspost_message",
+      "method": "POST",
+      "path": "/channels/{channel_id}/messages/{message_id}/crosspost",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__messages__message_id__threads",
+      "operation_id": "create_thread_from_message",
+      "method": "POST",
+      "path": "/channels/{channel_id}/messages/{message_id}/threads",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__messages_bulk_delete",
+      "operation_id": "bulk_delete_messages",
+      "method": "POST",
+      "path": "/channels/{channel_id}/messages/bulk-delete",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__polls__message_id__expire",
+      "operation_id": "poll_expire",
+      "method": "POST",
+      "path": "/channels/{channel_id}/polls/{message_id}/expire",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__send_soundboard_sound",
+      "operation_id": "send_soundboard_sound",
+      "method": "POST",
+      "path": "/channels/{channel_id}/send-soundboard-sound",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__threads",
+      "operation_id": "create_thread",
+      "method": "POST",
+      "path": "/channels/{channel_id}/threads",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__typing",
+      "operation_id": "trigger_typing_indicator",
+      "method": "POST",
+      "path": "/channels/{channel_id}/typing",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_channels__channel_id__webhooks",
+      "operation_id": "create_webhook",
+      "method": "POST",
+      "path": "/channels/{channel_id}/webhooks",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_channels__channel_id__messages__message_id__reactions__emoji_name___me",
+      "operation_id": "add_my_message_reaction",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/@me",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_channels__channel_id__messages_pins__message_id",
+      "operation_id": "create_pin",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/messages/pins/{message_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_channels__channel_id__permissions__overwrite_id",
+      "operation_id": "set_channel_permission_overwrite",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/permissions/{overwrite_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_channels__channel_id__pins__message_id",
+      "operation_id": "deprecated_create_pin",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/pins/{message_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_channels__channel_id__recipients__user_id",
+      "operation_id": "add_group_dm_user",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/recipients/{user_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_channels__channel_id__thread_members__user_id",
+      "operation_id": "add_thread_member",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/thread-members/{user_id}",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_channels__channel_id__thread_members__me",
+      "operation_id": "join_thread",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/thread-members/@me",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_channels__channel_id__voice_status",
+      "operation_id": "update_voice_channel_status",
+      "method": "PUT",
+      "path": "/channels/{channel_id}/voice-status",
+      "group": "channels",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_gateway",
+      "operation_id": "get_gateway",
+      "method": "GET",
+      "path": "/gateway",
+      "group": "gateway",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/topics/gateway",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_gateway_bot",
+      "operation_id": "get_bot_gateway",
+      "method": "GET",
+      "path": "/gateway/bot",
+      "group": "gateway",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/topics/gateway",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__auto_moderation_rules__rule_id",
+      "operation_id": "delete_auto_moderation_rule",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/auto-moderation/rules/{rule_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__bans__user_id",
+      "operation_id": "unban_user_from_guild",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/bans/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__emojis__emoji_id",
+      "operation_id": "delete_guild_emoji",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/emojis/{emoji_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__integrations__integration_id",
+      "operation_id": "delete_guild_integration",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/integrations/{integration_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__members__user_id",
+      "operation_id": "delete_guild_member",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__members__user_id__roles__role_id",
+      "operation_id": "delete_guild_member_role",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/members/{user_id}/roles/{role_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__roles__role_id",
+      "operation_id": "delete_guild_role",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/roles/{role_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__scheduled_events__guild_scheduled_event_id",
+      "operation_id": "delete_guild_scheduled_event",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__scheduled_events__guild_scheduled_event_id__exceptions__exception_id",
+      "operation_id": "delete_guild_scheduled_event_exception",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/exceptions/{exception_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__soundboard_sounds__sound_id",
+      "operation_id": "delete_guild_soundboard_sound",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/soundboard-sounds/{sound_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__stickers__sticker_id",
+      "operation_id": "delete_guild_sticker",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/stickers/{sticker_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_guilds__guild_id__templates__code",
+      "operation_id": "delete_guild_template",
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/templates/{code}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id",
+      "operation_id": "get_guild",
+      "method": "GET",
+      "path": "/guilds/{guild_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__audit_logs",
+      "operation_id": "list_guild_audit_log_entries",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/audit-logs",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__auto_moderation_rules",
+      "operation_id": "list_auto_moderation_rules",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/auto-moderation/rules",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__auto_moderation_rules__rule_id",
+      "operation_id": "get_auto_moderation_rule",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/auto-moderation/rules/{rule_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__bans",
+      "operation_id": "list_guild_bans",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/bans",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__bans__user_id",
+      "operation_id": "get_guild_ban",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/bans/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__channels",
+      "operation_id": "list_guild_channels",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/channels",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": []
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__emojis",
+      "operation_id": "list_guild_emojis",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/emojis",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__emojis__emoji_id",
+      "operation_id": "get_guild_emoji",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/emojis/{emoji_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__integrations",
+      "operation_id": "list_guild_integrations",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/integrations",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__invites",
+      "operation_id": "list_guild_invites",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/invites",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__members",
+      "operation_id": "list_guild_members",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/members",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__members__user_id",
+      "operation_id": "get_guild_member",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__members_search",
+      "operation_id": "search_guild_members",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/members/search",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__messages_search",
+      "operation_id": "guild_search",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/messages/search",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": []
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__new_member_welcome",
+      "operation_id": "get_guild_new_member_welcome",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/new-member-welcome",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__onboarding",
+      "operation_id": "get_guilds_onboarding",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/onboarding",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__permissions_member__user_id",
+      "operation_id": "get_guild_member_permissions",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/permissions/member/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__permissions_role__role_id",
+      "operation_id": "get_guild_role_permissions",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/permissions/role/{role_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__preview",
+      "operation_id": "get_guild_preview",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/preview",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__prune",
+      "operation_id": "preview_prune_guild",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/prune",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__regions",
+      "operation_id": "list_guild_voice_regions",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/regions",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__requests",
+      "operation_id": "get_guild_join_requests",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/requests",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__roles",
+      "operation_id": "list_guild_roles",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/roles",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__roles__role_id",
+      "operation_id": "get_guild_role",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/roles/{role_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__roles_member_counts",
+      "operation_id": "guild_role_member_counts",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/roles/member-counts",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__scheduled_events",
+      "operation_id": "list_guild_scheduled_events",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/scheduled-events",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__scheduled_events__guild_scheduled_event_id",
+      "operation_id": "get_guild_scheduled_event",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__scheduled_events__guild_scheduled_event_id___guild_scheduled_event_exception_id__users",
+      "operation_id": "list_guild_scheduled_event_exception_users",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/{guild_scheduled_event_exception_id}/users",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__scheduled_events__guild_scheduled_event_id__users",
+      "operation_id": "list_guild_scheduled_event_users",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/users",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__scheduled_events__guild_scheduled_event_id__users_counts",
+      "operation_id": "count_guild_scheduled_event_users",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/users/counts",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__soundboard_sounds",
+      "operation_id": "list_guild_soundboard_sounds",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/soundboard-sounds",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__soundboard_sounds__sound_id",
+      "operation_id": "get_guild_soundboard_sound",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/soundboard-sounds/{sound_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__stickers",
+      "operation_id": "list_guild_stickers",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/stickers",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__stickers__sticker_id",
+      "operation_id": "get_guild_sticker",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/stickers/{sticker_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__templates",
+      "operation_id": "list_guild_templates",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/templates",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__threads_active",
+      "operation_id": "get_active_guild_threads",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/threads/active",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__vanity_url",
+      "operation_id": "get_guild_vanity_url",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/vanity-url",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__voice_states__user_id",
+      "operation_id": "get_voice_state",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/voice-states/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__voice_states__me",
+      "operation_id": "get_self_voice_state",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/voice-states/@me",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__webhooks",
+      "operation_id": "get_guild_webhooks",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/webhooks",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__welcome_screen",
+      "operation_id": "get_guild_welcome_screen",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/welcome-screen",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__widget",
+      "operation_id": "get_guild_widget_settings",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/widget",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__widget_json",
+      "operation_id": "get_guild_widget",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/widget.json",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds__guild_id__widget_png",
+      "operation_id": "get_guild_widget_png",
+      "method": "GET",
+      "path": "/guilds/{guild_id}/widget.png",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_guilds_templates__code",
+      "operation_id": "get_guild_template",
+      "method": "GET",
+      "path": "/guilds/templates/{code}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id",
+      "operation_id": "update_guild",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__auto_moderation_rules__rule_id",
+      "operation_id": "update_auto_moderation_rule",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/auto-moderation/rules/{rule_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__channels",
+      "operation_id": "bulk_update_guild_channels",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/channels",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__emojis__emoji_id",
+      "operation_id": "update_guild_emoji",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/emojis/{emoji_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__members__user_id",
+      "operation_id": "update_guild_member",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__members__me",
+      "operation_id": "update_my_guild_member",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/members/@me",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__requests__request_id",
+      "operation_id": "action_guild_join_request",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/requests/{request_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__roles",
+      "operation_id": "bulk_update_guild_roles",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/roles",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__roles__role_id",
+      "operation_id": "update_guild_role",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/roles/{role_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__scheduled_events__guild_scheduled_event_id",
+      "operation_id": "update_guild_scheduled_event",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__scheduled_events__guild_scheduled_event_id__exceptions__exception_id",
+      "operation_id": "update_guild_scheduled_event_exception",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/exceptions/{exception_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__soundboard_sounds__sound_id",
+      "operation_id": "update_guild_soundboard_sound",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/soundboard-sounds/{sound_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__stickers__sticker_id",
+      "operation_id": "update_guild_sticker",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/stickers/{sticker_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__templates__code",
+      "operation_id": "update_guild_template",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/templates/{code}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__voice_states__user_id",
+      "operation_id": "update_voice_state",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/voice-states/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__voice_states__me",
+      "operation_id": "update_self_voice_state",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/voice-states/@me",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__welcome_screen",
+      "operation_id": "update_guild_welcome_screen",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/welcome-screen",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_guilds__guild_id__widget",
+      "operation_id": "update_guild_widget_settings",
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/widget",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__auto_moderation_rules",
+      "operation_id": "create_auto_moderation_rule",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/auto-moderation/rules",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__bulk_ban",
+      "operation_id": "bulk_ban_users_from_guild",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/bulk-ban",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__channels",
+      "operation_id": "create_guild_channel",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/channels",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__emojis",
+      "operation_id": "create_guild_emoji",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/emojis",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__prune",
+      "operation_id": "prune_guild",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/prune",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__roles",
+      "operation_id": "create_guild_role",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/roles",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__scheduled_events",
+      "operation_id": "create_guild_scheduled_event",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/scheduled-events",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__scheduled_events__guild_scheduled_event_id__exceptions",
+      "operation_id": "create_guild_scheduled_event_exception",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/exceptions",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__soundboard_sounds",
+      "operation_id": "create_guild_soundboard_sound",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/soundboard-sounds",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__stickers",
+      "operation_id": "create_guild_sticker",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/stickers",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_guilds__guild_id__templates",
+      "operation_id": "create_guild_template",
+      "method": "POST",
+      "path": "/guilds/{guild_id}/templates",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_guilds__guild_id__bans__user_id",
+      "operation_id": "ban_user_from_guild",
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/bans/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_guilds__guild_id__incident_actions",
+      "operation_id": "update_guild_incident_actions",
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/incident-actions",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_guilds__guild_id__members__user_id",
+      "operation_id": "add_guild_member",
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_guilds__guild_id__members__user_id__roles__role_id",
+      "operation_id": "add_guild_member_role",
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/members/{user_id}/roles/{role_id}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_guilds__guild_id__onboarding",
+      "operation_id": "put_guilds_onboarding",
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/onboarding",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_guilds__guild_id__templates__code",
+      "operation_id": "sync_guild_template",
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/templates/{code}",
+      "group": "guilds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_interactions__interaction_id___interaction_token__callback",
+      "operation_id": "create_interaction_response",
+      "method": "POST",
+      "path": "/interactions/{interaction_id}/{interaction_token}/callback",
+      "group": "interactions",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/interactions/receiving-and-responding",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_invites__code",
+      "operation_id": "invite_revoke",
+      "method": "DELETE",
+      "path": "/invites/{code}",
+      "group": "invites",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_invites__code__target_users__user_id",
+      "operation_id": "remove_invite_target_user",
+      "method": "DELETE",
+      "path": "/invites/{code}/target-users/{user_id}",
+      "group": "invites",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_invites__code",
+      "operation_id": "invite_resolve",
+      "method": "GET",
+      "path": "/invites/{code}",
+      "group": "invites",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_invites__code__target_users",
+      "operation_id": "get_invite_target_users",
+      "method": "GET",
+      "path": "/invites/{code}/target-users",
+      "group": "invites",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_invites__code__target_users_job_status",
+      "operation_id": "get_invite_target_users_job_status",
+      "method": "GET",
+      "path": "/invites/{code}/target-users/job-status",
+      "group": "invites",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_invites__code__target_users_bulk_add",
+      "operation_id": "bulk_add_invite_target_users",
+      "method": "POST",
+      "path": "/invites/{code}/target-users/bulk-add",
+      "group": "invites",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_invites__code__target_users_bulk_delete",
+      "operation_id": "bulk_remove_invite_target_users",
+      "method": "POST",
+      "path": "/invites/{code}/target-users/bulk-delete",
+      "group": "invites",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_invites__code__target_users",
+      "operation_id": "update_invite_target_users",
+      "method": "PUT",
+      "path": "/invites/{code}/target-users",
+      "group": "invites",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_invites__code__target_users__user_id",
+      "operation_id": "add_invite_target_user",
+      "method": "PUT",
+      "path": "/invites/{code}/target-users/{user_id}",
+      "group": "invites",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_lobbies__lobby_id",
+      "operation_id": "delete_lobby",
+      "method": "DELETE",
+      "path": "/lobbies/{lobby_id}",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_lobbies__lobby_id__members__user_id",
+      "operation_id": "delete_lobby_member",
+      "method": "DELETE",
+      "path": "/lobbies/{lobby_id}/members/{user_id}",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_lobbies__lobby_id__members__me",
+      "operation_id": "leave_lobby",
+      "method": "DELETE",
+      "path": "/lobbies/{lobby_id}/members/@me",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": []
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_lobbies__lobby_id",
+      "operation_id": "get_lobby",
+      "method": "GET",
+      "path": "/lobbies/{lobby_id}",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_lobbies__lobby_id__messages",
+      "operation_id": "get_lobby_messages",
+      "method": "GET",
+      "path": "/lobbies/{lobby_id}/messages",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": []
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_lobbies__lobby_id",
+      "operation_id": "edit_lobby",
+      "method": "PATCH",
+      "path": "/lobbies/{lobby_id}",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_lobbies__lobby_id__channel_linking",
+      "operation_id": "edit_lobby_channel_link",
+      "method": "PATCH",
+      "path": "/lobbies/{lobby_id}/channel-linking",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": []
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_lobbies",
+      "operation_id": "create_lobby",
+      "method": "POST",
+      "path": "/lobbies",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_lobbies__lobby_id__members__user_id__invites",
+      "operation_id": "create_linked_lobby_guild_invite_for_user",
+      "method": "POST",
+      "path": "/lobbies/{lobby_id}/members/{user_id}/invites",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_lobbies__lobby_id__members__me_invites",
+      "operation_id": "create_linked_lobby_guild_invite_for_self",
+      "method": "POST",
+      "path": "/lobbies/{lobby_id}/members/@me/invites",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": []
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_lobbies__lobby_id__members_bulk",
+      "operation_id": "bulk_update_lobby_members",
+      "method": "POST",
+      "path": "/lobbies/{lobby_id}/members/bulk",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_lobbies__lobby_id__messages",
+      "operation_id": "create_lobby_message",
+      "method": "POST",
+      "path": "/lobbies/{lobby_id}/messages",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": []
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_lobbies",
+      "operation_id": "create_or_join_lobby",
+      "method": "PUT",
+      "path": "/lobbies",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": []
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_lobbies__lobby_id__members__user_id",
+      "operation_id": "add_lobby_member",
+      "method": "PUT",
+      "path": "/lobbies/{lobby_id}/members/{user_id}",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_lobbies__lobby_id__messages__message_id__moderation_metadata",
+      "operation_id": "update_lobby_message_external_moderation_metadata",
+      "method": "PUT",
+      "path": "/lobbies/{lobby_id}/messages/{message_id}/moderation-metadata",
+      "group": "lobbies",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_oauth2__me",
+      "operation_id": "get_my_oauth2_authorization",
+      "method": "GET",
+      "path": "/oauth2/@me",
+      "group": "oauth2",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/topics/oauth2",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "activities.invites.write",
+            "activities.read",
+            "activities.write",
+            "applications.builds.read",
+            "applications.builds.upload",
+            "applications.commands",
+            "applications.commands.permissions.update",
+            "applications.commands.update",
+            "applications.entitlements",
+            "applications.store.update",
+            "bot",
+            "connections",
+            "dm_channels.read",
+            "email",
+            "gdm.join",
+            "guilds",
+            "guilds.join",
+            "guilds.members.read",
+            "identify",
+            "messages.read",
+            "openid",
+            "relationships.read",
+            "role_connections.write",
+            "rpc",
+            "rpc.activities.write",
+            "rpc.notifications.read",
+            "rpc.screenshare.read",
+            "rpc.screenshare.write",
+            "rpc.video.read",
+            "rpc.video.write",
+            "rpc.voice.read",
+            "rpc.voice.write",
+            "voice",
+            "webhook.incoming"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_oauth2_applications__me",
+      "operation_id": "get_my_oauth2_application",
+      "method": "GET",
+      "path": "/oauth2/applications/@me",
+      "group": "oauth2",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/topics/oauth2",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_oauth2_keys",
+      "operation_id": "get_public_keys",
+      "method": "GET",
+      "path": "/oauth2/keys",
+      "group": "oauth2",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/topics/oauth2",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_oauth2_userinfo",
+      "operation_id": "get_openid_connect_userinfo",
+      "method": "GET",
+      "path": "/oauth2/userinfo",
+      "group": "oauth2",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/topics/oauth2",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "openid"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_partner_sdk_provisional_accounts_unmerge",
+      "operation_id": "partner_sdk_unmerge_provisional_account",
+      "method": "POST",
+      "path": "/partner-sdk/provisional-accounts/unmerge",
+      "group": "partner-sdk",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_partner_sdk_provisional_accounts_unmerge_bot",
+      "operation_id": "bot_partner_sdk_unmerge_provisional_account",
+      "method": "POST",
+      "path": "/partner-sdk/provisional-accounts/unmerge/bot",
+      "group": "partner-sdk",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_partner_sdk_token",
+      "operation_id": "partner_sdk_token",
+      "method": "POST",
+      "path": "/partner-sdk/token",
+      "group": "partner-sdk",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_partner_sdk_token_bot",
+      "operation_id": "bot_partner_sdk_token",
+      "method": "POST",
+      "path": "/partner-sdk/token/bot",
+      "group": "partner-sdk",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_partner_sdk_dms__user_id_1___user_id_2__messages__message_id__moderation_metadata",
+      "operation_id": "update_user_message_external_moderation_metadata",
+      "method": "PUT",
+      "path": "/partner-sdk/dms/{user_id_1}/{user_id_2}/messages/{message_id}/moderation-metadata",
+      "group": "partner-sdk",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_skus__sku_id__subscriptions",
+      "operation_id": "get_sku_subscriptions",
+      "method": "GET",
+      "path": "/skus/{sku_id}/subscriptions",
+      "group": "skus",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/monetization/skus",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "activities.invites.write",
+            "activities.read",
+            "activities.write",
+            "applications.builds.read",
+            "applications.builds.upload",
+            "applications.commands",
+            "applications.commands.permissions.update",
+            "applications.commands.update",
+            "applications.entitlements",
+            "applications.store.update",
+            "bot",
+            "connections",
+            "dm_channels.read",
+            "email",
+            "gdm.join",
+            "guilds",
+            "guilds.join",
+            "guilds.members.read",
+            "identify",
+            "messages.read",
+            "openid",
+            "relationships.read",
+            "role_connections.write",
+            "rpc",
+            "rpc.activities.write",
+            "rpc.notifications.read",
+            "rpc.screenshare.read",
+            "rpc.screenshare.write",
+            "rpc.video.read",
+            "rpc.video.write",
+            "rpc.voice.read",
+            "rpc.voice.write",
+            "voice",
+            "webhook.incoming"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_skus__sku_id__subscriptions__subscription_id",
+      "operation_id": "get_sku_subscription",
+      "method": "GET",
+      "path": "/skus/{sku_id}/subscriptions/{subscription_id}",
+      "group": "skus",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/monetization/skus",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "activities.invites.write",
+            "activities.read",
+            "activities.write",
+            "applications.builds.read",
+            "applications.builds.upload",
+            "applications.commands",
+            "applications.commands.permissions.update",
+            "applications.commands.update",
+            "applications.entitlements",
+            "applications.store.update",
+            "bot",
+            "connections",
+            "dm_channels.read",
+            "email",
+            "gdm.join",
+            "guilds",
+            "guilds.join",
+            "guilds.members.read",
+            "identify",
+            "messages.read",
+            "openid",
+            "relationships.read",
+            "role_connections.write",
+            "rpc",
+            "rpc.activities.write",
+            "rpc.notifications.read",
+            "rpc.screenshare.read",
+            "rpc.screenshare.write",
+            "rpc.video.read",
+            "rpc.video.write",
+            "rpc.voice.read",
+            "rpc.voice.write",
+            "voice",
+            "webhook.incoming"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_soundboard_default_sounds",
+      "operation_id": "get_soundboard_default_sounds",
+      "method": "GET",
+      "path": "/soundboard-default-sounds",
+      "group": "soundboard-default-sounds",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/soundboard",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_stage_instances__channel_id",
+      "operation_id": "delete_stage_instance",
+      "method": "DELETE",
+      "path": "/stage-instances/{channel_id}",
+      "group": "stage-instances",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/stage-instance",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_stage_instances__channel_id",
+      "operation_id": "get_stage_instance",
+      "method": "GET",
+      "path": "/stage-instances/{channel_id}",
+      "group": "stage-instances",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/stage-instance",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_stage_instances__channel_id",
+      "operation_id": "update_stage_instance",
+      "method": "PATCH",
+      "path": "/stage-instances/{channel_id}",
+      "group": "stage-instances",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/stage-instance",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_stage_instances",
+      "operation_id": "create_stage_instance",
+      "method": "POST",
+      "path": "/stage-instances",
+      "group": "stage-instances",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/stage-instance",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_sticker_packs",
+      "operation_id": "list_sticker_packs",
+      "method": "GET",
+      "path": "/sticker-packs",
+      "group": "sticker-packs",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/sticker",
+      "auth": [
+        {
+          "type": "none"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_sticker_packs__pack_id",
+      "operation_id": "get_sticker_pack",
+      "method": "GET",
+      "path": "/sticker-packs/{pack_id}",
+      "group": "sticker-packs",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/sticker",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_stickers__sticker_id",
+      "operation_id": "get_sticker",
+      "method": "GET",
+      "path": "/stickers/{sticker_id}",
+      "group": "stickers",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/sticker",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_users__me_applications__application_id__role_connection",
+      "operation_id": "delete_application_user_role_connection",
+      "method": "DELETE",
+      "path": "/users/@me/applications/{application_id}/role-connection",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "oauth2",
+          "scopes": [
+            "role_connections.write"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_users__me_guilds__guild_id",
+      "operation_id": "leave_guild",
+      "method": "DELETE",
+      "path": "/users/@me/guilds/{guild_id}",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_users__user_id",
+      "operation_id": "get_user",
+      "method": "GET",
+      "path": "/users/{user_id}",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_users__me",
+      "operation_id": "get_my_user",
+      "method": "GET",
+      "path": "/users/@me",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "identify"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_users__me_applications__application_id__entitlements",
+      "operation_id": "get_current_user_application_entitlements",
+      "method": "GET",
+      "path": "/users/@me/applications/{application_id}/entitlements",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "oauth2",
+          "scopes": [
+            "activities.invites.write",
+            "activities.read",
+            "activities.write",
+            "applications.builds.read",
+            "applications.builds.upload",
+            "applications.commands",
+            "applications.commands.permissions.update",
+            "applications.commands.update",
+            "applications.entitlements",
+            "applications.store.update",
+            "bot",
+            "connections",
+            "dm_channels.read",
+            "email",
+            "gdm.join",
+            "guilds",
+            "guilds.join",
+            "guilds.members.read",
+            "identify",
+            "messages.read",
+            "openid",
+            "relationships.read",
+            "role_connections.write",
+            "rpc",
+            "rpc.activities.write",
+            "rpc.notifications.read",
+            "rpc.screenshare.read",
+            "rpc.screenshare.write",
+            "rpc.video.read",
+            "rpc.video.write",
+            "rpc.voice.read",
+            "rpc.voice.write",
+            "voice",
+            "webhook.incoming"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_users__me_applications__application_id__role_connection",
+      "operation_id": "get_application_user_role_connection",
+      "method": "GET",
+      "path": "/users/@me/applications/{application_id}/role-connection",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "oauth2",
+          "scopes": [
+            "role_connections.write"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_users__me_connections",
+      "operation_id": "list_my_connections",
+      "method": "GET",
+      "path": "/users/@me/connections",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "connections"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_users__me_guilds",
+      "operation_id": "list_my_guilds",
+      "method": "GET",
+      "path": "/users/@me/guilds",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "bot"
+        },
+        {
+          "type": "oauth2",
+          "scopes": [
+            "guilds"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_users__me_guilds__guild_id__member",
+      "operation_id": "get_my_guild_member",
+      "method": "GET",
+      "path": "/users/@me/guilds/{guild_id}/member",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "oauth2",
+          "scopes": [
+            "guilds.members.read"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_users__me",
+      "operation_id": "update_my_user",
+      "method": "PATCH",
+      "path": "/users/@me",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_users__me_channels",
+      "operation_id": "create_dm",
+      "method": "POST",
+      "path": "/users/@me/channels",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "put_users__me_applications__application_id__role_connection",
+      "operation_id": "update_application_user_role_connection",
+      "method": "PUT",
+      "path": "/users/@me/applications/{application_id}/role-connection",
+      "group": "users",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
+      "auth": [
+        {
+          "type": "oauth2",
+          "scopes": [
+            "role_connections.write"
+          ]
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_voice_regions",
+      "operation_id": "list_voice_regions",
+      "method": "GET",
+      "path": "/voice/regions",
+      "group": "voice",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/voice",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_webhooks__webhook_id",
+      "operation_id": "delete_webhook",
+      "method": "DELETE",
+      "path": "/webhooks/{webhook_id}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_webhooks__webhook_id___webhook_token",
+      "operation_id": "delete_webhook_by_token",
+      "method": "DELETE",
+      "path": "/webhooks/{webhook_id}/{webhook_token}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_webhooks__webhook_id___webhook_token__messages__message_id",
+      "operation_id": "delete_webhook_message",
+      "method": "DELETE",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "delete_webhooks__webhook_id___webhook_token__messages__original",
+      "operation_id": "delete_original_webhook_message",
+      "method": "DELETE",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/messages/@original",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_webhooks__webhook_id",
+      "operation_id": "get_webhook",
+      "method": "GET",
+      "path": "/webhooks/{webhook_id}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_webhooks__webhook_id___webhook_token",
+      "operation_id": "get_webhook_by_token",
+      "method": "GET",
+      "path": "/webhooks/{webhook_id}/{webhook_token}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_webhooks__webhook_id___webhook_token__messages__message_id",
+      "operation_id": "get_webhook_message",
+      "method": "GET",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "get_webhooks__webhook_id___webhook_token__messages__original",
+      "operation_id": "get_original_webhook_message",
+      "method": "GET",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/messages/@original",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_webhooks__webhook_id",
+      "operation_id": "update_webhook",
+      "method": "PATCH",
+      "path": "/webhooks/{webhook_id}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_webhooks__webhook_id___webhook_token",
+      "operation_id": "update_webhook_by_token",
+      "method": "PATCH",
+      "path": "/webhooks/{webhook_id}/{webhook_token}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_webhooks__webhook_id___webhook_token__messages__message_id",
+      "operation_id": "update_webhook_message",
+      "method": "PATCH",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "patch_webhooks__webhook_id___webhook_token__messages__original",
+      "operation_id": "update_original_webhook_message",
+      "method": "PATCH",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/messages/@original",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_webhooks__webhook_id___webhook_token",
+      "operation_id": "execute_webhook",
+      "method": "POST",
+      "path": "/webhooks/{webhook_id}/{webhook_token}",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_webhooks__webhook_id___webhook_token__github",
+      "operation_id": "execute_github_compatible_webhook",
+      "method": "POST",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/github",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    },
+    {
+      "capability_id": "post_webhooks__webhook_id___webhook_token__slack",
+      "operation_id": "execute_slack_compatible_webhook",
+      "method": "POST",
+      "path": "/webhooks/{webhook_id}/{webhook_token}/slack",
+      "group": "webhooks",
+      "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
+      "auth": [
+        {
+          "type": "webhook_token"
+        },
+        {
+          "type": "bot"
+        }
+      ],
+      "permissions": null,
+      "mcp_tool": null,
+      "implementation": "unmapped",
+      "availability": "unknown",
+      "verification": "not_tested",
+      "evidence": [],
+      "notes": null
+    }
+  ],
+  "preview_only_operations": []
+}
