@@ -259,7 +259,7 @@ FR-DIST-05 (MUST): Provide copy-paste configuration for every client in the comp
 
 FR-DIST-06 (MUST): Ship LICENSE with preserved upstream notices, CONTRIBUTING, SECURITY (private vulnerability reporting), CHANGELOG and a code of conduct.
 
-FR-DIST-07 (MUST): CI runs unit, contract and protocol tests on every change, checks API drift against the pinned baseline, scans for secrets and blocks releases on coverage regressions. Live tests are opt-in through contributor-supplied credentials for their own test guild and never run with project secrets on untrusted pull requests.
+FR-DIST-07 (MUST, deferred until public release): CI runs unit, contract and protocol tests on every change, checks API drift against the pinned baseline, scans for secrets and blocks releases on coverage regressions. Until then these checks run locally before opening a PR. Live tests are opt-in through contributor-supplied credentials for their own test guild and never run with project secrets on untrusted pull requests.
 
 FR-DIST-08 (MUST): Semantic versioning; release notes list tool and parameter changes, deprecations and migration steps.
 
