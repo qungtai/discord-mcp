@@ -6,7 +6,7 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 
 - Repository: `discord/discord-api-spec`
 - Commit: `4e75626a4cedfbc397d66f5491c79a9a62a71fd5`
-- Retrieved at: 2026-11-02T17:37:55.473Z
+- Retrieved at: 2026-11-02T17:55:39.922Z
 - Stable operations: 250
 - Preview-only operations: 0
 
@@ -53,7 +53,7 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 
 ## Per-group status dimensions
 
-| Group | Ops | Implementation (unmapped/planned/partial/implemented/deferred/obsolete) | Availability | Verification |
+| Group | Ops | Implementation | Availability | Verification |
 | --- | ---: | --- | --- | --- |
 | applications | 33 | unmapped=33 | unknown=33 | not_tested=33 |
 | channels | 50 | unmapped=50 | unknown=50 | not_tested=50 |
@@ -72,6 +72,17 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | users | 12 | unmapped=12 | unknown=12 | not_tested=12 |
 | voice | 1 | unmapped=1 | unknown=1 | not_tested=1 |
 | webhooks | 15 | unmapped=15 | unknown=15 | not_tested=15 |
+
+## Operations by credential profile
+
+| Credential profile | Count |
+| --- | ---: |
+| bot | 187 |
+| bot, oauth2 | 36 |
+| interaction_token, bot | 1 |
+| none, bot | 9 |
+| oauth2 | 5 |
+| webhook_token, bot | 12 |
 
 ## Preview-only operations
 
