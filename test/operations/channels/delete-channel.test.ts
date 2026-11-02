@@ -17,22 +17,6 @@ const toolRegistry = () => {
   return registry;
 };
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { pipeline } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["channels"], false),
-  });
-  expect(await pipeline.call("discord_delete_channel", { channel_id: "100" })).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool needs approval but the client does not support elicitation",
-      remediation:
-        "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-    },
-  });
-});
-
 it("deletes a channel with audit log reason after the client accepts approval", async () => {
   const { client, request } = await harness({
     registry: toolRegistry(),

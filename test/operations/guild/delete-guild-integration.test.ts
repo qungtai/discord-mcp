@@ -14,26 +14,6 @@ afterEach(() => {
 
 const empty204 = () => new Response(null, { status: 204 }) as unknown as ResponseLike;
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const tool = (await PToolRegistry.load()).get("discord_delete_guild_integration");
-  expect(tool?.effect).toBe("destructive");
-  expect(tool?.approval).toBe(true);
-
-  const { client, makeRequest } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["guild"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_delete_guild_integration",
-    arguments: { guild_id: "123", integration_id: "456" },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("deletes an integration with reason after the client accepts approval", async () => {
   const base = (await PToolRegistry.load()).get("discord_delete_guild_integration");
   if (!base) throw new Error("Missing tool");

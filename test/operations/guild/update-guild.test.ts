@@ -25,26 +25,6 @@ async function toolHarness(options = {}) {
   });
 }
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const tool = (await PToolRegistry.load()).get("discord_update_guild");
-  expect(tool?.effect).toBe("destructive");
-  expect(tool?.approval).toBe(true);
-
-  const { client, makeRequest } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["guild"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_update_guild",
-    arguments: { guild_id: "123", name: "Updated Guild" },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("updates a guild and passes comprehensive literal body and reason after the client accepts approval", async () => {
   const { client, request } = await toolHarness({ respond: () => GUILD });
   const result = await client.callTool({

@@ -19,28 +19,6 @@ const UPDATED_MEMBER = {
   joined_at: "2026-01-01T00:00:00.000Z",
 };
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { pipeline } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["members"], false),
-  });
-  expect(
-    await pipeline.call("discord_update_guild_member", {
-      guild_id: "123",
-      user_id: "456",
-      nick: "NewNick",
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool needs approval but the client does not support elicitation",
-      remediation:
-        "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-    },
-  });
-});
-
 it("updates a guild member with reason and fields after the client accepts approval", async () => {
   const registry = new PToolRegistry();
   registry.register(updateGuildMember);

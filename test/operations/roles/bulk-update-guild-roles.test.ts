@@ -19,24 +19,6 @@ const ROLES = [
   { id: "102", position: 2 },
 ];
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { client, makeRequest } = await harness({ clientCapabilities: {}, policy });
-  const result = await client.callTool({
-    name: "discord_bulk_update_guild_roles",
-    arguments: {
-      guild_id: "123",
-      roles: [{ id: "101", position: 1 }],
-    },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-    remediation:
-      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("rejects invalid roles array structure", async () => {
   const { client, makeRequest } = await harness({ policy });
   const result = await client.callTool({

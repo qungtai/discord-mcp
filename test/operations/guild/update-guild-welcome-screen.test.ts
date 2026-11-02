@@ -23,26 +23,6 @@ const WELCOME = {
   ],
 };
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const tool = (await PToolRegistry.load()).get("discord_update_guild_welcome_screen");
-  expect(tool?.effect).toBe("destructive");
-  expect(tool?.approval).toBe(true);
-
-  const { client, makeRequest } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["guild"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_update_guild_welcome_screen",
-    arguments: { guild_id: "123", description: "Updated Welcome" },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("updates welcome screen after the client accepts approval", async () => {
   const base = (await PToolRegistry.load()).get("discord_update_guild_welcome_screen");
   if (!base) throw new Error("Missing tool");

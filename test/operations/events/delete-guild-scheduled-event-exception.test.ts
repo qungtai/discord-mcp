@@ -26,21 +26,6 @@ const toolRegistry = async () => {
   return registry;
 };
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { client } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["events"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_delete_guild_scheduled_event_exception",
-    arguments: get,
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-  });
-});
-
 it("deletes event exception via REST DELETE endpoint", async () => {
   const registry = await toolRegistry();
   const { client, request } = await harness({

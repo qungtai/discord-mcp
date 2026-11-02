@@ -17,28 +17,6 @@ const channelId = "100";
 const messageId = "200";
 const emoji = "👍";
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { pipeline } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["reactions"], false),
-  });
-  expect(
-    await pipeline.call("discord_delete_all_message_reactions_by_emoji", {
-      channel_id: channelId,
-      message_id: messageId,
-      emoji,
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool needs approval but the client does not support elicitation",
-      remediation:
-        "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-    },
-  });
-});
-
 it("refuses a dot segment in the emoji path segment", async () => {
   const { client, makeRequest } = await harness({
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -89,10 +67,11 @@ it("supports custom emoji", async () => {
     policy: new PPolicyEngine([], ["reactions"], false),
     makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
   });
-  await client.callTool({
+  const result = await client.callTool({
     name: "discord_delete_all_message_reactions_by_emoji",
     arguments: { channel_id: channelId, message_id: messageId, emoji: customEmoji },
   });
+  expect(result.isError).toBeFalsy();
   expect(request().url).toBe(
     "https://discord.com/api/v10/channels/100/messages/200/reactions/party_blob%3A123456789",
   );

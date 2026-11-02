@@ -239,7 +239,8 @@ it("does not replay a failed send and returns its nonce for a deduplicated retry
 
 it("logs the redacted cause of a Discord failure", async () => {
   const { pipeline } = await harness({ makeRequest: async () => json({}, { status: 502 }) });
-  await pipeline.call("discord_send_message", { channel_id: "1", content: "hello" });
+  const result = await pipeline.call("discord_send_message", { channel_id: "1", content: "hello" });
+  expect(result).toMatchObject({ ok: false, error: { category: "uncertain" } });
   const written = vi
     .mocked(process.stderr.write)
     .mock.calls.map(([c]) => String(c))

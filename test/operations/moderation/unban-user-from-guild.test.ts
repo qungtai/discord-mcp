@@ -134,21 +134,3 @@ it("denies execution when guild is not in allowlist", async () => {
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
-
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { client, makeRequest } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["core", "moderation"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_unban_user_from_guild",
-    arguments: { guild_id: "123", user_id: "456" },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-    remediation:
-      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});

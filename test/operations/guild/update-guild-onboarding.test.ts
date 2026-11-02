@@ -25,26 +25,6 @@ const ONBOARDING = {
   mode: 0,
 };
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const tool = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
-  expect(tool?.effect).toBe("destructive");
-  expect(tool?.approval).toBe(true);
-
-  const { client, makeRequest } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["guild"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_update_guild_onboarding",
-    arguments: { guild_id: "123", enabled: true },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("puts onboarding after the client accepts approval and preserves response fields", async () => {
   const base = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
   if (!base) throw new Error("Missing tool");

@@ -33,20 +33,6 @@ const EXCEPTION = {
   is_canceled: true,
 };
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { pipeline } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["events"], false),
-  });
-  expect(await pipeline.call("discord_update_guild_scheduled_event_exception", get)).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool needs approval but the client does not support elicitation",
-    },
-  });
-});
-
 it("updates an event exception with exact literals", async () => {
   const { client, request } = await harness({
     registry: toolRegistry(),

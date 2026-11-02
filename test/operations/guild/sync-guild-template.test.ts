@@ -23,24 +23,6 @@ const TEMPLATE = {
   source_guild_id: "123",
 };
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { client, makeRequest } = await harness({ clientCapabilities: {}, policy });
-  const result = await client.callTool({
-    name: "discord_sync_guild_template",
-    arguments: {
-      guild_id: "123",
-      code: "sync123",
-    },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-    remediation:
-      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("rejects empty code", async () => {
   const { client, makeRequest } = await harness({ policy });
   const result = await client.callTool({

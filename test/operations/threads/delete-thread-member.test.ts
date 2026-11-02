@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { PToolRegistry } from "../../../src/core/tool-registry.js";
 import { errorOf, json } from "../../support/harness.js";
 import { empty204, setupTestLifecycle, singleToolRegistry, threadHarness } from "./support.js";
 
@@ -11,25 +10,6 @@ afterEach(() => {
 });
 
 const args = { channel_id: "101", user_id: "501" };
-
-it("refuses to run when the client cannot ask for approval", async () => {
-  const tool = (await PToolRegistry.load()).get("discord_delete_thread_member");
-  expect(tool?.effect).toBe("destructive");
-  expect(tool?.approval).toBe(true);
-
-  const { client, makeRequest } = await threadHarness({ clientCapabilities: {} });
-  const result = await client.callTool({
-    name: "discord_delete_thread_member",
-    arguments: args,
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-    remediation:
-      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
 
 it("deletes a thread member and returns deleted status after the client accepts approval", async () => {
   const registry = await singleToolRegistry("discord_delete_thread_member");

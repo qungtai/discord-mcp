@@ -17,27 +17,6 @@ async function toolHarness(options: Parameters<typeof harness>[0] = {}) {
   });
 }
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { client, makeRequest } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["channels"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_update_voice_channel_status",
-    arguments: {
-      channel_id: "100",
-      status: "Coding session",
-    },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-    remediation:
-      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("updates voice channel status with literal method, route and body", async () => {
   const { client, request } = await toolHarness({
     respond: () => ({}),

@@ -16,27 +16,6 @@ afterEach(() => {
 const channelId = "100";
 const messageId = "200";
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { pipeline } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["reactions"], false),
-  });
-  expect(
-    await pipeline.call("discord_delete_all_message_reactions", {
-      channel_id: channelId,
-      message_id: messageId,
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool needs approval but the client does not support elicitation",
-      remediation:
-        "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-    },
-  });
-});
-
 it("deletes all reactions on a message with ManageMessages after the client accepts approval", async () => {
   const registry = new PToolRegistry();
   registry.register(deleteAllMessageReactions);

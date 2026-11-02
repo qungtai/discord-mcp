@@ -43,10 +43,11 @@ it("supports custom emoji", async () => {
     policy: new PPolicyEngine([], ["reactions"], false),
     makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
   });
-  await client.callTool({
+  const result = await client.callTool({
     name: "discord_delete_my_message_reaction",
     arguments: { channel_id: channelId, message_id: messageId, emoji: customEmoji },
   });
+  expect(result.isError).toBeFalsy();
   expect(request().url).toBe(
     "https://discord.com/api/v10/channels/100/messages/200/reactions/party_blob%3A123456789/@me",
   );

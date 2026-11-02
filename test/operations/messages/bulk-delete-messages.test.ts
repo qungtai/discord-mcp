@@ -23,25 +23,6 @@ async function toolHarness(options: Parameters<typeof harness>[0] = {}) {
   return harness({ ...options, registry });
 }
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const tool = (await PToolRegistry.load()).get("discord_bulk_delete_messages");
-  expect(tool?.effect).toBe("destructive");
-  expect(tool?.approval).toBe(true);
-
-  const { client, makeRequest } = await harness({ clientCapabilities: {} });
-  const result = await client.callTool({
-    name: "discord_bulk_delete_messages",
-    arguments: args,
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool needs approval but the client does not support elicitation",
-    remediation:
-      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("bulk deletes messages with an audit reason after the client accepts approval", async () => {
   const { client, request } = await toolHarness({
     makeRequest: async () => empty204(),

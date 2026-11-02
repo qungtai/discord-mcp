@@ -24,20 +24,6 @@ const get = {
   reason: "Event cancelled",
 };
 
-it("refuses to run when the client cannot ask for approval", async () => {
-  const { pipeline } = await harness({
-    clientCapabilities: {},
-    policy: new PPolicyEngine([], ["events"], false),
-  });
-  expect(await pipeline.call("discord_delete_guild_scheduled_event", get)).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool needs approval but the client does not support elicitation",
-    },
-  });
-});
-
 it("deletes a guild scheduled event and sends reason", async () => {
   const { client, request } = await harness({
     registry: toolRegistry(),

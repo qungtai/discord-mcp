@@ -90,7 +90,7 @@ it("computes next_offset from the results returned when more remain", async () =
 
 it("asserts remaining query parameters in URL", async () => {
   const { client, request } = await harness({ respond: () => SEARCH_RESPONSE });
-  await client.callTool({
+  const result = await client.callTool({
     name: "discord_search_guild_messages",
     arguments: {
       guild_id: "123",
@@ -115,6 +115,7 @@ it("asserts remaining query parameters in URL", async () => {
       "min_id=405&max_id=406&link_hostname=example.com&embed_provider=YouTube&" +
       "attachment_extension=png&attachment_filename=image.png",
   );
+  expect(result.isError).toBeFalsy();
 });
 
 it("handles 202 response when search index is not ready", async () => {
