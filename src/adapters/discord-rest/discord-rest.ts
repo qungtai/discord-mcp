@@ -34,6 +34,7 @@ export class PDiscordRestAdapter implements DiscordTransport {
     }).setToken(token);
   }
   async request<T>(request: DiscordRequestInit, signal: AbortSignal): Promise<T> {
+    checkRoute(request.route);
     const bytes = request.files?.reduce((sum, file) => sum + file.data.length, 0) ?? 0;
     const deadline = AbortSignal.timeout(Math.ceil(this.timeoutMs + bytes / UPLOAD_BYTES_PER_MS));
     try {
@@ -60,6 +61,23 @@ const BY_STATUS: Record<number, [ErrorCategory, string]> = {
   409: ["conflict", "Check the current state of the resource"],
   413: ["validation", "Send smaller files; Discord rejected the upload size"],
 };
+// Routes leaves an argument unencoded when it is URL-safe, so %2e%2e would fold into a parent path.
+function checkRoute(route: string): void {
+  for (const segment of route.split("/")) {
+    let decoded = segment;
+    try {
+      decoded = decodeURIComponent(segment);
+    } catch {
+      // A malformed percent sequence is not a dot segment.
+    }
+    if (decoded === "." || decoded === "..")
+      throw new PToolError("Invalid route: a path segment is a dot segment", {
+        category: "validation",
+        retryable: false,
+        remediation: "Use plain alphanumeric IDs and codes, not dot segments",
+      });
+  }
+}
 function toQuery(query: NonNullable<DiscordRequestInit["query"]>): URLSearchParams {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {

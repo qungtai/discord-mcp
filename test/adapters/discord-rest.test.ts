@@ -30,3 +30,16 @@ it("repeats keys for array query values and skips empty arrays", async () => {
     "https://discord.com/api/v10/guilds/1/messages/search?author_id=10&author_id=20",
   );
 });
+
+it("refuses a route with a dot segment", async () => {
+  const makeRequest = vi.fn<RESTOptions["makeRequest"]>(async () => json({}));
+  const adapter = new PDiscordRestAdapter("test-token", { rest: { makeRequest } });
+  await expect(
+    adapter.request({ method: "PATCH", route: "/guilds/1/%2e%2e" }, new AbortController().signal),
+  ).rejects.toMatchObject({
+    category: "validation",
+    retryable: false,
+    message: "Invalid route: a path segment is a dot segment",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});

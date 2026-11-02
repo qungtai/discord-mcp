@@ -55,6 +55,16 @@ it("rejects invalid guild_id", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
+it.each(["%2e%2e", "../x", "a/b"])("refuses template code %s", async (code) => {
+  const { client, makeRequest } = await harness({ policy });
+  const result = await client.callTool({
+    name: "discord_update_guild_template",
+    arguments: { guild_id: "123", code, name: "Updated Name" },
+  });
+  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
 function toolRegistry() {
   const reg = new PToolRegistry();
   reg.register(updateGuildTemplate);

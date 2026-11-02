@@ -99,9 +99,11 @@ Set `DISCORD_TOKEN` in the inspector's environment panel before connecting.
 - `DISCORD_MCP_READ_ONLY` - `true` blocks mutating tools
 - `DISCORD_MCP_APPROVAL` - `elicitation` (default) or `none`. In `elicitation`
   mode, destructive operations ask the user for confirmation using MCP
-  elicitation (`elicitation/create`). In `none` mode, destructive operations run
-  without server elicitation, relying on the client's own tool confirmation.
-  Clients without MCP elicitation support need `DISCORD_MCP_APPROVAL=none`.
+  elicitation (`elicitation/create`). In `none` mode, server-side approval for
+  destructive tools is disabled: those tools run without elicitation and rely on
+  the client's own tool confirmation, which is not a security boundary. The
+  server prints a warning to stderr at startup in `none` mode. Clients without
+  MCP elicitation support need `DISCORD_MCP_APPROVAL=none`.
 - `DISCORD_MCP_FILE_ROOTS` - comma-separated absolute directories readable for
   uploads
 - `DISCORD_MCP_DOWNLOAD_DIR` - absolute directory for downloads

@@ -39,6 +39,22 @@ it("refuses to run when the client cannot ask for approval", async () => {
   });
 });
 
+it("refuses a dot segment in the emoji path segment", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["reactions"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_delete_all_message_reactions_by_emoji",
+    arguments: { channel_id: channelId, message_id: messageId, emoji: "%2e%2e" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+    retryable: false,
+    message: "Invalid route: a path segment is a dot segment",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
 it("deletes all reactions for an emoji with ManageMessages after the client accepts approval", async () => {
   const registry = new PToolRegistry();
   registry.register(deleteAllMessageReactionsByEmoji);

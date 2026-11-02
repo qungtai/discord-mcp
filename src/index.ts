@@ -23,6 +23,10 @@ const bot = new PDiscordRestAdapter(token, {
   rateLimitWaitMs: positiveInt("DISCORD_MCP_RATE_LIMIT_WAIT_MS"),
 });
 const policy = PPolicyEngine.fromEnv(process.env);
+if (policy.approval === "none")
+  process.stderr.write(
+    "DISCORD_MCP_APPROVAL=none: server-side approval for destructive tools is disabled\n",
+  );
 const registry = await PToolRegistry.load();
 const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
   .split(",")

@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 import { resource, snowflake, user } from "../schemas.js";
 
-export const templateCode = z.string().min(1);
+export const templateCode = z.string().regex(/^[\w-]+$/, "Expected a template code");
 
 export const guildTemplate = resource(
   z.looseObject({
