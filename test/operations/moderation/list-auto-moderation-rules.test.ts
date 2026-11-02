@@ -38,19 +38,22 @@ it("lists all auto moderation rules for a guild", async () => {
   expect(result.structuredContent).toEqual({ rules: [RULE] });
 });
 
-it("rejects invalid guild_id", async () => {
+it.each([[{ guild_id: "invalid" }], [{}]])("rejects invalid input: %j", async (args) => {
   const { client, makeRequest } = await harness({
     policy: new PPolicyEngine([], ["core", "moderation"], false),
   });
   const result = await client.callTool({
     name: "discord_list_auto_moderation_rules",
-    arguments: { guild_id: "invalid" },
+    arguments: args,
   });
-  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+    message: expect.stringContaining("Invalid input"),
+  });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("maps 403 to permission error with ManageGuild remediation", async () => {
+it("maps 403 to permission error with ManageGuild remediation and literal message", async () => {
   const { client } = await harness({
     policy: new PPolicyEngine([], ["core", "moderation"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
@@ -62,11 +65,12 @@ it("maps 403 to permission error with ManageGuild remediation", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
     remediation: "Check the bot permissions; this tool needs ManageGuild",
   });
 });
 
-it("maps 404 to not_found error", async () => {
+it("maps 404 to not_found error with literal message", async () => {
   const { client } = await harness({
     policy: new PPolicyEngine([], ["core", "moderation"], false),
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
@@ -78,6 +82,7 @@ it("maps 404 to not_found error", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "not_found",
     status: 404,
+    message: "Discord rejected the request (HTTP 404): Unknown Guild",
   });
 });
 

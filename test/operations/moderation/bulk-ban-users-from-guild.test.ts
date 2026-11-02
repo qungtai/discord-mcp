@@ -52,20 +52,30 @@ it("bulk bans users from a guild with delete_message_seconds and reason header",
   expect(req.headers).toMatchObject({ "X-Audit-Log-Reason": "raid%20cleanup" });
 });
 
-it("rejects empty user_ids array", async () => {
+it.each([
+  [{ guild_id: "invalid", user_ids: ["11"] }],
+  [{ guild_id: "123", user_ids: [] }],
+  [{ guild_id: "123", user_ids: Array.from({ length: 201 }, (_, i) => String(i + 1)) }],
+  [{ guild_id: "123", user_ids: ["invalid"] }],
+  [{ guild_id: "123", user_ids: ["11"], delete_message_seconds: -1 }],
+  [{ guild_id: "123", user_ids: ["11"], delete_message_seconds: 604801 }],
+])("rejects invalid input: %j", async (args) => {
   const { client, makeRequest } = await harness({
     registry: optedOutRegistry(),
     policy: new PPolicyEngine([], ["core", "moderation"], false),
   });
   const result = await client.callTool({
     name: "discord_bulk_ban_users_from_guild",
-    arguments: { guild_id: "123", user_ids: [] },
+    arguments: args,
   });
-  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+    message: expect.stringContaining("Invalid input"),
+  });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("maps 403 to permission error with BanMembers remediation", async () => {
+it("maps 403 to permission error with BanMembers, ManageGuild remediation and literal message", async () => {
   const { client } = await harness({
     registry: optedOutRegistry(),
     policy: new PPolicyEngine([], ["core", "moderation"], false),
@@ -78,11 +88,12 @@ it("maps 403 to permission error with BanMembers remediation", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
-    remediation: "Check the bot permissions; this tool needs BanMembers",
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
+    remediation: "Check the bot permissions; this tool needs BanMembers, ManageGuild",
   });
 });
 
-it("maps 404 to not_found error", async () => {
+it("maps 404 to not_found error with literal message", async () => {
   const { client } = await harness({
     registry: optedOutRegistry(),
     policy: new PPolicyEngine([], ["core", "moderation"], false),
@@ -95,6 +106,7 @@ it("maps 404 to not_found error", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "not_found",
     status: 404,
+    message: "Discord rejected the request (HTTP 404): Unknown Guild",
   });
 });
 

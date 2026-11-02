@@ -22,11 +22,11 @@ export const deleteAutoModerationRule = defineTool({
     rule_id: snowflake,
     reason,
   }),
-  execute: async ({ guild_id, rule_id, reason: auditReason }, { discord }) => {
+  execute: async ({ guild_id, rule_id, reason }, { discord }) => {
     await discord<RESTDeleteAPIAutoModerationRuleResult>({
       method: "DELETE",
       route: Routes.guildAutoModerationRule(guild_id, rule_id),
-      reason: auditReason,
+      reason,
     });
     return {
       deleted: true as const,

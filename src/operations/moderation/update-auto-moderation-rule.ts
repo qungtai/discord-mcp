@@ -1,14 +1,11 @@
-import {
-  type RESTPatchAPIAutoModerationRuleJSONBody,
-  type RESTPatchAPIAutoModerationRuleResult,
-  Routes,
-} from "discord-api-types/v10";
+import { type RESTPatchAPIAutoModerationRuleResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
 import {
   autoModerationAction,
   autoModerationRule,
+  autoModerationRuleEventTypeSchema,
   autoModerationTriggerMetadata,
 } from "./mem-moderation-schemas.js";
 
@@ -20,7 +17,7 @@ export const updateAutoModerationRule = defineTool({
   scope: { guild: "guild_id" },
   permissions: ["ManageGuild"],
   effect: "destructive",
-  idempotent: false,
+  idempotent: true,
   output: z.object({
     rule: autoModerationRule,
   }),
@@ -28,7 +25,7 @@ export const updateAutoModerationRule = defineTool({
     guild_id: snowflake,
     rule_id: snowflake,
     name: z.string().min(1).max(100).optional(),
-    event_type: z.number().int().optional(),
+    event_type: autoModerationRuleEventTypeSchema.optional(),
     trigger_metadata: autoModerationTriggerMetadata.optional(),
     actions: z.array(autoModerationAction).min(1).max(5).optional(),
     enabled: z.boolean().optional(),
@@ -36,12 +33,12 @@ export const updateAutoModerationRule = defineTool({
     exempt_channels: z.array(snowflake).max(50).optional(),
     reason,
   }),
-  execute: async ({ guild_id, rule_id, reason: auditReason, ...body }, { discord }) => ({
+  execute: async ({ guild_id, rule_id, reason, ...body }, { discord }) => ({
     rule: await discord<RESTPatchAPIAutoModerationRuleResult>({
       method: "PATCH",
       route: Routes.guildAutoModerationRule(guild_id, rule_id),
-      body: body as RESTPatchAPIAutoModerationRuleJSONBody,
-      reason: auditReason,
+      body,
+      reason,
     }),
   }),
 });

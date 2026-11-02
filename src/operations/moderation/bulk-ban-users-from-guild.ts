@@ -9,7 +9,7 @@ export const bulkBanUsersFromGuild = defineTool({
   operationIds: ["bulk_ban_users_from_guild"],
   toolset: "moderation",
   scope: { guild: "guild_id" },
-  permissions: ["BanMembers"],
+  permissions: ["BanMembers", "ManageGuild"],
   effect: "destructive",
   idempotent: false,
   output: z.object({
@@ -22,12 +22,11 @@ export const bulkBanUsersFromGuild = defineTool({
     delete_message_seconds: z.number().int().min(0).max(604800).optional(),
     reason,
   }),
-  execute: async ({ guild_id, reason: auditReason, ...body }, { discord }) => {
-    return discord<RESTPostAPIGuildBulkBanResult>({
+  execute: ({ guild_id, reason, ...body }, { discord }) =>
+    discord<RESTPostAPIGuildBulkBanResult>({
       method: "POST",
       route: Routes.guildBulkBan(guild_id),
       body,
-      reason: auditReason,
-    });
-  },
+      reason,
+    }),
 });

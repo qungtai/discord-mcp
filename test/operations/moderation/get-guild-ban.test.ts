@@ -29,19 +29,26 @@ it("gets ban for a specific user in a guild", async () => {
   expect(result.structuredContent).toEqual({ ban: BAN });
 });
 
-it("rejects invalid input", async () => {
+it.each([
+  [{ guild_id: "invalid", user_id: "456" }],
+  [{ guild_id: "123", user_id: "invalid" }],
+  [{ guild_id: "123" }],
+])("rejects invalid input: %j", async (args) => {
   const { client, makeRequest } = await harness({
     policy: new PPolicyEngine([], ["core", "moderation"], false),
   });
   const result = await client.callTool({
     name: "discord_get_guild_ban",
-    arguments: { guild_id: "123", user_id: "invalid" },
+    arguments: args,
   });
-  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+    message: expect.stringContaining("Invalid input"),
+  });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("maps 403 to permission error with BanMembers remediation", async () => {
+it("maps 403 to permission error with BanMembers remediation and literal message", async () => {
   const { client } = await harness({
     policy: new PPolicyEngine([], ["core", "moderation"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
@@ -53,11 +60,12 @@ it("maps 403 to permission error with BanMembers remediation", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
     remediation: "Check the bot permissions; this tool needs BanMembers",
   });
 });
 
-it("maps 404 to not_found error", async () => {
+it("maps 404 to not_found error with literal message", async () => {
   const { client } = await harness({
     policy: new PPolicyEngine([], ["core", "moderation"], false),
     makeRequest: async () => json({ message: "Unknown Ban", code: 10026 }, { status: 404 }),
@@ -69,6 +77,7 @@ it("maps 404 to not_found error", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "not_found",
     status: 404,
+    message: "Discord rejected the request (HTTP 404): Unknown Ban",
   });
 });
 

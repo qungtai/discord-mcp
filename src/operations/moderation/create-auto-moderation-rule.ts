@@ -1,14 +1,12 @@
-import {
-  type RESTPostAPIAutoModerationRuleJSONBody,
-  type RESTPostAPIAutoModerationRuleResult,
-  Routes,
-} from "discord-api-types/v10";
+import { type RESTPostAPIAutoModerationRuleResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
 import {
   autoModerationAction,
   autoModerationRule,
+  autoModerationRuleEventTypeSchema,
+  autoModerationRuleTriggerTypeSchema,
   autoModerationTriggerMetadata,
 } from "./mem-moderation-schemas.js";
 
@@ -20,6 +18,8 @@ export const createAutoModerationRule = defineTool({
   scope: { guild: "guild_id" },
   permissions: ["ManageGuild"],
   effect: "write",
+  // Actions can enforce moderation (timeout, block message) on members, requiring approval.
+  approval: true,
   idempotent: false,
   output: z.object({
     rule: autoModerationRule,
@@ -27,8 +27,8 @@ export const createAutoModerationRule = defineTool({
   input: z.object({
     guild_id: snowflake,
     name: z.string().min(1).max(100),
-    event_type: z.number().int(),
-    trigger_type: z.number().int(),
+    event_type: autoModerationRuleEventTypeSchema,
+    trigger_type: autoModerationRuleTriggerTypeSchema,
     trigger_metadata: autoModerationTriggerMetadata.optional(),
     actions: z.array(autoModerationAction).min(1).max(5),
     enabled: z.boolean().optional(),
@@ -36,12 +36,12 @@ export const createAutoModerationRule = defineTool({
     exempt_channels: z.array(snowflake).max(50).optional(),
     reason,
   }),
-  execute: async ({ guild_id, reason: auditReason, ...body }, { discord }) => ({
+  execute: async ({ guild_id, reason, ...body }, { discord }) => ({
     rule: await discord<RESTPostAPIAutoModerationRuleResult>({
       method: "POST",
       route: Routes.guildAutoModerationRules(guild_id),
-      body: body as RESTPostAPIAutoModerationRuleJSONBody,
-      reason: auditReason,
+      body,
+      reason,
     }),
   }),
 });

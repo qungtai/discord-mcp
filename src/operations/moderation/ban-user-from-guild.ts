@@ -21,15 +21,14 @@ export const banUserFromGuild = defineTool({
     guild_id: snowflake,
     user_id: snowflake,
     delete_message_seconds: z.number().int().min(0).max(604800).optional(),
-    delete_message_days: z.number().int().min(0).max(7).optional(),
     reason,
   }),
-  execute: async ({ guild_id, user_id, reason: auditReason, ...body }, { discord }) => {
+  execute: async ({ guild_id, user_id, reason, ...body }, { discord }) => {
     await discord<RESTPutAPIGuildBanResult>({
       method: "PUT",
       route: Routes.guildBan(guild_id, user_id),
       body,
-      reason: auditReason,
+      reason,
     });
     return {
       banned: true as const,

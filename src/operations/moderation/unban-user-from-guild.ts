@@ -22,11 +22,11 @@ export const unbanUserFromGuild = defineTool({
     user_id: snowflake,
     reason,
   }),
-  execute: async ({ guild_id, user_id, reason: auditReason }, { discord }) => {
+  execute: async ({ guild_id, user_id, reason }, { discord }) => {
     await discord<RESTDeleteAPIGuildBanResult>({
       method: "DELETE",
       route: Routes.guildBan(guild_id, user_id),
-      reason: auditReason,
+      reason,
     });
     return {
       unbanned: true as const,

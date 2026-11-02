@@ -1,3 +1,4 @@
+import type { ResponseLike } from "@discordjs/rest";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
 import { PToolRegistry } from "../../../src/core/tool-registry.js";
@@ -21,11 +22,13 @@ function optedOutRegistry() {
   return reg;
 }
 
-it("deletes an auto moderation rule for a guild with reason header", async () => {
+const mock204 = async () => new Response(null, { status: 204 }) as unknown as ResponseLike;
+
+it("deletes an auto moderation rule for a guild with reason header (exercising HTTP 204)", async () => {
   const { client, request } = await harness({
     registry: optedOutRegistry(),
     policy: new PPolicyEngine([], ["core", "moderation"], false),
-    respond: () => undefined,
+    makeRequest: mock204,
   });
   const result = await client.callTool({
     name: "discord_delete_auto_moderation_rule",
@@ -46,20 +49,27 @@ it("deletes an auto moderation rule for a guild with reason header", async () =>
   expect(req.headers).toMatchObject({ "X-Audit-Log-Reason": "deprecated%20rule" });
 });
 
-it("rejects invalid rule_id", async () => {
+it.each([
+  [{ guild_id: "invalid", rule_id: "201" }],
+  [{ guild_id: "123", rule_id: "not-a-snowflake" }],
+  [{ guild_id: "123" }],
+])("rejects invalid input: %j", async (args) => {
   const { client, makeRequest } = await harness({
     registry: optedOutRegistry(),
     policy: new PPolicyEngine([], ["core", "moderation"], false),
   });
   const result = await client.callTool({
     name: "discord_delete_auto_moderation_rule",
-    arguments: { guild_id: "123", rule_id: "not-a-snowflake" },
+    arguments: args,
   });
-  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+    message: expect.stringContaining("Invalid input"),
+  });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("maps 403 to permission error with ManageGuild remediation", async () => {
+it("maps 403 to permission error with ManageGuild remediation and literal message", async () => {
   const { client } = await harness({
     registry: optedOutRegistry(),
     policy: new PPolicyEngine([], ["core", "moderation"], false),
@@ -72,11 +82,12 @@ it("maps 403 to permission error with ManageGuild remediation", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
     remediation: "Check the bot permissions; this tool needs ManageGuild",
   });
 });
 
-it("maps 404 to not_found error", async () => {
+it("maps 404 to not_found error with literal message", async () => {
   const { client } = await harness({
     registry: optedOutRegistry(),
     policy: new PPolicyEngine([], ["core", "moderation"], false),
@@ -89,14 +100,15 @@ it("maps 404 to not_found error", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "not_found",
     status: 404,
+    message: "Discord rejected the request (HTTP 404): Unknown Rule",
   });
 });
 
-it("allows execution when guild is in allowlist", async () => {
+it("allows execution when guild is in allowlist (exercising HTTP 204)", async () => {
   const { client, request } = await harness({
     registry: optedOutRegistry(),
     policy: new PPolicyEngine(["123"], ["core", "moderation"], false),
-    respond: () => undefined,
+    makeRequest: mock204,
   });
   const result = await client.callTool({
     name: "discord_delete_auto_moderation_rule",

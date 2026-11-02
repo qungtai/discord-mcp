@@ -6,7 +6,7 @@ import { ban } from "./mem-moderation-schemas.js";
 
 export const listGuildBans = defineTool({
   name: "discord_list_guild_bans",
-  description: "List bans for a guild. Page with before=next_before or after=next_after",
+  description: "List bans in ascending user ID order. Page with after=next_after",
   operationIds: ["list_guild_bans"],
   toolset: "moderation",
   scope: { guild: "guild_id" },
@@ -15,7 +15,6 @@ export const listGuildBans = defineTool({
   idempotent: true,
   output: z.object({
     bans: z.array(ban),
-    next_before: snowflake.nullable(),
     next_after: snowflake.nullable(),
   }),
   input: z.object({
@@ -32,8 +31,7 @@ export const listGuildBans = defineTool({
     });
     return {
       bans,
-      next_before: bans.at(-1)?.user.id ?? null,
-      next_after: bans[0]?.user.id ?? null,
+      next_after: bans.at(-1)?.user.id ?? null,
     };
   },
 });
