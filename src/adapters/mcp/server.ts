@@ -33,10 +33,7 @@ export function createServer(pipeline: PToolPipeline): Server {
             },
             { signal: extra.signal, relatedRequestId: extra.requestId },
           );
-          return (
-            result.action === "accept" &&
-            (result.content as { approve?: boolean } | undefined)?.approve === true
-          );
+          return result.action === "accept" && result.content?.approve === true;
         }
       : undefined;
     const result = await pipeline.call(request.params.name, request.params.arguments, {
