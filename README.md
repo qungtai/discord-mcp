@@ -9,8 +9,8 @@ dimensions) so coverage claims are evidence-based rather than tool-count based.
 
 Pre-release. Unpublished. The package is not yet on npm and no Docker image or
 MCP Registry entry exists. Install from source today (see below); the standard
-`npx -y discord-mcp@<version>` install path will be available after the first
-release.
+`npx -y @qungtai/discord-mcp@<version>` install path will be available after the
+first release.
 
 ## Features (planned by toolset)
 
@@ -47,8 +47,8 @@ Privileged intents (enable in the Discord Developer Portal as needed):
 - `SERVER MEMBERS` - members, roles, moderation toolsets
 - `PRESENCE` - only if presence features are used
 
-Permissions are checked per operation; the server reports the missing
-permission, scope, intent or Discord restriction when known. Discord remains
+Permissions are checked per operation (planned: reporting the missing
+permission, scope, intent or Discord restriction). Discord remains
 authoritative. A bot invite should grant only the permissions the selected
 toolsets need (minimum-permission guide to be expanded in `docs/`).
 
@@ -59,16 +59,16 @@ is never a tool argument and is never logged.
 
 - `DISCORD_TOKEN` - bot token (required)
 - `DISCORD_MCP_ALLOWED_GUILDS` - comma-separated guild IDs; empty means no
-  restriction
+  restriction (planned: guild and channel allowlists across every access path)
 - `DISCORD_MCP_TOOLSETS` - comma-separated toolsets; default `core,messages`
-- `DISCORD_MCP_READ_ONLY` - `true` blocks mutating tools
+  (planned: invalid or empty values fail closed to this default set)
+- `DISCORD_MCP_READ_ONLY` - `true` blocks mutating tools (planned)
 - `DISCORD_MCP_FILE_ROOTS` - comma-separated absolute directories readable for
   uploads
 - `DISCORD_MCP_DOWNLOAD_DIR` - absolute directory for downloads
 
-Empty or invalid toolset configuration fails closed to the documented default
-set. Guild allowlists apply across every access path; DM access is a separate
-switch and is not implied by a guild allowlist.
+DM access is a separate switch and is not implied by a guild allowlist (planned).
+Permission and scope reporting for denied operations is planned.
 
 ## Install from source
 

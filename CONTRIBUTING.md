@@ -9,9 +9,10 @@ This project follows the rules in `AGENTS.md`. Summary:
 - Tests: vitest (`pnpm test` runs `vitest run --coverage`).
 - Coverage gates: at least 80% lines and branches overall, 90% for `src/core`.
   CI fails below these.
-- Live tests are opt-in via env vars and run only against the test server
-  (`1381945630808604713` with `lequangtaibot`). Never use project secrets on
-  untrusted pull requests.
+- Live tests are opt-in via env vars. Contributors run them against their own
+  test guild with their own credentials; the owner's test server
+  (`1381945630808604713` with `lequangtaibot`) is for maintainers only.
+  Never use project secrets on untrusted pull requests.
 - Commits: Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`,
   `chore:`, `refactor:`). No AI co-author or attribution lines.
 - Branches: `feat/<toolset>-<task>`, `fix/<scope>-<task>`,
@@ -24,3 +25,7 @@ This project follows the rules in `AGENTS.md`. Summary:
 - Code style: 2-space indentation, line width 100, double quotes, semicolons,
   trailing commas. No `any` to silence types, no swallowed errors, no
   `setTimeout` workarounds, no dead code.
+
+## Code of conduct
+
+This project follows the Contributor Covenant; see `.github/CODE_OF_CONDUCT.md`.
