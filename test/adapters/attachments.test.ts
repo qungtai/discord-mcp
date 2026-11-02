@@ -78,6 +78,17 @@ describe("uploads", () => {
     for (const path of [join(dir, "outside"), join(dir, "missing")])
       await rejects(service.upload(path), "policy", "Upload outside allowed roots");
   });
+  it("skips a missing root (F4)", async () => {
+    const file = await new PAttachmentService([join(dir, "gone"), root], "").upload(
+      join(root, "a.txt"),
+    );
+    expect(file.name).toBe("a.txt");
+    await rejects(
+      new PAttachmentService([join(dir, "gone")], "").upload(join(dir, "gone", "a.txt")),
+      "not_found",
+      "Upload file not found",
+    );
+  });
   it("reports a missing file as not_found", async () => {
     await rejects(
       new PAttachmentService([root], "").upload(join(root, "missing")),

@@ -575,6 +575,7 @@ describe("guild allowlist", () => {
     "/webhooks/66": { id: "66", guild_id: "999", channel_id: "9" },
     "/invites/abc": { code: "abc", guild: { id: "200" }, channel: { id: "1" } },
     "/invites/dm": { code: "dm", channel: { id: "5" } },
+    "/invites/..%2Fchannels%2F1": {},
   };
   const webhookCall = async (input: Record<string, unknown>) => {
     const { pipeline, makeRequest } = await harness({
@@ -599,6 +600,12 @@ describe("guild allowlist", () => {
         error: { category: "policy", message: "Guild is not allowed" },
       });
   });
+  it("encodes invite codes in the lookup route (F3)", async () => {
+    expect(await webhookCall({ code: "../channels/1" })).toMatchObject({
+      result: { error: { category: "policy" } },
+      requests: ["GET https://discord.com/api/v10/invites/..%2Fchannels%2F1"],
+    });
+  });
   it("does not let an allowed guild ID vouch for a webhook elsewhere (P7)", async () => {
     expect(await webhookCall({ guild_id: "200", webhook_id: "66" })).toMatchObject({
       result: { error: { category: "policy", message: "Guild is not allowed" } },
@@ -615,6 +622,7 @@ describe("guild allowlist", () => {
       data: { guilds: ["200"] },
     });
     expect(makeRequest).not.toHaveBeenCalled();
+    expect(new PPolicyEngine([], ["core"], false).allowsGuild("300")).toBe(true);
   });
   it("fails scope kinds it cannot check and a message without its channel", async () => {
     const discord: DiscordRequest = async <T>() => ({}) as T;

@@ -101,7 +101,11 @@ export function defineTool<I extends z.ZodObject, O extends z.ZodObject>(
 }
 export function scopeIds(tool: ToolDescriptor, input: Record<string, unknown>) {
   const byKind: Partial<Record<ScopeKind, string[]>> = {};
+  // Audit every target ID, scoped or not, so member, role and moderation writes name their targets.
   const resources: Record<string, string> = {};
+  for (const [key, value] of Object.entries(input))
+    if (/(^|_)ids?$|^code$/.test(key) && (typeof value === "string" || Array.isArray(value)))
+      resources[key] = String(value);
   if (tool.scope === "none") return { byKind, resources };
   for (const [kind, keys] of Object.entries(tool.scope) as [ScopeKind, string | string[]][])
     for (const key of typeof keys === "string" ? [keys] : keys) {
@@ -111,7 +115,6 @@ export function scopeIds(tool: ToolDescriptor, input: Record<string, unknown>) {
       // Fail closed: a scope key that is not a string or string[] would escape the allowlist.
       if (!Array.isArray(values) || values.some((v) => typeof v !== "string"))
         throw new Error(`Scope key ${key} of ${tool.name} must be a string or string[]`);
-      resources[key] = values.join(",");
       byKind[kind] = [...(byKind[kind] ?? []), ...(values as string[])];
     }
   return { byKind, resources };

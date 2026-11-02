@@ -53,7 +53,8 @@ export const getChannel = defineTool({
 ## Scope (guild allowlist)
 - Scope only IDs the route or body uses, as top-level inputs: `scope: { guild: "guild_id", channel: ["channel_id", "target_channel_ids"] }`. Values must be a string or string[].
 - Kinds: `guild`, `channel` (thread IDs are channel IDs), `webhook` (webhook IDs), `invite` (invite codes). Channels, webhooks and invites are looked up, so a guild input never vouches for them. `message` needs a `channel` next to it. Any other kind fails under an allowlist.
-- IDs that Discord checks against the guild or channel in the route need no scope: role, member, emoji, overwrite and message IDs, and channel IDs inside `PATCH /guilds/{guild_id}/channels`.
+- IDs that Discord checks against the guild or channel in the route need no scope: role, member, emoji and overwrite IDs, and channel IDs inside `PATCH /guilds/{guild_id}/channels`. Message IDs take `message` next to their `channel`, as in the message tools. Every top-level `*_id`, `*_ids` and `code` input is audited whether scoped or not.
+- `test/core/scope-declarations.test.ts` fails when a top-level guild, channel, thread or webhook ID input is not scoped. Add a key to its exception list only when Discord checks it against the route, with the reason in the PR.
 - Never add a `guild_id` or `channel_id` input just to satisfy the allowlist, and never read a resource ID from a nested object.
 - `scope: "none"` is for tools that touch no guild resource (current user, gateway, voice regions); the allowlist does not apply to them. Tools that list guilds or guild-owned resources across guilds filter the result with `context.allowsGuild(guild_id)`.
 
@@ -62,7 +63,7 @@ export const getChannel = defineTool({
 - Nested input objects use `z.strictObject`.
 - Tools that send message content use `allowed_mentions: allowedMentions`.
 - Audit log reason: add `reason` from `schemas.ts` and destructure it out of the body: `execute: async ({ guild_id, reason, ...body }, { discord }) => discord({ method: "PATCH", route, body, reason })`.
-- Lists pass the parsed input as `query` (undefined values are dropped) and return paging cursors like `discord_list_messages`: `next_before` and `next_after` for lists that page both ways, `next_after` for ascending lists.
+- Lists pass the input without route IDs as `query` (undefined values are dropped) and return paging cursors like `discord_list_messages`: `next_before` and `next_after` for lists that page both ways, `next_after` for ascending lists.
 - Deletes and other 204 endpoints return `{ deleted: true, ...ids }` with the target IDs, for example `{ deleted: true, channel_id, message_id }`. Name the flag after the action for non-delete 204s (`{ pinned: true, ... }`).
 - Outputs reuse the lenient shared schemas. Require IDs only.
 - Throw `PToolError` with a category and remediation for tool-level failures. Do not catch Discord errors; the pipeline maps them.

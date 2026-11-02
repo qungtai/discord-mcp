@@ -84,7 +84,17 @@ export class PAttachmentService implements AttachmentPort {
       retryable: false,
       remediation: "Choose a file inside an allowed root",
     });
-    const realRoots = await Promise.all(this.roots.map((root) => realpath(root)));
+    // A missing root holds no files, so it is skipped instead of failing uploads under other roots.
+    const realRoots = (
+      await Promise.all(
+        this.roots.map((root) =>
+          realpath(root).catch((error: unknown) => {
+            if (code(error) === "ENOENT") return undefined;
+            throw error;
+          }),
+        ),
+      )
+    ).filter((root) => root !== undefined);
     // Lexical check first, so paths outside the roots never reveal whether they exist.
     if (!within([...this.roots, ...realRoots], path)) throw outside;
     const target = await realpath(path).catch((error: unknown) => {
