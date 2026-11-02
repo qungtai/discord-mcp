@@ -8,8 +8,8 @@ interface GuildJoinRequestsResponse {
   guild_join_requests: JoinRequest[];
 }
 
-export const getGuildJoinRequests = defineTool({
-  name: "discord_get_guild_join_requests",
+export const listGuildJoinRequests = defineTool({
+  name: "discord_list_guild_join_requests",
   description: "List join requests for a guild, optionally filtered by application status",
   operationIds: ["get_guild_join_requests"],
   toolset: "members",

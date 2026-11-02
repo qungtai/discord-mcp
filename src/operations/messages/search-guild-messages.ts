@@ -10,7 +10,7 @@ import {
   snowflake,
   throwSearchNotReady,
 } from "../schemas.js";
-import { threadMember } from "../threads/msg-threads-schemas.js";
+import { threadMember } from "../threads/schemas.js";
 
 const sortingMode = z.enum(["relevance", "timestamp"]);
 const sortingOrder = z.enum(["asc", "desc"]);

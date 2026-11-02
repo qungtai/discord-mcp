@@ -2,10 +2,10 @@ import { type RESTGetAPIGuildThreadsResult, Routes } from "discord-api-types/v10
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { threadList } from "./msg-threads-schemas.js";
+import { threadList } from "./schemas.js";
 
-export const getActiveGuildThreads = defineTool({
-  name: "discord_get_active_guild_threads",
+export const listActiveGuildThreads = defineTool({
+  name: "discord_list_active_guild_threads",
   description: "Get all active threads in a guild, including public and private threads",
   operationIds: ["get_active_guild_threads"],
   toolset: "threads",

@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { allowedMentions, message, snowflake } from "../schemas.js";
+import { allowedMentions, message, resource, snowflake } from "../schemas.js";
 
 export const messageIds = { channel_id: snowflake, message_id: snowflake };
 export const messageBody = {
@@ -36,3 +36,10 @@ export const poll = z.strictObject({
   allow_multiselect: z.boolean().optional(),
   layout_type: z.literal(1).optional().describe("1 for the default poll layout"),
 });
+
+export const pinnedMessage = resource(
+  z.looseObject({
+    pinned_at: z.string(),
+    message,
+  }),
+);

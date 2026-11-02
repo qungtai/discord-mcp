@@ -17,7 +17,7 @@ import {
   permissionOverwrite,
   threadSortOrderEnum,
   videoQualityModeEnum,
-} from "./ch-channels-schemas.js";
+} from "./schemas.js";
 
 export const createGuildChannel = defineTool({
   name: "discord_create_guild_channel",

@@ -17,7 +17,7 @@ import {
   permissionOverwrite,
   threadSortOrderEnum,
   videoQualityModeEnum,
-} from "./ch-channels-schemas.js";
+} from "./schemas.js";
 
 export const updateChannel = defineTool({
   name: "discord_update_channel",

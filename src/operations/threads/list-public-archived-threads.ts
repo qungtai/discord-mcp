@@ -6,7 +6,7 @@ import {
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { threadList } from "./msg-threads-schemas.js";
+import { threadList } from "./schemas.js";
 
 export const listPublicArchivedThreads = defineTool({
   name: "discord_list_public_archived_threads",

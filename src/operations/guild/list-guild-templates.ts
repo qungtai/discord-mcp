@@ -2,7 +2,7 @@ import { type RESTGetAPIGuildTemplatesResult, Routes } from "discord-api-types/v
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { templatesResult } from "./template-schemas.js";
+import { templatesResult } from "./schemas.js";
 
 export const listGuildTemplates = defineTool({
   name: "discord_list_guild_templates",

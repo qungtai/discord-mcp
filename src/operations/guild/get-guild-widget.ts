@@ -1,7 +1,7 @@
 import { type RESTGetAPIGuildWidgetJSONResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { guildIds, widget } from "./guild-settings-schemas.js";
+import { guildIds, widget } from "./schemas.js";
 
 export const getGuildWidget = defineTool({
   name: "discord_get_guild_widget",

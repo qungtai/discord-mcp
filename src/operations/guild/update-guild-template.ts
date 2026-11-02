@@ -2,7 +2,7 @@ import { type RESTPatchAPIGuildTemplateResult, Routes } from "discord-api-types/
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { templateCode, templateResult } from "./template-schemas.js";
+import { templateCode, templateResult } from "./schemas.js";
 
 export const updateGuildTemplate = defineTool({
   name: "discord_update_guild_template",

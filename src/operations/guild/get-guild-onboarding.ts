@@ -1,7 +1,7 @@
 import { type RESTGetAPIGuildOnboardingResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { guildIds, onboarding } from "./guild-settings-schemas.js";
+import { guildIds, onboarding } from "./schemas.js";
 
 export const getGuildOnboarding = defineTool({
   name: "discord_get_guild_onboarding",

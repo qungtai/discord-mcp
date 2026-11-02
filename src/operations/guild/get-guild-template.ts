@@ -2,7 +2,7 @@ import { type RESTGetAPITemplateResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { PToolError } from "../../core/tool-error.js";
 import { defineTool } from "../../core/tool-registry.js";
-import { templateCode, templateResult } from "./template-schemas.js";
+import { templateCode, templateResult } from "./schemas.js";
 
 export const getGuildTemplate = defineTool({
   name: "discord_get_guild_template",

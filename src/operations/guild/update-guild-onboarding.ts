@@ -2,7 +2,7 @@ import { type RESTPutAPIGuildOnboardingResult, Routes } from "discord-api-types/
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { guildIds, onboarding } from "./guild-settings-schemas.js";
+import { guildIds, onboarding } from "./schemas.js";
 
 const promptOptionInput = z.strictObject({
   id: snowflake.nullish(),

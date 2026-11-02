@@ -1,7 +1,7 @@
 import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { reactionIds } from "./msg-reactions-schemas.js";
+import { reactionIds } from "./schemas.js";
 
 export const deleteAllMessageReactionsByEmoji = defineTool({
   name: "discord_delete_all_message_reactions_by_emoji",

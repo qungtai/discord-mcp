@@ -2,7 +2,7 @@ import { type RESTPatchAPIGuildResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { guild, guildIds } from "./guild-settings-schemas.js";
+import { guild, guildIds } from "./schemas.js";
 
 export const updateGuild = defineTool({
   name: "discord_update_guild",

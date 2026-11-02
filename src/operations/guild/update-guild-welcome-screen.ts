@@ -2,7 +2,7 @@ import { type RESTPatchAPIGuildWelcomeScreenResult, Routes } from "discord-api-t
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { guildIds, welcomeScreen } from "./guild-settings-schemas.js";
+import { guildIds, welcomeScreen } from "./schemas.js";
 
 const welcomeScreenChannelInput = z.strictObject({
   channel_id: snowflake,

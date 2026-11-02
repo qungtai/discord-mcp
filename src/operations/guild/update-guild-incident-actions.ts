@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { guildIds, incidentActions } from "./guild-settings-schemas.js";
+import { guildIds, incidentActions } from "./schemas.js";
 
 export const updateGuildIncidentActions = defineTool({
   name: "discord_update_guild_incident_actions",

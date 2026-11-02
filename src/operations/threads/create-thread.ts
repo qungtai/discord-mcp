@@ -2,7 +2,7 @@ import { type RESTPostAPIChannelThreadsResult, Routes } from "discord-api-types/
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { autoArchiveDuration, rateLimitPerUser, reason, snowflake } from "../schemas.js";
-import { forumInitialMessage, thread } from "./msg-threads-schemas.js";
+import { forumInitialMessage, thread } from "./schemas.js";
 
 export const createThread = defineTool({
   name: "discord_create_thread",

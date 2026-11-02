@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { guildIds, newMemberWelcome } from "./guild-settings-schemas.js";
+import { guildIds, newMemberWelcome } from "./schemas.js";
 
 export const getGuildNewMemberWelcome = defineTool({
   name: "discord_get_guild_new_member_welcome",

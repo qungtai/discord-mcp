@@ -2,7 +2,7 @@ import { type RESTGetAPIChannelMessageReactionUsersResult, Routes } from "discor
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake, user } from "../schemas.js";
-import { reactionIds } from "./msg-reactions-schemas.js";
+import { reactionIds } from "./schemas.js";
 
 export const listMessageReactionsByEmoji = defineTool({
   name: "discord_list_message_reactions_by_emoji",

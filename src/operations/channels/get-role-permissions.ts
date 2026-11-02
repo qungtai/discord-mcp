@@ -6,7 +6,7 @@ import {
   implicitNeedsChannel,
   permissionLookupRequest,
   permissionLookupShape,
-} from "./ch-channels-schemas.js";
+} from "./schemas.js";
 
 export const getRolePermissions = defineTool({
   name: "discord_get_role_permissions",

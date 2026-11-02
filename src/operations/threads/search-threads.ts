@@ -9,7 +9,7 @@ import {
   threadTagSetting,
   throwSearchNotReady,
 } from "../schemas.js";
-import { threadList } from "./msg-threads-schemas.js";
+import { threadList } from "./schemas.js";
 
 export const searchThreads = defineTool({
   name: "discord_search_threads",

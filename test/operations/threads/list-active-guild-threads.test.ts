@@ -28,7 +28,7 @@ it("gets active guild threads", async () => {
     respond: () => THREAD_LIST,
   });
   const result = await client.callTool({
-    name: "discord_get_active_guild_threads",
+    name: "discord_list_active_guild_threads",
     arguments: { guild_id: "200" },
   });
   expect(result.structuredContent).toEqual(THREAD_LIST);
@@ -42,7 +42,7 @@ it("gets active guild threads", async () => {
 it("validates guild_id format", async () => {
   const { client, makeRequest } = await threadHarness();
   const result = await client.callTool({
-    name: "discord_get_active_guild_threads",
+    name: "discord_list_active_guild_threads",
     arguments: { guild_id: "not-snowflake" },
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
@@ -54,7 +54,7 @@ it("handles 403 error with literal message", async () => {
     makeRequest: async () => json({ message: "Missing Access", code: 50001 }, { status: 403 }),
   });
   const result = await client.callTool({
-    name: "discord_get_active_guild_threads",
+    name: "discord_list_active_guild_threads",
     arguments: { guild_id: "200" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -70,7 +70,7 @@ it("handles 404 error with literal message", async () => {
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
   const result = await client.callTool({
-    name: "discord_get_active_guild_threads",
+    name: "discord_list_active_guild_threads",
     arguments: { guild_id: "999" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -87,7 +87,7 @@ it("succeeds under an allowlist containing the guild with literal route", async 
     respond: () => THREAD_LIST,
   });
   const result = await client.callTool({
-    name: "discord_get_active_guild_threads",
+    name: "discord_list_active_guild_threads",
     arguments: { guild_id: "200" },
   });
   expect(result.structuredContent).toEqual(THREAD_LIST);
@@ -102,7 +102,7 @@ it("denies guild outside the allowlist", async () => {
     policy: new PPolicyEngine(["200"], ["threads"], false),
   });
   const result = await client.callTool({
-    name: "discord_get_active_guild_threads",
+    name: "discord_list_active_guild_threads",
     arguments: { guild_id: "300" },
   });
   expect(errorOf(result)).toMatchObject({

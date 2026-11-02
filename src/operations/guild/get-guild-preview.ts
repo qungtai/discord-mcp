@@ -1,7 +1,7 @@
 import { type RESTGetAPIGuildPreviewResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { guildIds, guildPreview } from "./guild-settings-schemas.js";
+import { guildIds, guildPreview } from "./schemas.js";
 
 export const getGuildPreview = defineTool({
   name: "discord_get_guild_preview",

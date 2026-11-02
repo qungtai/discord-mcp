@@ -2,7 +2,7 @@ import { type RESTGetAPIChannelUsersThreadsArchivedResult, Routes } from "discor
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { threadList } from "./msg-threads-schemas.js";
+import { threadList } from "./schemas.js";
 
 export const listMyPrivateArchivedThreads = defineTool({
   name: "discord_list_my_private_archived_threads",

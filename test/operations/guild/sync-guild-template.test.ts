@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
 import { PToolRegistry } from "../../../src/core/tool-registry.js";
-import { syncGuildTemplate } from "../../../src/operations/guild/template-sync.js";
+import { syncGuildTemplate } from "../../../src/operations/guild/sync-guild-template.js";
 import { errorOf, harness, json } from "../../support/harness.js";
 
 beforeEach(() => {

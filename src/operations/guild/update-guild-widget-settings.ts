@@ -2,7 +2,7 @@ import { type RESTPatchAPIGuildWidgetSettingsResult, Routes } from "discord-api-
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { guildIds, widgetSettings } from "./guild-settings-schemas.js";
+import { guildIds, widgetSettings } from "./schemas.js";
 
 export const updateGuildWidgetSettings = defineTool({
   name: "discord_update_guild_widget_settings",

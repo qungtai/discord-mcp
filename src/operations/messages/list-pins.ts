@@ -2,7 +2,7 @@ import { type RESTGetAPIChannelMessagesPinsResult, Routes } from "discord-api-ty
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { pinnedMessage } from "./msg-pins-schemas.js";
+import { pinnedMessage } from "./schemas.js";
 
 export const listPins = defineTool({
   name: "discord_list_pins",

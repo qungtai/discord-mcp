@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
 import { PToolRegistry } from "../../../src/core/tool-registry.js";
-import { deleteGuildTemplate } from "../../../src/operations/guild/template-delete.js";
+import { updateGuildTemplate } from "../../../src/operations/guild/update-guild-template.js";
 import { errorOf, harness, json } from "../../support/harness.js";
 
 beforeEach(() => {
@@ -14,11 +14,11 @@ afterEach(() => {
 
 const policy = new PPolicyEngine([], ["core", "guild"], false);
 
-const DELETED_TEMPLATE = {
-  code: "del123",
-  name: "Deleted Template",
-  description: "To be deleted",
-  usage_count: 0,
+const TEMPLATE = {
+  code: "update123",
+  name: "Updated Name",
+  description: "Updated description",
+  usage_count: 3,
   creator_id: "999",
   source_guild_id: "123",
 };
@@ -26,10 +26,11 @@ const DELETED_TEMPLATE = {
 it("refuses to run when the client cannot ask for approval", async () => {
   const { client, makeRequest } = await harness({ clientCapabilities: {}, policy });
   const result = await client.callTool({
-    name: "discord_delete_guild_template",
+    name: "discord_update_guild_template",
     arguments: {
       guild_id: "123",
-      code: "del123",
+      code: "update123",
+      name: "Updated Name",
     },
   });
   expect(errorOf(result)).toMatchObject({
@@ -41,14 +42,24 @@ it("refuses to run when the client cannot ask for approval", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("rejects empty code", async () => {
+it("rejects invalid guild_id", async () => {
   const { client, makeRequest } = await harness({ policy });
   const result = await client.callTool({
-    name: "discord_delete_guild_template",
+    name: "discord_update_guild_template",
     arguments: {
-      guild_id: "123",
-      code: "",
+      guild_id: "invalid",
+      code: "update123",
     },
+  });
+  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it.each(["%2e%2e", "../x", "a/b"])("refuses template code %s", async (code) => {
+  const { client, makeRequest } = await harness({ policy });
+  const result = await client.callTool({
+    name: "discord_update_guild_template",
+    arguments: { guild_id: "123", code, name: "Updated Name" },
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
   expect(makeRequest).not.toHaveBeenCalled();
@@ -56,47 +67,54 @@ it("rejects empty code", async () => {
 
 function toolRegistry() {
   const reg = new PToolRegistry();
-  reg.register(deleteGuildTemplate);
+  reg.register(updateGuildTemplate);
   return reg;
 }
 
-it("deletes a guild template after the client accepts approval", async () => {
+it("updates a guild template after the client accepts approval", async () => {
   const { client, request } = await harness({
     policy,
     registry: toolRegistry(),
-    respond: () => DELETED_TEMPLATE,
+    respond: () => TEMPLATE,
   });
   const result = await client.callTool({
-    name: "discord_delete_guild_template",
+    name: "discord_update_guild_template",
     arguments: {
       guild_id: "123",
-      code: "del123",
+      code: "update123",
+      name: "Updated Name",
+      description: "Updated description",
     },
   });
-  expect(result.structuredContent).toEqual({ template: DELETED_TEMPLATE });
-  const { url, method } = request();
+  expect(result.structuredContent).toEqual({ template: TEMPLATE });
+  const { url, method, body } = request();
   expect([method, url]).toEqual([
-    "DELETE",
-    "https://discord.com/api/v10/guilds/123/templates/del123",
+    "PATCH",
+    "https://discord.com/api/v10/guilds/123/templates/update123",
   ]);
+  expect(JSON.parse(String(body))).toEqual({
+    name: "Updated Name",
+    description: "Updated description",
+  });
 });
 
 it("allows guilds in the allowlist and sends expected request", async () => {
   const { client, request } = await harness({
     policy: new PPolicyEngine(["123"], ["core", "guild"], false),
     registry: toolRegistry(),
-    respond: () => DELETED_TEMPLATE,
+    respond: () => TEMPLATE,
   });
   const result = await client.callTool({
-    name: "discord_delete_guild_template",
-    arguments: { guild_id: "123", code: "del123" },
+    name: "discord_update_guild_template",
+    arguments: { guild_id: "123", code: "update123", name: "Updated Name" },
   });
-  expect(result.structuredContent).toEqual({ template: DELETED_TEMPLATE });
-  const { url, method } = request();
+  expect(result.structuredContent).toEqual({ template: TEMPLATE });
+  const { url, method, body } = request();
   expect([method, url]).toEqual([
-    "DELETE",
-    "https://discord.com/api/v10/guilds/123/templates/del123",
+    "PATCH",
+    "https://discord.com/api/v10/guilds/123/templates/update123",
   ]);
+  expect(JSON.parse(String(body))).toEqual({ name: "Updated Name" });
 });
 
 it("blocks guilds outside the allowlist", async () => {
@@ -105,8 +123,8 @@ it("blocks guilds outside the allowlist", async () => {
     registry: toolRegistry(),
   });
   const result = await client.callTool({
-    name: "discord_delete_guild_template",
-    arguments: { guild_id: "123", code: "del123" },
+    name: "discord_update_guild_template",
+    arguments: { guild_id: "123", code: "update123", name: "Updated Name" },
   });
   expect(errorOf(result)).toMatchObject({
     category: "policy",
@@ -122,8 +140,8 @@ it("maps 403 to permission error with exact message and remediation", async () =
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
-    name: "discord_delete_guild_template",
-    arguments: { guild_id: "123", code: "del123" },
+    name: "discord_update_guild_template",
+    arguments: { guild_id: "123", code: "update123", name: "Updated Name" },
   });
   expect(errorOf(result)).toMatchObject({
     category: "permission",
@@ -142,8 +160,8 @@ it("maps 404 to not_found error with exact message and remediation", async () =>
     makeRequest: async () => json({ message: "Unknown Template", code: 10057 }, { status: 404 }),
   });
   const result = await client.callTool({
-    name: "discord_delete_guild_template",
-    arguments: { guild_id: "123", code: "del123" },
+    name: "discord_update_guild_template",
+    arguments: { guild_id: "123", code: "update123", name: "Updated Name" },
   });
   expect(errorOf(result)).toMatchObject({
     category: "not_found",

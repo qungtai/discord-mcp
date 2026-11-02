@@ -41,7 +41,7 @@ it("lists guild join requests with query params and cursors", async () => {
     }),
   });
   const result = await client.callTool({
-    name: "discord_get_guild_join_requests",
+    name: "discord_list_guild_join_requests",
     arguments: {
       guild_id: "123",
       status: "SUBMITTED",
@@ -69,7 +69,7 @@ it("passes allowlist check when guild is allowed", async () => {
     }),
   });
   const result = await client.callTool({
-    name: "discord_get_guild_join_requests",
+    name: "discord_list_guild_join_requests",
     arguments: { guild_id: "123" },
   });
   expect(result.structuredContent).toEqual({
@@ -88,7 +88,7 @@ it("denies access when guild is not allowed", async () => {
     policy: new PPolicyEngine(["999"], ["members"], false),
   });
   const result = await client.callTool({
-    name: "discord_get_guild_join_requests",
+    name: "discord_list_guild_join_requests",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -107,7 +107,7 @@ it.each([
     policy: new PPolicyEngine([], ["members"], false),
   });
   const result = await client.callTool({
-    name: "discord_get_guild_join_requests",
+    name: "discord_list_guild_join_requests",
     arguments: args,
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
@@ -119,17 +119,17 @@ it("handles 403 missing permissions error", async () => {
     policy: new PPolicyEngine([], ["members"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
-  expect(await pipeline.call("discord_get_guild_join_requests", { guild_id: "123" })).toMatchObject(
-    {
-      ok: false,
-      error: {
-        category: "permission",
-        status: 403,
-        discord_code: 50013,
-        remediation: "Check the bot permissions; this tool needs ManageGuild",
-      },
+  expect(
+    await pipeline.call("discord_list_guild_join_requests", { guild_id: "123" }),
+  ).toMatchObject({
+    ok: false,
+    error: {
+      category: "permission",
+      status: 403,
+      discord_code: 50013,
+      remediation: "Check the bot permissions; this tool needs ManageGuild",
     },
-  );
+  });
 });
 
 it("handles 404 error", async () => {
@@ -137,15 +137,15 @@ it("handles 404 error", async () => {
     policy: new PPolicyEngine([], ["members"], false),
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
-  expect(await pipeline.call("discord_get_guild_join_requests", { guild_id: "123" })).toMatchObject(
-    {
-      ok: false,
-      error: {
-        category: "not_found",
-        status: 404,
-        discord_code: 10004,
-        remediation: "Check the IDs in the request",
-      },
+  expect(
+    await pipeline.call("discord_list_guild_join_requests", { guild_id: "123" }),
+  ).toMatchObject({
+    ok: false,
+    error: {
+      category: "not_found",
+      status: 404,
+      discord_code: 10004,
+      remediation: "Check the IDs in the request",
     },
-  );
+  });
 });
