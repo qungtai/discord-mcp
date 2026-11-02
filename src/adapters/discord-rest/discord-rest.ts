@@ -62,21 +62,15 @@ const BY_STATUS: Record<number, [ErrorCategory, string]> = {
   413: ["validation", "Send smaller files; Discord rejected the upload size"],
 };
 // Routes leaves an argument unencoded when it is URL-safe, so %2e%2e would fold into a parent path.
+const DOT_SEGMENT = /^(?:\.|%2e){1,2}$/i;
 function checkRoute(route: string): void {
-  for (const segment of route.split("/")) {
-    let decoded = segment;
-    try {
-      decoded = decodeURIComponent(segment);
-    } catch {
-      // A malformed percent sequence is not a dot segment.
-    }
-    if (decoded === "." || decoded === "..")
+  for (const segment of route.split("/"))
+    if (DOT_SEGMENT.test(segment))
       throw new PToolError("Invalid route: a path segment is a dot segment", {
         category: "validation",
         retryable: false,
         remediation: "Use plain alphanumeric IDs and codes, not dot segments",
       });
-  }
 }
 function toQuery(query: NonNullable<DiscordRequestInit["query"]>): URLSearchParams {
   const params = new URLSearchParams();

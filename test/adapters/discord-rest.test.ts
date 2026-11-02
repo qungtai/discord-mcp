@@ -31,15 +31,31 @@ it("repeats keys for array query values and skips empty arrays", async () => {
   );
 });
 
-it("refuses a route with a dot segment", async () => {
+it.each(["..", ".", "%2e%2e", "%2e", ".%2E", "%2E."])(
+  "refuses the dot segment %s",
+  async (segment) => {
+    const makeRequest = vi.fn<RESTOptions["makeRequest"]>(async () => json({}));
+    const adapter = new PDiscordRestAdapter("test-token", { rest: { makeRequest } });
+    await expect(
+      adapter.request(
+        { method: "PATCH", route: `/guilds/1/${segment}` },
+        new AbortController().signal,
+      ),
+    ).rejects.toMatchObject({
+      category: "validation",
+      retryable: false,
+      message: "Invalid route: a path segment is a dot segment",
+    });
+    expect(makeRequest).not.toHaveBeenCalled();
+  },
+);
+
+it("allows a segment that only looks like a dot segment", async () => {
   const makeRequest = vi.fn<RESTOptions["makeRequest"]>(async () => json({}));
   const adapter = new PDiscordRestAdapter("test-token", { rest: { makeRequest } });
-  await expect(
-    adapter.request({ method: "PATCH", route: "/guilds/1/%2e%2e" }, new AbortController().signal),
-  ).rejects.toMatchObject({
-    category: "validation",
-    retryable: false,
-    message: "Invalid route: a path segment is a dot segment",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
+  await adapter.request(
+    { method: "PATCH", route: "/guilds/1/..abc" },
+    new AbortController().signal,
+  );
+  expect(makeRequest.mock.calls[0]?.[0]).toBe("https://discord.com/api/v10/guilds/1/..abc");
 });
