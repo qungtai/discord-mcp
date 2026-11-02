@@ -1,6 +1,6 @@
 # qungtai/discord-mcp: coding rules
 
-Status: agreed with the owner on 3 November 2026. Becomes the repo's `AGENTS.md` (`CLAUDE.md` points to it). Every agent brief references this file. Product requirements live in `discord-mcp-prd-v0.2.md`.
+Status: agreed with the owner on 3 November 2026. Becomes the repo's `AGENTS.md` (`CLAUDE.md` points to it). Every agent brief references this file. Product requirements live in `docs/planning/prd.md`.
 
 ## 1. Stack
 - TypeScript with `strict: true`, ESM only, current Node LTS pinned in `.nvmrc` and `engines`.

@@ -38,12 +38,13 @@ export class PPolicyEngine {
         remediation: denial[1],
       });
   }
+  allowsGuild(id: string): boolean {
+    return !this.allowedGuilds.length || this.allowedGuilds.includes(id);
+  }
   checkResource(scope: ResolvedScope): void {
     if (
       this.allowedGuilds.length &&
-      (!scope.guildIds.length ||
-        scope.isDm ||
-        scope.guildIds.some((id) => !this.allowedGuilds.includes(id)))
+      (!scope.guildIds.length || scope.isDm || !scope.guildIds.every((id) => this.allowsGuild(id)))
     )
       throw new PToolError("Guild is not allowed", {
         category: "policy",

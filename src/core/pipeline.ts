@@ -118,20 +118,24 @@ export class PToolPipeline {
         }
       };
       const uncertain = (cause: unknown) =>
-        new PToolError("The write may have been applied", {
-          category: "uncertain",
-          retryable: false,
-          remediation: nonce
-            ? "Check the result before retrying, or retry with the same nonce"
-            : "Check the resource before retrying",
-          resourceIds: {
-            ...resources,
-            ...(committedId ? { id: committedId } : {}),
-            ...(nonce ? { nonce } : {}),
+        new PToolError(
+          committed ? "Part of the change was applied" : "The write may have been applied",
+          {
+            category: "uncertain",
+            retryable: false,
+            remediation: nonce
+              ? "Check the result before retrying, or retry with the same nonce"
+              : "Check the resource before retrying",
+            resourceIds: {
+              ...resources,
+              ...(committedId ? { id: committedId } : {}),
+              ...(nonce ? { nonce } : {}),
+            },
+            cause,
           },
-          cause,
-        });
-      if (this.policy.allowedGuilds.length)
+        );
+      // A tool without a scope touches no guild resource, so the allowlist does not apply.
+      if (this.policy.allowedGuilds.length && tool.scope !== "none")
         this.policy.checkResource(await this.services.resolveScope(ids.byKind, discord));
       const { files } = this.services;
       const output = await tool
@@ -146,6 +150,7 @@ export class PToolPipeline {
           progress,
           log,
           correlationId,
+          allowsGuild: (id) => this.policy.allowsGuild(id),
         })
         .catch((error: unknown) => {
           // A failure after an earlier write committed leaves a partial change behind.

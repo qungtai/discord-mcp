@@ -1,8 +1,10 @@
 import { execFileSync, spawn } from "node:child_process";
+import { rmSync } from "node:fs";
 import { createInterface } from "node:readline";
 import { beforeAll, expect, it } from "vitest";
 
 beforeAll(() => {
+  rmSync("dist", { recursive: true, force: true });
   execFileSync("node_modules/.bin/tsc", ["-p", "tsconfig.build.json"]);
 }, 60_000);
 

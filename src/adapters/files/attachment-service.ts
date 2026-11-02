@@ -84,8 +84,9 @@ export class PAttachmentService implements AttachmentPort {
       retryable: false,
       remediation: "Choose a file inside an allowed root",
     });
+    const realRoots = await Promise.all(this.roots.map((root) => realpath(root)));
     // Lexical check first, so paths outside the roots never reveal whether they exist.
-    if (!within(this.roots, path)) throw outside;
+    if (!within([...this.roots, ...realRoots], path)) throw outside;
     const target = await realpath(path).catch((error: unknown) => {
       throw code(error) === "ENOENT"
         ? new PToolError("Upload file not found", {
@@ -96,7 +97,7 @@ export class PAttachmentService implements AttachmentPort {
           })
         : error;
     });
-    if (!within(await Promise.all(this.roots.map((root) => realpath(root))), target)) throw outside;
+    if (!within(realRoots, target)) throw outside;
     const handle = await open(target, constants.O_RDONLY | constants.O_NOFOLLOW);
     try {
       const info = await handle.stat();

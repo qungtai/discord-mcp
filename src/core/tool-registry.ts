@@ -45,6 +45,8 @@ export interface ToolContext {
   progress: (progress: number, total?: number) => Promise<void>;
   log: (level: LogLevel, message: string) => Promise<void>;
   correlationId: string;
+  // Listing tools drop guilds outside DISCORD_MCP_ALLOWED_GUILDS with this.
+  allowsGuild: (guildId: string) => boolean;
 }
 export interface ToolSpec<I extends z.ZodObject, O extends z.ZodObject> {
   name: `discord_${string}`;

@@ -1,14 +1,20 @@
 # Adding a tool
 
-Rules every toolset agent follows. Coding rules in `AGENTS.md` still apply.
+Rules every toolset agent follows, on top of `AGENTS.md`. Requirements: `docs/planning/prd.md`.
 
 ## Where the code goes
-- All tools of a toolset live in one file: `src/operations/<toolset>/tools.ts`. Schemas used only by that toolset go in `src/operations/<toolset>/schemas.ts`.
-- `src/operations/schemas.ts` holds cross-toolset types only (`snowflake`, `user`, `message`, `channel`, `role`, `member`, `attachment`, `allowedMentions`, `fileUpload`, `attachmentUpdate`). Reuse them; add to it only after the lead agrees.
+- One file per tool: `src/operations/<toolset>/<verb>-<noun>.ts` exporting one `defineTool`, for example `src/operations/messages/send-message.ts`. Schemas shared inside a toolset go in `src/operations/<toolset>/schemas.ts`.
+- Tests mirror the source path: `test/operations/<toolset>/<verb>-<noun>.test.ts`.
+- `src/operations/schemas.ts` holds cross-toolset schemas (`snowflake`, `user`, `message`, `channel`, `role`, `member`, `attachment`, `allowedMentions`, `fileUpload`, `attachmentUpdate`, `reason`). Add to it only after the lead agrees.
 - Every exported `defineTool` is registered automatically. Do not edit `src/core`, `TOOLSETS` or any registration list.
 
 ## The shape
 ```ts
+import { type RESTGetAPIChannelResult, Routes } from "discord-api-types/v10";
+import { z } from "zod/v4";
+import { defineTool } from "../../core/tool-registry.js";
+import { channel, snowflake } from "../schemas.js";
+
 export const getChannel = defineTool({
   name: "discord_get_channel",
   description: "Get a channel by ID",
@@ -21,43 +27,56 @@ export const getChannel = defineTool({
   input: z.object({ channel_id: snowflake }),
   output: z.object({ channel }),
   execute: async (p, { discord }) => ({
-    channel: await discord<RESTGetAPIChannelResult>({ method: "GET", route: Routes.channel(p.channel_id) }),
+    channel: await discord<RESTGetAPIChannelResult>({
+      method: "GET",
+      route: Routes.channel(p.channel_id),
+    }),
   }),
 });
 ```
+- Import `z` from `"zod/v4"` (plain `"zod"` gives v3 types that do not fit `defineTool`). Relative imports end in `.js`.
 - `name`: `discord_<verb>_<noun>`. Input keys: snake_case Discord field names.
 - `operationIds`: IDs from `coverage/register.json`, copied exactly. A test checks them once the register lands.
-- `credential`: omit for the bot token (the default). Never take a token or webhook URL as an input.
 - `permissions`: the bot permissions Discord checks; they appear in the 403 remediation.
 - Routes come from `Routes` and result types from `discord-api-types/v10`.
-- Lists pass the parsed input as `query`; undefined values are dropped: `execute: async ({ guild_id, ...query }, { discord }) => ... discord({ method: "GET", route, query })`.
-- Pass `reason` on the request when the endpoint accepts `X-Audit-Log-Reason` and the input has `reason`.
+
+## Credentials
+- Only the bot profile is wired. Omit `credential`.
+- Tools that need a webhook token, interaction token or OAuth user token (execute_webhook, webhook message tools, interaction responses, `oauth_user`) wait for their profile. Never take a token or webhook URL as an input.
 
 ## Effect, approval and idempotency
-- `effect: "read"` for GET only, `"write"` for additive changes (create, send, add), `"destructive"` for anything that replaces or removes state (update, overwrite, delete, remove). `effect` drives the MCP annotations and read-only mode.
-- `approval` defaults to `effect === "destructive"`, and such tools stay hidden and refused until the approval flow ships. Set `approval: false` only for non-additive changes that are safe without approval (editing the bot's own messages, renaming a channel). Keep the default for deletes of resources or other users' content, bulk operations, moderation (ban, kick, timeout, prune), permission overwrites and role permission changes. Say why in a comment.
+- `effect`: `"read"` for GET only; `"write"` for additive changes (create, send, add); `"destructive"` for anything that replaces or removes state (update, overwrite, delete, remove); `"local_write"` for tools that write a local file, like downloads. Every effect except `"read"` is refused in read-only mode.
+- `approval` defaults to `effect === "destructive"`; such tools stay hidden and refused until the approval flow ships. Set `approval: false` only for non-additive changes that are safe without approval (editing the bot's own messages, renaming a channel), with a comment saying why. Keep the default for deletes of resources or other users' content, bulk operations, moderation, permission overwrites and role permission changes.
 - `idempotent: true` only when repeating the call leaves the same end state (GET, PUT, most PATCH, DELETE). POST is usually `false`; the pipeline then reports an uncertain result instead of a retry.
 - Do not write previews or change summaries this wave.
 
 ## Scope (guild allowlist)
-- Every guild or channel ID the tool touches must be a top-level input listed in `scope`, as a key name or array of key names: `scope: { guild: "guild_id", channel: ["channel_id", "target_channel_ids"] }`.
-- A scope key's value must be a string or string[]. Anything else fails the call.
-- Never read a resource ID from a nested object. Flatten it to a top-level input instead (for example `reference_channel_id`, not `message_reference.channel_id`).
-- Use `scope: "none"` only for tools with no guild or channel (current user, gateway info).
+- Scope only IDs the route or body uses, as top-level inputs: `scope: { guild: "guild_id", channel: ["channel_id", "target_channel_ids"] }`. Values must be a string or string[].
+- Kinds: `guild`, `channel` (thread IDs are channel IDs), `webhook` (webhook IDs), `invite` (invite codes). Channels, webhooks and invites are looked up, so a guild input never vouches for them. `message` needs a `channel` next to it. Any other kind fails under an allowlist.
+- IDs that Discord checks against the guild or channel in the route need no scope: role, member, emoji, overwrite and message IDs, and channel IDs inside `PATCH /guilds/{guild_id}/channels`.
+- Never add a `guild_id` or `channel_id` input just to satisfy the allowlist, and never read a resource ID from a nested object.
+- `scope: "none"` is for tools that touch no guild resource (current user, gateway, voice regions); the allowlist does not apply to them. Tools that list guilds or guild-owned resources across guilds filter the result with `context.allowsGuild(guild_id)`.
 
 ## Inputs and outputs
-- No function defaults in inputs (`.default(() => ...)`). They are evaluated once and advertised as a fixed value. Generate values in `execute` (`p.nonce ?? randomBytes(12).toString("hex")`).
-- Nested input objects use `z.strictObject`, so misspelled keys fail.
-- Every tool that sends message content (messages, webhooks, threads, forum posts, interactions) uses `allowed_mentions: allowedMentions` from `schemas.ts`. Never ping by default.
+- No function defaults in inputs. Generate values in `execute` (`p.nonce ?? randomBytes(12).toString("hex")`).
+- Nested input objects use `z.strictObject`.
+- Tools that send message content use `allowed_mentions: allowedMentions`.
+- Audit log reason: add `reason` from `schemas.ts` and destructure it out of the body: `execute: async ({ guild_id, reason, ...body }, { discord }) => discord({ method: "PATCH", route, body, reason })`.
+- Lists pass the parsed input as `query` (undefined values are dropped) and return paging cursors like `discord_list_messages`: `next_before` and `next_after` for lists that page both ways, `next_after` for ascending lists.
+- Deletes and other 204 endpoints return `{ deleted: true, ...ids }` with the target IDs, for example `{ deleted: true, channel_id, message_id }`. Name the flag after the action for non-delete 204s (`{ pinned: true, ... }`).
 - Outputs reuse the lenient shared schemas. Require IDs only.
 - Throw `PToolError` with a category and remediation for tool-level failures. Do not catch Discord errors; the pipeline maps them.
 
 ## Tests
-- File: `test/operations/<toolset>/tools.test.ts`. Use `harness()` from `test/support/harness.ts`, which goes through a real MCP client.
-- For each tool: call it with `client.callTool`, assert the exact method, URL and request body as literals (`toEqual`, not `toMatchObject` on the body), and the exact `structuredContent`.
-- Cover each validation rule you add, a 403 and a 404 (`errorOf(result)` with the literal category and message), and the allowlist denial for scoped tools.
-- Do not assert on mocks you control only. A test must fail if the tool drops a field from the request.
-- Live tests are opt-in and only against the test server listed in `AGENTS.md`.
+- Use `harness()` from `test/support/harness.ts`, which goes through a real MCP client.
+- For each tool: assert the exact method, URL and request body as literals (`toEqual` on the body) and the exact `structuredContent`.
+- Cover each validation rule you add, a 403 and a 404 (`errorOf(result)` with the literal category and message).
+- Allowlist: the same call once succeeding under an allowlist that includes the guild, and once denied for another guild, with no write sent.
+- A test must fail if the tool drops a field from the request. Live tests are opt-in and only against the test server in `AGENTS.md`.
 
 ## Before the PR
-`pnpm install --frozen-lockfile && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm tools:manifest`. Check that your tools appear in `coverage/tools.json` with the right `effect` and `approval`.
+```sh
+pnpm biome check --write .
+pnpm install --frozen-lockfile && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm tools:manifest
+```
+Check that your tools appear in `coverage/tools.json` with the right `effect` and `approval`.

@@ -1,4 +1,4 @@
-import { access, mkdir, mkdtemp, symlink, truncate, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, realpath, symlink, truncate, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -38,6 +38,13 @@ describe("uploads", () => {
       "policy",
       "Upload outside allowed roots",
     );
+  });
+  it("accepts the canonical path of a root configured through a symlink (n3)", async () => {
+    await symlink(root, join(dir, "alias"));
+    const file = await new PAttachmentService([join(dir, "alias")], "").upload(
+      join(await realpath(root), "a.txt"),
+    );
+    expect(file.data.toString()).toBe("hello");
   });
   it("rejects a symlink that escapes the root", async () => {
     await symlink(join(dir, "outside"), join(root, "link"));

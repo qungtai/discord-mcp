@@ -87,3 +87,5 @@ export const attachmentUpdate = z.strictObject({
   description: z.string().optional(),
   is_spoiler: z.boolean().optional(),
 });
+// Sent as X-Audit-Log-Reason, never in the body.
+export const reason = z.string().max(512).optional().describe("Audit log reason");

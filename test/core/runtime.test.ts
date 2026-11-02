@@ -81,6 +81,29 @@ const scoped = defineTool({
     return {};
   },
 });
+// A webhook tool that also takes a guild, the shape the allowlist must not trust (P7).
+const webhookTool = defineTool({
+  ...probe,
+  name: "discord_webhook_probe",
+  scope: { guild: "guild_id", webhook: "webhook_id", invite: "code" },
+  input: z.object({
+    guild_id: z.string().optional(),
+    webhook_id: z.string().optional(),
+    code: z.string().optional(),
+  }),
+  output: z.object({}),
+  execute: async (p, { discord }) => {
+    await discord({ method: "DELETE", route: `/webhooks/${p.webhook_id}` });
+    return {};
+  },
+});
+const listing = defineTool({
+  ...probe,
+  name: "discord_listing_probe",
+  input: z.object({}),
+  output: z.object({ guilds: z.array(z.string()) }),
+  execute: async (_, { allowsGuild }) => ({ guilds: ["200", "300"].filter(allowsGuild) }),
+});
 function registryOf(...tools: ToolDescriptor[]) {
   const registry = new PToolRegistry();
   for (const tool of tools) registry.register(tool);
@@ -419,6 +442,7 @@ describe("uncertain writes", () => {
       ok: false,
       error: {
         category: "uncertain",
+        message: "Part of the change was applied",
         retryable: false,
         resource_ids: { channel_id: "7", id: "55" },
       },
@@ -545,6 +569,78 @@ describe("guild allowlist", () => {
     expect(lookups).toBe(1);
     const { result } = await scopedCall({ guild_id: "200", channel_id: "1", target_ids: ["1"] });
     expect(result).toEqual({ ok: true, data: {} });
+  });
+  const lookups: Record<string, unknown> = {
+    "/webhooks/55": { id: "55", guild_id: "200", channel_id: "1" },
+    "/webhooks/66": { id: "66", guild_id: "999", channel_id: "9" },
+    "/invites/abc": { code: "abc", guild: { id: "200" }, channel: { id: "1" } },
+    "/invites/dm": { code: "dm", channel: { id: "5" } },
+  };
+  const webhookCall = async (input: Record<string, unknown>) => {
+    const { pipeline, makeRequest } = await harness({
+      registry: registryOf(webhookTool, listing),
+      policy: new PPolicyEngine(["200"], ["core"], false),
+      makeRequest: async (url) => json(lookups[new URL(String(url)).pathname.slice(8)] ?? {}),
+    });
+    const result = await pipeline.call("discord_webhook_probe", input);
+    return { result, requests: makeRequest.mock.calls.map(([u, i]) => `${i.method} ${u}`) };
+  };
+  it("resolves webhook IDs and invite codes to their guild (P6)", async () => {
+    expect(await webhookCall({ webhook_id: "55" })).toEqual({
+      result: { ok: true, data: {} },
+      requests: [
+        "GET https://discord.com/api/v10/webhooks/55",
+        "DELETE https://discord.com/api/v10/webhooks/55",
+      ],
+    });
+    expect((await webhookCall({ webhook_id: "55", code: "abc" })).result.ok).toBe(true);
+    for (const input of [{ webhook_id: "66" }, { code: "dm" }])
+      expect((await webhookCall(input)).result).toMatchObject({
+        error: { category: "policy", message: "Guild is not allowed" },
+      });
+  });
+  it("does not let an allowed guild ID vouch for a webhook elsewhere (P7)", async () => {
+    expect(await webhookCall({ guild_id: "200", webhook_id: "66" })).toMatchObject({
+      result: { error: { category: "policy", message: "Guild is not allowed" } },
+      requests: ["GET https://discord.com/api/v10/webhooks/66"],
+    });
+  });
+  it("allows tools without a scope and lets them filter guild listings (P5)", async () => {
+    const { pipeline, makeRequest } = await harness({
+      registry: registryOf(listing),
+      policy: new PPolicyEngine(["200"], ["core"], false),
+    });
+    expect(await pipeline.call("discord_listing_probe", {})).toEqual({
+      ok: true,
+      data: { guilds: ["200"] },
+    });
+    expect(makeRequest).not.toHaveBeenCalled();
+  });
+  it("fails scope kinds it cannot check and a message without its channel", async () => {
+    const discord: DiscordRequest = async <T>() => ({}) as T;
+    const resolve = createScopeResolver();
+    await expect(resolve({ user: ["1"] }, discord)).rejects.toMatchObject({
+      category: "policy",
+      message: "Scope kind user cannot be checked against the allowlist",
+    });
+    await expect(resolve({ message: ["1"] }, discord)).rejects.toMatchObject({
+      message: "Scope kind message cannot be checked against the allowlist",
+    });
+  });
+  it("looks up a repeated ID once and retries a failed lookup (n2)", async () => {
+    let lookups = 0;
+    const discord: DiscordRequest = async <T>() => {
+      if (++lookups === 1) throw new Error("network");
+      return { guild_id: "200" } as T;
+    };
+    const resolve = createScopeResolver();
+    await expect(resolve({ channel: ["1"] }, discord)).rejects.toThrow("network");
+    expect(await resolve({ channel: ["1", "1"] }, discord)).toEqual({
+      guildIds: ["200"],
+      channelIds: ["1"],
+      isDm: false,
+    });
+    expect(lookups).toBe(2);
   });
   it("fails closed on a scope key that is not a string or string[]", async () => {
     const bad = defineTool({
