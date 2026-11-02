@@ -1,3 +1,4 @@
+import type { APIMessage } from "discord-api-types/v10";
 import { expect, it, vi } from "vitest";
 import { PToolPipeline } from "../../../src/core/pipeline.js";
 import { PPolicyEngine } from "../../../src/core/policy.js";
@@ -18,12 +19,15 @@ it("sends, reads, edits and downloads using fresh attachment metadata", async ()
       { id: "13", filename: "three.png", url: "https://cdn.discordapp.com/three" },
     ],
   };
+  const response = existing as unknown as APIMessage;
   const rest = {
     getChannel: vi.fn(),
-    getMessage: vi.fn(async () => existing),
-    listMessages: vi.fn(async () => []),
-    sendMessage: vi.fn(async () => existing),
-    editMessage: vi.fn(async () => existing),
+    getMessage: vi.fn(async (_channel: string, _id: string) => response),
+    listMessages: vi.fn(async (_channel: string, _query: URLSearchParams) => []),
+    sendMessage: vi.fn(async () => response),
+    editMessage: vi.fn(
+      async (_channel: string, _id: string, _body: Record<string, unknown>) => response,
+    ),
     deleteMessage: vi.fn(async () => {}),
   };
   const attachments = {
@@ -43,17 +47,21 @@ it("sends, reads, edits and downloads using fresh attachment metadata", async ()
       await call("send_message", {
         channel_id: "1",
         content: "hello",
-        files: [{ path: "/a", spoiler: true, description: "alt" }],
+        files: [{ path: "/a", is_spoiler: true, description: "alt" }],
       })
     ).ok,
   ).toBe(true);
   expect(rest.sendMessage).toHaveBeenCalledWith(
     "1",
     expect.objectContaining({
+      nonce: expect.stringMatching(/^[a-f0-9]{24}$/),
+      enforce_nonce: true,
       allowed_mentions: { parse: [] },
-      attachments: [{ id: "0", filename: "SPOILER_new.txt", description: "alt" }],
+      attachments: [
+        { id: "0", filename: "new.txt", description: "alt", title: undefined, is_spoiler: true },
+      ],
     }),
-    [expect.objectContaining({ name: "SPOILER_new.txt" })],
+    [expect.objectContaining({ name: "new.txt" })],
   );
   expect(
     (
@@ -73,10 +81,16 @@ it("sends, reads, edits and downloads using fresh attachment metadata", async ()
     "2",
     expect.objectContaining({
       attachments: [
-        { id: "11", filename: "SPOILER_one.png", description: "new" },
-        { id: "12", filename: "two.png", description: undefined },
-        { id: "13", filename: "three.png", description: undefined },
-        { id: "0", filename: "new.txt", description: "added" },
+        { id: "11", description: "new", is_spoiler: true },
+        { id: "12", description: undefined, is_spoiler: false },
+        { id: "13", description: undefined, is_spoiler: undefined },
+        {
+          id: "0",
+          filename: "new.txt",
+          description: "added",
+          title: undefined,
+          is_spoiler: undefined,
+        },
       ],
     }),
     expect.any(Array),
@@ -94,7 +108,7 @@ it("sends, reads, edits and downloads using fresh attachment metadata", async ()
   ).toBe(false);
   expect((await call("get_message", { channel_id: "1", message_id: "2" })).ok).toBe(true);
   expect((await call("list_messages", { channel_id: "1", limit: 3, before: "4" })).ok).toBe(true);
-  expect(rest.listMessages.mock.lastCall?.[1].toString()).toBe("limit=3&before=4");
+  expect(rest.listMessages.mock.lastCall?.[1]?.toString()).toBe("limit=3&before=4");
   expect(
     (await call("download_attachment", { channel_id: "1", message_id: "2", attachment_id: "11" }))
       .ok,

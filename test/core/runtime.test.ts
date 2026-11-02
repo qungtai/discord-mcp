@@ -38,6 +38,17 @@ describe("core", () => {
     expect(p.toolsets).toEqual(["core", "messages"]);
     expect(p.readOnly).toBe(true);
   });
+  it("rejects invalid safety settings", () => {
+    for (const value of ["1", "TRUE"])
+      expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_READ_ONLY: value })).toThrow(
+        "DISCORD_MCP_READ_ONLY must be true or false",
+      );
+    for (const value of ["", "mesages"])
+      expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_TOOLSETS: value })).toThrow(
+        "Invalid DISCORD_MCP_TOOLSETS",
+      );
+    expect(PPolicyEngine.fromEnv({ DISCORD_MCP_READ_ONLY: "false" }).readOnly).toBe(false);
+  });
   it("enforces policy and handles errors", async () => {
     const { pipeline, registry } = setup();
     expect(await pipeline.call(tool.name, { channel_id: "1" })).toEqual({

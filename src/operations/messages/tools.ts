@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { AllowedMentionsTypes } from "discord-api-types/v10";
 import { z } from "zod";
 import type { DiscordRest } from "../../adapters/discord-rest/discord-rest.js";
@@ -9,7 +10,9 @@ const file = z.object({
   path: z.string(),
   filename: z.string().optional(),
   description: z.string().optional(),
-  spoiler: z.boolean().optional(),
+  is_spoiler: z.boolean().optional(),
+  title: z.string().optional(),
+  content_type: z.string().optional(),
 });
 const update = z.object({
   id,
@@ -24,8 +27,21 @@ const result = z.object({ result: z.unknown() });
 export function registerMessageTools(
   registry: PToolRegistry,
   rest: DiscordRest,
-  attachments: PAttachmentService,
+  attachments: Pick<PAttachmentService, "upload" | "download">,
 ): void {
+  const metadata: Record<
+    string,
+    { operation_ids: string[]; effect: "read" | "write" | "destructive" | "local_write" }
+  > = {
+    discord_send_message: { operation_ids: ["create_message"], effect: "write" },
+    discord_edit_message: {
+      operation_ids: ["get_message", "update_message"],
+      effect: "destructive",
+    },
+    discord_get_message: { operation_ids: ["get_message"], effect: "read" },
+    discord_list_messages: { operation_ids: ["list_messages"], effect: "read" },
+    discord_download_attachment: { operation_ids: ["get_message"], effect: "local_write" },
+  };
   const add = (
     name: string,
     description: string,
@@ -36,15 +52,17 @@ export function registerMessageTools(
     registry.register(
       defineTool({
         name,
+        ...metadata[name],
+        credential: "bot",
         description,
         input,
         output: result,
         toolset: "messages",
         mutating,
         annotations: {
-          readOnlyHint: !mutating,
-          destructiveHint: name === "discord_delete_message",
-          idempotentHint: !mutating,
+          readOnlyHint: metadata[name]?.effect === "read",
+          destructiveHint: metadata[name]?.effect === "destructive",
+          idempotentHint: metadata[name]?.effect === "read",
           openWorldHint: true,
         },
         handler,
@@ -54,13 +72,7 @@ export function registerMessageTools(
     Promise.all(
       files.map(async (f) => {
         const uploaded = await attachments.upload(f.path, f.filename);
-        return {
-          ...uploaded,
-          name:
-            f.spoiler && !uploaded.name.startsWith("SPOILER_")
-              ? `SPOILER_${uploaded.name}`
-              : uploaded.name,
-        };
+        return { ...uploaded, contentType: f.content_type };
       }),
     );
   add(
@@ -117,6 +129,8 @@ export function registerMessageTools(
         result: await rest.sendMessage(
           p.channel_id,
           {
+            nonce: randomBytes(12).toString("hex"),
+            enforce_nonce: true,
             content: p.content,
             embeds: p.embeds,
             allowed_mentions: p.allowed_mentions ?? { parse: [] },
@@ -125,6 +139,8 @@ export function registerMessageTools(
               id: i.toString(),
               filename: f.name,
               description: p.files[i]?.description,
+              title: p.files[i]?.title,
+              is_spoiler: p.files[i]?.is_spoiler,
             })),
           },
           files,
@@ -155,7 +171,6 @@ export function registerMessageTools(
         .parse(raw);
       if (p.remove_attachment_ids?.length)
         throw new Error("Attachment removal requires approval support");
-      const files = await uploads(p.add_files ?? []);
       const payload: Record<string, unknown> = { content: p.content, embeds: p.embeds };
       if (p.add_files || p.remove_attachment_ids || p.update_attachments) {
         const existing = await rest.getMessage(p.channel_id, p.message_id);
@@ -170,20 +185,25 @@ export function registerMessageTools(
             .filter((a) => !p.remove_attachment_ids?.includes(a.id))
             .map((a) => {
               const change = p.update_attachments?.find((u) => u.id === a.id);
-              let filename = a.filename;
-              if (change?.is_spoiler === true && !filename.startsWith("SPOILER_"))
-                filename = `SPOILER_${filename}`;
-              if (change?.is_spoiler === false && filename.startsWith("SPOILER_"))
-                filename = filename.slice(8);
-              return { id: a.id, filename, description: change?.description ?? a.description };
+              return {
+                id: a.id,
+                description: change?.description ?? a.description,
+                is_spoiler: change?.is_spoiler,
+              };
             }),
+        ];
+      }
+      const files = await uploads(p.add_files ?? []);
+      if (Array.isArray(payload.attachments))
+        payload.attachments.push(
           ...files.map((f, i) => ({
             id: i.toString(),
             filename: f.name,
             description: p.add_files?.[i]?.description,
+            title: p.add_files?.[i]?.title,
+            is_spoiler: p.add_files?.[i]?.is_spoiler,
           })),
-        ];
-      }
+        );
       return { result: await rest.editMessage(p.channel_id, p.message_id, payload, files) };
     },
   );

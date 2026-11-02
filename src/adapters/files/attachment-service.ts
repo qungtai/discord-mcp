@@ -27,6 +27,9 @@ export class PAttachmentService {
       throw new Error("Upload outside allowed roots");
     const handle = await open(target, constants.O_RDONLY | constants.O_NOFOLLOW);
     try {
+      const info = await handle.stat();
+      if (!info.isFile() || info.size > 25 * 1024 * 1024)
+        throw new Error("Upload must be a regular file under 25 MiB");
       return { name: filename ?? basename(target), data: await handle.readFile() };
     } finally {
       await handle.close();

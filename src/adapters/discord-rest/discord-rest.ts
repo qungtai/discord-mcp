@@ -21,12 +21,11 @@ export interface DiscordRest {
     body: Record<string, unknown>,
     files?: { name: string; data: Buffer }[],
   ): Promise<APIMessage>;
-  deleteMessage(channelId: string, messageId: string): Promise<void>;
 }
 export class PDiscordRestAdapter implements DiscordRest {
   private readonly rest: REST;
   constructor(token: string) {
-    this.rest = new REST({ version: "10" }).setToken(token);
+    this.rest = new REST({ version: "10", retries: 0 }).setToken(token);
   }
   async getChannel(id: string) {
     return (await this.rest.get(Routes.channel(id))) as APIChannel;
@@ -54,8 +53,5 @@ export class PDiscordRestAdapter implements DiscordRest {
       body,
       files,
     })) as APIMessage;
-  }
-  async deleteMessage(channel: string, id: string) {
-    await this.rest.delete(Routes.channelMessage(channel, id));
   }
 }

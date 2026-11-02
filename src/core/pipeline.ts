@@ -28,7 +28,8 @@ export class PToolPipeline {
       if (!tool)
         throw new PToolError("Unknown tool", "not_found", false, "Choose a listed tool", name);
       const parsed: Record<string, unknown> = tool.input.parse(input);
-      this.policy.check(
+      this.policy.checkStatic(tool);
+      this.policy.checkResource(
         tool,
         this.policy.allowedGuilds.length ? await this.resolveGuild(parsed) : undefined,
       );

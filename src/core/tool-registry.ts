@@ -3,6 +3,9 @@ import type { z } from "zod";
 export interface ToolDescriptor {
   name: string;
   toolset: string;
+  operation_ids?: readonly string[];
+  credential?: "bot";
+  effect?: "read" | "write" | "destructive" | "local_write";
   description: string;
   input: z.AnyZodObject;
   output: z.AnyZodObject;
