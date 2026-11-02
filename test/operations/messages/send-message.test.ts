@@ -88,6 +88,125 @@ it("rejects misspelled keys in nested objects", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
+it("sends a poll with the literal Discord poll body", async () => {
+  const { client, request } = await harness();
+  const result = await client.callTool({
+    name: "discord_send_message",
+    arguments: {
+      channel_id: "1",
+      poll: {
+        question: { text: "Lunch?" },
+        answers: [
+          { poll_media: { text: "Pizza", emoji: { name: "🍕" } } },
+          { poll_media: { text: "Sushi", emoji: { id: "100" } } },
+        ],
+        duration: 24,
+        allow_multiselect: true,
+        layout_type: 1,
+      },
+    },
+  });
+  expect(result.structuredContent).toEqual({ message: MESSAGE });
+  const { url, method, body } = request();
+  expect([method, url]).toEqual(["POST", "https://discord.com/api/v10/channels/1/messages"]);
+  expect(JSON.parse(String(body))).toEqual({
+    nonce: expect.stringMatching(/^[a-f0-9]{24}$/),
+    enforce_nonce: true,
+    allowed_mentions: { parse: [] },
+    attachments: [],
+    poll: {
+      question: { text: "Lunch?" },
+      answers: [
+        { poll_media: { text: "Pizza", emoji: { name: "🍕" } } },
+        { poll_media: { text: "Sushi", emoji: { id: "100" } } },
+      ],
+      duration: 24,
+      allow_multiselect: true,
+      layout_type: 1,
+    },
+  });
+});
+
+it("sends flags, tts and sticker IDs with a literal body", async () => {
+  const { client, request } = await harness();
+  await client.callTool({
+    name: "discord_send_message",
+    arguments: {
+      channel_id: "1",
+      content: "hello",
+      tts: true,
+      flags: 4100,
+      sticker_ids: ["5", "6"],
+    },
+  });
+  expect(JSON.parse(String(request().body))).toEqual({
+    nonce: expect.stringMatching(/^[a-f0-9]{24}$/),
+    enforce_nonce: true,
+    content: "hello",
+    allowed_mentions: { parse: [] },
+    attachments: [],
+    tts: true,
+    flags: 4100,
+    sticker_ids: ["5", "6"],
+  });
+});
+
+it.each([
+  {
+    arguments: { poll: { question: { text: "x" }, answers: [] } },
+    desc: "a poll without answers",
+  },
+  {
+    arguments: {
+      poll: {
+        question: { text: "x".repeat(301) },
+        answers: [{ poll_media: { text: "a" } }],
+      },
+    },
+    desc: "a question longer than 300 characters",
+  },
+  {
+    arguments: {
+      poll: { question: { text: "x" }, answers: [{ poll_media: { text: "a".repeat(56) } }] },
+    },
+    desc: "an answer longer than 55 characters",
+  },
+  {
+    arguments: {
+      poll: {
+        question: { text: "x" },
+        answers: [{ poll_media: { text: "a", emoji: {} } }],
+      },
+    },
+    desc: "a poll emoji without id or name",
+  },
+  {
+    arguments: {
+      poll: {
+        question: { text: "x" },
+        answers: Array.from({ length: 11 }, () => ({ poll_media: { text: "a" } })),
+      },
+    },
+    desc: "more than 10 answers",
+  },
+  {
+    arguments: {
+      poll: { question: { text: "x" }, answers: [{ poll_media: { text: "a" } }], duration: 769 },
+    },
+    desc: "a duration longer than 768 hours",
+  },
+  { arguments: { flags: 1 }, desc: "an unsupported message flag" },
+  { arguments: { sticker_ids: ["1", "2", "3", "4"] }, desc: "more than 3 sticker IDs" },
+])("rejects invalid input: $desc", async ({ arguments: input }) => {
+  const { client, makeRequest } = await harness();
+  const result = await client.callTool({
+    name: "discord_send_message",
+    arguments: { channel_id: "1", ...input },
+  });
+  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
 it("blocks guilds outside the allowlist before calling the tool", async () => {
   const { client, makeRequest } = await harness({
     policy: new PPolicyEngine(["200"], ["core", "messages"], false),
