@@ -71,7 +71,7 @@ it("handles 202 response when search index is not ready", async () => {
     category: "rate_limited",
     retryable: true,
     retry_after: 5,
-    message: "The search index is still being built; retry after retry_after seconds",
+    message: "Search index is not ready",
     remediation: "The search index is still being built; retry after retry_after seconds",
   });
 });

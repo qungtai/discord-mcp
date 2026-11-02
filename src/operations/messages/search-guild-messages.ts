@@ -84,22 +84,18 @@ export const searchGuildMessages = defineTool({
   }),
   output: outputSchema,
   execute: async ({ guild_id, ...query }, { discord }) => {
-    const response = await discord<GuildSearchOutput>({
+    const response = await discord<GuildSearchOutput | SearchIndexNotReady>({
       method: "GET",
       route: Routes.guildMessagesSearch(guild_id),
       query,
     });
-    if ("retry_after" in response && !("total_results" in response)) {
-      const notReady = response as unknown as SearchIndexNotReady;
-      throw new PToolError(
-        "The search index is still being built; retry after retry_after seconds",
-        {
-          category: "rate_limited",
-          retryable: true,
-          retryAfter: notReady.retry_after,
-          remediation: "The search index is still being built; retry after retry_after seconds",
-        },
-      );
+    if (!("total_results" in response)) {
+      throw new PToolError("Search index is not ready", {
+        category: "rate_limited",
+        retryable: true,
+        retryAfter: response.retry_after,
+        remediation: "The search index is still being built; retry after retry_after seconds",
+      });
     }
     return response;
   },
