@@ -1,0 +1,38 @@
+{
+  "name": "@qungtai/discord-mcp",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "discord-mcp": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "test": "vitest run --coverage",
+    "coverage:import": "node scripts/coverage/import-baseline.mjs",
+    "coverage:report": "node scripts/coverage/report.mjs",
+    "coverage:check": "node scripts/coverage/check.mjs",
+    "tools:manifest": "node dist/tools-manifest.js"
+  },
+  "dependencies": {
+    "@discordjs/rest": "^2.6.0",
+    "@modelcontextprotocol/sdk": "^1.25.0",
+    "discord-api-types": "^0.38.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^3.2.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "packageManager": "pnpm@11.24.0",
+  "files": [
+    "dist"
+  ]
+}

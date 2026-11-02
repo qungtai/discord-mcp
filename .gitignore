@@ -4,3 +4,4 @@ coverage-report/
 .env
 *.log
 .DS_Store
+coverage/tools.json
