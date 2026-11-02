@@ -16,15 +16,22 @@ export const listGuildAuditLogEntries = defineTool({
   input: z.object({
     ...guildIds,
     user_id: snowflake.optional().describe("Filter by user who made the changes"),
-    action_type: z.number().optional().describe("Filter by audit log event type"),
+    target_id: snowflake.optional().describe("Filter by target entity ID"),
+    action_type: z.number().int().optional().describe("Filter by audit log event type"),
     before: snowflake.optional().describe("Filter for entries before this ID"),
     after: snowflake.optional().describe("Filter for entries after this ID"),
-    limit: z.number().min(1).max(100).optional().describe("Number of entries to return (1-100)"),
+    limit: z
+      .number()
+      .int()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe("Number of entries to return (1-100)"),
   }),
   output: z.object({
     audit_log: auditLog,
-    next_before: snowflake.optional(),
-    next_after: snowflake.optional(),
+    next_before: snowflake.nullable(),
+    next_after: snowflake.nullable(),
   }),
   execute: async ({ guild_id, ...query }, { discord }) => {
     const res = await discord<RESTGetAPIAuditLogResult>({
@@ -34,9 +41,9 @@ export const listGuildAuditLogEntries = defineTool({
     });
     const entries = res.audit_log_entries ?? [];
     return {
-      audit_log: res,
-      next_before: entries.at(-1)?.id,
-      next_after: entries.at(0)?.id,
+      audit_log: res as unknown as { [x: string]: unknown },
+      next_before: entries.at(-1)?.id ?? null,
+      next_after: entries.at(0)?.id ?? null,
     };
   },
 });

@@ -1,13 +1,16 @@
 import { z } from "zod/v4";
-import { snowflake } from "../schemas.js";
+import { snowflake, user } from "../schemas.js";
 
 export const guildIds = { guild_id: snowflake };
 
-export const guild = z.object({
+export const guild = z.looseObject({
   id: snowflake,
   name: z.string().optional(),
   icon: z.string().nullish(),
   description: z.string().nullish(),
+  home_header: z.string().nullish(),
+  splash: z.string().nullish(),
+  discovery_splash: z.string().nullish(),
   features: z.array(z.string()).optional(),
   banner: z.string().nullish(),
   owner_id: snowflake.optional(),
@@ -34,7 +37,7 @@ export const guild = z.object({
   approximate_presence_count: z.number().optional(),
 });
 
-export const guildPreview = z.object({
+export const guildPreview = z.looseObject({
   id: snowflake,
   name: z.string().optional(),
   icon: z.string().nullish(),
@@ -46,39 +49,39 @@ export const guildPreview = z.object({
   description: z.string().nullish(),
 });
 
-export const auditLog = z.object({
-  audit_log_entries: z.array(z.object({ id: snowflake })).optional(),
-  users: z.array(z.object({ id: snowflake })).optional(),
-  integrations: z.array(z.object({ id: snowflake })).optional(),
-  webhooks: z.array(z.object({ id: snowflake })).optional(),
-  guild_scheduled_events: z.array(z.object({ id: snowflake })).optional(),
-  threads: z.array(z.object({ id: snowflake })).optional(),
-  application_commands: z.array(z.object({ id: snowflake })).optional(),
-  auto_moderation_rules: z.array(z.object({ id: snowflake })).optional(),
+export const auditLog = z.looseObject({
+  audit_log_entries: z.array(z.looseObject({ id: snowflake })).optional(),
+  users: z.array(user).optional(),
+  integrations: z.array(z.looseObject({ id: snowflake })).optional(),
+  webhooks: z.array(z.looseObject({ id: snowflake })).optional(),
+  guild_scheduled_events: z.array(z.looseObject({ id: snowflake })).optional(),
+  threads: z.array(z.looseObject({ id: snowflake })).optional(),
+  application_commands: z.array(z.looseObject({ id: snowflake })).optional(),
+  auto_moderation_rules: z.array(z.looseObject({ id: snowflake })).optional(),
 });
 
-export const integration = z.object({
+export const integration = z.looseObject({
   id: snowflake,
   name: z.string().optional(),
   type: z.string().optional(),
   enabled: z.boolean().optional(),
 });
 
-export const incidentActions = z.object({
+export const incidentActions = z.looseObject({
   invites_disabled_until: z.string().nullish(),
   dms_disabled_until: z.string().nullish(),
 });
 
-export const vanityUrl = z.object({
+export const vanityUrl = z.looseObject({
   code: z.string().nullish(),
   uses: z.number().optional(),
 });
 
-export const welcomeScreen = z.object({
+export const welcomeScreen = z.looseObject({
   description: z.string().nullish(),
   welcome_channels: z
     .array(
-      z.object({
+      z.looseObject({
         channel_id: snowflake,
         description: z.string().optional(),
         emoji_id: snowflake.nullish(),
@@ -88,24 +91,31 @@ export const welcomeScreen = z.object({
     .optional(),
 });
 
-export const onboarding = z.object({
+export const onboarding = z.looseObject({
   guild_id: snowflake,
-  prompts: z.array(z.object({ id: snowflake })).optional(),
+  prompts: z.array(z.looseObject({ id: snowflake })).optional(),
   default_channel_ids: z.array(snowflake).optional(),
   enabled: z.boolean().optional(),
   mode: z.number().optional(),
 });
 
-export const widgetSettings = z.object({
+export const widgetSettings = z.looseObject({
   enabled: z.boolean().optional(),
   channel_id: snowflake.nullish(),
 });
 
-export const widget = z.object({
+export const widget = z.looseObject({
   id: snowflake,
   name: z.string().optional(),
   instant_invite: z.string().nullish(),
-  channels: z.array(z.object({ id: snowflake })).optional(),
-  members: z.array(z.object({ id: snowflake })).optional(),
+  channels: z.array(z.looseObject({ id: snowflake })).optional(),
+  members: z.array(z.looseObject({ id: snowflake })).optional(),
   presence_count: z.number().optional(),
+});
+
+export const newMemberWelcome = z.looseObject({
+  guild_id: snowflake,
+  enabled: z.boolean().optional(),
+  new_member_actions: z.array(z.looseObject({})).optional(),
+  resource_channels: z.array(z.looseObject({})).optional(),
 });

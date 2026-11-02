@@ -17,7 +17,7 @@ const promptOptionInput = z.strictObject({
 
 const promptInput = z.strictObject({
   id: snowflake,
-  type: z.number().nullish(),
+  type: z.number().int().nullish(),
   options: z.array(promptOptionInput).min(1).max(50),
   title: z.string().min(1).max(100),
   single_select: z.boolean().nullish(),
@@ -40,18 +40,18 @@ export const putGuildsOnboarding = defineTool({
   input: z.object({
     ...guildIds,
     prompts: z.array(promptInput).max(15).nullish(),
-    default_channel_ids: z.array(snowflake).max(500).nullish(),
+    default_channel_ids: z.array(snowflake).max(500).optional().describe("Default channel IDs"),
     enabled: z.boolean().nullish(),
-    mode: z.number().nullish(),
+    mode: z.number().int().nullish(),
     reason,
   }),
   output: z.object({ onboarding }),
   execute: async ({ guild_id, reason, ...body }, { discord }) => ({
-    onboarding: await discord<RESTPutAPIGuildOnboardingResult>({
+    onboarding: (await discord<RESTPutAPIGuildOnboardingResult>({
       method: "PUT",
       route: Routes.guildOnboarding(guild_id),
       body,
       reason,
-    }),
+    })) as unknown as { guild_id: string },
   }),
 });

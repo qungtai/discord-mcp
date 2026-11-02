@@ -19,16 +19,16 @@ export const updateGuildWidgetSettings = defineTool({
   input: z.object({
     ...guildIds,
     enabled: z.boolean().nullish(),
-    channel_id: snowflake.nullish(),
+    channel_id: snowflake.optional().describe("Widget channel ID"),
     reason,
   }),
   output: z.object({ widget_settings: widgetSettings }),
   execute: async ({ guild_id, reason, ...body }, { discord }) => ({
-    widget_settings: await discord<RESTPatchAPIGuildWidgetSettingsResult>({
+    widget_settings: (await discord<RESTPatchAPIGuildWidgetSettingsResult>({
       method: "PATCH",
       route: Routes.guildWidgetSettings(guild_id),
       body,
       reason,
-    }),
+    })) as unknown as { [x: string]: unknown },
   }),
 });

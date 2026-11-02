@@ -15,9 +15,9 @@ export const getGuildWidget = defineTool({
   input: z.object(guildIds),
   output: z.object({ widget }),
   execute: async ({ guild_id }, { discord }) => ({
-    widget: await discord<RESTGetAPIGuildWidgetJSONResult>({
+    widget: (await discord<RESTGetAPIGuildWidgetJSONResult>({
       method: "GET",
       route: Routes.guildWidgetJSON(guild_id),
-    }),
+    })) as unknown as { id: string },
   }),
 });

@@ -15,9 +15,9 @@ export const listGuildIntegrations = defineTool({
   input: z.object(guildIds),
   output: z.object({ integrations: z.array(integration) }),
   execute: async ({ guild_id }, { discord }) => ({
-    integrations: await discord<RESTGetAPIGuildIntegrationsResult>({
+    integrations: (await discord<RESTGetAPIGuildIntegrationsResult>({
       method: "GET",
       route: Routes.guildIntegrations(guild_id),
-    }),
+    })) as unknown as { id: string }[],
   }),
 });

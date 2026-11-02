@@ -14,12 +14,12 @@ const WIDGET = {
   id: "123",
   name: "Widget Guild",
   instant_invite: "https://discord.gg/xyz",
-  channels: [{ id: "456" }],
-  members: [{ id: "789" }],
+  channels: [{ id: "456", name: "general", position: 1 }],
+  members: [{ id: "789", username: "alice", status: "online" }],
   presence_count: 10,
 };
 
-it("gets widget and returns structured content", async () => {
+it("gets widget and preserves channel names and member details", async () => {
   const { client, request } = await harness({
     policy: new PPolicyEngine([], ["guild"], false),
     respond: () => WIDGET,
@@ -54,7 +54,11 @@ it("maps a 403 error to permission", async () => {
     name: "discord_get_guild_widget",
     arguments: { guild_id: "123" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "permission", status: 403 });
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
+  });
 });
 
 it("maps a 404 error to not_found", async () => {
@@ -66,7 +70,11 @@ it("maps a 404 error to not_found", async () => {
     name: "discord_get_guild_widget",
     arguments: { guild_id: "123" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "not_found", status: 404 });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    message: "Discord rejected the request (HTTP 404): Unknown Guild",
+  });
 });
 
 it("allows access when guild is in allowlist", async () => {
@@ -80,6 +88,7 @@ it("allows access when guild is in allowlist", async () => {
   });
   expect(result.structuredContent).toEqual({ widget: WIDGET });
   expect(request().method).toBe("GET");
+  expect(request().url).toBe("https://discord.com/api/v10/guilds/123/widget.json");
 });
 
 it("denies access when guild is not in allowlist", async () => {

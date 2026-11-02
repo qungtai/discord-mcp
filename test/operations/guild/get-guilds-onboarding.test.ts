@@ -12,13 +12,30 @@ afterEach(() => {
 
 const ONBOARDING = {
   guild_id: "123",
-  prompts: [{ id: "555" }],
+  prompts: [
+    {
+      id: "555",
+      title: "What brings you here?",
+      options: [
+        {
+          id: "666",
+          title: "Gaming",
+          description: "Play together",
+          role_ids: ["777"],
+          channel_ids: ["888"],
+        },
+      ],
+      single_select: true,
+      required: true,
+      in_onboarding: true,
+    },
+  ],
   default_channel_ids: ["789"],
   enabled: true,
   mode: 0,
 };
 
-it("gets onboarding settings and returns structured content", async () => {
+it("gets onboarding settings and retains all prompt details", async () => {
   const { client, request } = await harness({
     policy: new PPolicyEngine([], ["guild"], false),
     respond: () => ONBOARDING,
@@ -56,6 +73,7 @@ it("maps a 403 error to permission with ManageGuild", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
     remediation: "Check the bot permissions; this tool needs ManageGuild",
   });
 });
@@ -69,7 +87,11 @@ it("maps a 404 error to not_found", async () => {
     name: "discord_get_guilds_onboarding",
     arguments: { guild_id: "123" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "not_found", status: 404 });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    message: "Discord rejected the request (HTTP 404): Unknown Guild",
+  });
 });
 
 it("allows access when guild is in allowlist", async () => {
@@ -83,6 +105,7 @@ it("allows access when guild is in allowlist", async () => {
   });
   expect(result.structuredContent).toEqual({ onboarding: ONBOARDING });
   expect(request().method).toBe("GET");
+  expect(request().url).toBe("https://discord.com/api/v10/guilds/123/onboarding");
 });
 
 it("denies access when guild is not in allowlist", async () => {

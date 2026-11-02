@@ -11,7 +11,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const GUILD = { id: "123", name: "Updated Guild" };
+const GUILD = { id: "123", name: "Updated Guild", description: "A great server" };
 
 async function unapprovedHarness(options = {}) {
   const base = (await PToolRegistry.load()).get("discord_update_guild");
@@ -44,13 +44,30 @@ it("is gated pending approval support by default", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("updates a guild and passes literal body and reason when approval is bypassed", async () => {
+it("updates a guild and passes comprehensive literal body and reason when approval is bypassed", async () => {
   const { client, request } = await unapprovedHarness({ respond: () => GUILD });
   const result = await client.callTool({
     name: "discord_update_guild",
     arguments: {
       guild_id: "123",
       name: "Updated Guild",
+      region: "us-central",
+      verification_level: 2,
+      default_message_notifications: 1,
+      explicit_content_filter: 2,
+      afk_channel_id: "456",
+      afk_timeout: 300,
+      icon: "data:image/png;base64,abc",
+      home_header: "data:image/png;base64,header",
+      system_channel_id: "457",
+      system_channel_flags: 1,
+      rules_channel_id: "458",
+      public_updates_channel_id: "459",
+      preferred_locale: "en-US",
+      features: ["COMMUNITY"],
+      description: "A great server",
+      premium_progress_bar_enabled: true,
+      safety_alerts_channel_id: "460",
       reason: "branding update",
     },
   });
@@ -61,7 +78,26 @@ it("updates a guild and passes literal body and reason when approval is bypassed
   expect(new Headers(req.headers as HeadersInit).get("x-audit-log-reason")).toBe(
     "branding%20update",
   );
-  expect(JSON.parse(String(req.body))).toEqual({ name: "Updated Guild" });
+  expect(JSON.parse(String(req.body))).toEqual({
+    name: "Updated Guild",
+    region: "us-central",
+    verification_level: 2,
+    default_message_notifications: 1,
+    explicit_content_filter: 2,
+    afk_channel_id: "456",
+    afk_timeout: 300,
+    icon: "data:image/png;base64,abc",
+    home_header: "data:image/png;base64,header",
+    system_channel_id: "457",
+    system_channel_flags: 1,
+    rules_channel_id: "458",
+    public_updates_channel_id: "459",
+    preferred_locale: "en-US",
+    features: ["COMMUNITY"],
+    description: "A great server",
+    premium_progress_bar_enabled: true,
+    safety_alerts_channel_id: "460",
+  });
 });
 
 it("validates input name min length", async () => {
@@ -85,6 +121,7 @@ it("maps a 403 error to permission with required permissions", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
     remediation: "Check the bot permissions; this tool needs ManageGuild",
   });
 });
@@ -100,10 +137,11 @@ it("maps a 404 error to not_found", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "not_found",
     status: 404,
+    message: "Discord rejected the request (HTTP 404): Unknown Guild",
   });
 });
 
-it("allows update when guild is in allowlist", async () => {
+it("allows update when guild and scoped channels are in allowlist", async () => {
   const base = (await PToolRegistry.load()).get("discord_update_guild");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
@@ -111,14 +149,18 @@ it("allows update when guild is in allowlist", async () => {
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine(["123"], ["guild"], false),
-    respond: () => GUILD,
+    makeRequest: async (url) => {
+      if (String(url).endsWith("/channels/456")) return json({ id: "456", guild_id: "123" });
+      return json(GUILD);
+    },
   });
   const result = await client.callTool({
     name: "discord_update_guild",
-    arguments: { guild_id: "123", name: "Updated Guild" },
+    arguments: { guild_id: "123", name: "Updated Guild", afk_channel_id: "456" },
   });
   expect(result.structuredContent).toEqual({ guild: GUILD });
-  expect(request().method).toBe("PATCH");
+  expect(request(1).method).toBe("PATCH");
+  expect(request(1).url).toBe("https://discord.com/api/v10/guilds/123");
 });
 
 it("denies update when guild is not in allowlist", async () => {
@@ -139,4 +181,29 @@ it("denies update when guild is not in allowlist", async () => {
     message: "Guild is not allowed",
   });
   expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it("denies update when a scoped channel belongs to another guild before write", async () => {
+  const base = (await PToolRegistry.load()).get("discord_update_guild");
+  if (!base) throw new Error("Missing tool");
+  const registry = new PToolRegistry();
+  registry.register({ ...base, approval: false });
+  const { client, makeRequest } = await harness({
+    registry,
+    policy: new PPolicyEngine(["123"], ["guild"], false),
+    makeRequest: async (url) => {
+      if (String(url).endsWith("/channels/456")) return json({ id: "456", guild_id: "999" });
+      return json(GUILD);
+    },
+  });
+  const result = await client.callTool({
+    name: "discord_update_guild",
+    arguments: { guild_id: "123", name: "Updated Guild", afk_channel_id: "456" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "policy",
+    message: "Guild is not allowed",
+  });
+  // Verified that only the GET lookup was made, no PATCH write was sent!
+  expect(makeRequest).toHaveBeenCalledTimes(1);
 });

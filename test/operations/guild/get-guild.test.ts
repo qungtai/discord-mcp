@@ -10,9 +10,16 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const GUILD = { id: "123", name: "Test Guild" };
+const GUILD = {
+  id: "123",
+  name: "Test Guild",
+  roles: [{ id: "111", name: "Admin" }],
+  emojis: [{ id: "222", name: "cool" }],
+  stickers: [{ id: "333", name: "party" }],
+  owner: true,
+};
 
-it("gets a guild with query and returns structured content", async () => {
+it("gets a guild with query and preserves extra nested fields", async () => {
   const { client, request } = await harness({
     policy: new PPolicyEngine([], ["guild"], false),
     respond: () => GUILD,
@@ -34,7 +41,10 @@ it("validates guild_id format", async () => {
     name: "discord_get_guild",
     arguments: { guild_id: "invalid-id" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+    message: expect.stringContaining("Expected a Discord snowflake"),
+  });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
@@ -50,6 +60,7 @@ it("maps a 403 error to permission category", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
   });
 });
 
@@ -65,6 +76,7 @@ it("maps a 404 error to not_found category", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "not_found",
     status: 404,
+    message: "Discord rejected the request (HTTP 404): Unknown Guild",
   });
 });
 
@@ -79,6 +91,7 @@ it("allows access when guild is in the allowlist", async () => {
   });
   expect(result.structuredContent).toEqual({ guild: GUILD });
   expect(request().method).toBe("GET");
+  expect(request().url).toBe("https://discord.com/api/v10/guilds/123");
 });
 
 it("denies access when guild is not in the allowlist", async () => {

@@ -64,6 +64,24 @@ it("updates incident actions when approval is bypassed", async () => {
   });
 });
 
+it("validates timestamp format", async () => {
+  const base = (await PToolRegistry.load()).get("discord_update_guild_incident_actions");
+  if (!base) throw new Error("Missing tool");
+  const registry = new PToolRegistry();
+  registry.register({ ...base, approval: false });
+
+  const { client, makeRequest } = await harness({
+    registry,
+    policy: new PPolicyEngine([], ["guild"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_update_guild_incident_actions",
+    arguments: { guild_id: "123", invites_disabled_until: "not-a-datetime" },
+  });
+  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
 it("validates guild_id format", async () => {
   const base = (await PToolRegistry.load()).get("discord_update_guild_incident_actions");
   if (!base) throw new Error("Missing tool");
@@ -100,6 +118,7 @@ it("maps a 403 error to permission with ManageGuild", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
     remediation: "Check the bot permissions; this tool needs ManageGuild",
   });
 });
@@ -119,7 +138,11 @@ it("maps a 404 error to not_found", async () => {
     name: "discord_update_guild_incident_actions",
     arguments: { guild_id: "123" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "not_found", status: 404 });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    message: "Discord rejected the request (HTTP 404): Unknown Guild",
+  });
 });
 
 it("allows access when guild is in allowlist", async () => {
@@ -139,6 +162,7 @@ it("allows access when guild is in allowlist", async () => {
   });
   expect(result.structuredContent).toEqual({ incident_actions: INCIDENTS });
   expect(request().method).toBe("PUT");
+  expect(request().url).toBe("https://discord.com/api/v10/guilds/123/incident-actions");
 });
 
 it("denies access when guild is not in allowlist", async () => {
