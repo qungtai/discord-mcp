@@ -21,8 +21,10 @@ export const createGuildChannel = defineTool({
   operationIds: ["create_guild_channel"],
   toolset: "channels",
   scope: { guild: "guild_id" },
-  permissions: ["ManageChannels"],
+  permissions: ["ManageChannels", "ManageRoles"],
   effect: "write",
+  // permission_overwrites changes channel permissions for roles and members.
+  approval: true,
   idempotent: false,
   input: z.object({
     guild_id: snowflake,

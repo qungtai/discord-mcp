@@ -10,8 +10,10 @@ export const createChannelInvite = defineTool({
   operationIds: ["create_channel_invite"],
   toolset: "invites",
   scope: { channel: "channel_id" },
-  permissions: ["CreateInstantInvite"],
+  permissions: ["CreateInstantInvite", "ManageRoles"],
   effect: "write",
+  // role_ids grants roles to everyone who accepts the invite.
+  approval: true,
   idempotent: false,
   input: z
     .object({
