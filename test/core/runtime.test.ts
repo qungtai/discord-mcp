@@ -2,6 +2,8 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
+import { PDiscordRestAdapter } from "../../src/adapters/discord-rest/discord-rest.js";
+import { PAttachmentService } from "../../src/adapters/files/attachment-service.js";
 import { createServer } from "../../src/adapters/mcp/server.js";
 import { PToolPipeline } from "../../src/core/pipeline.js";
 import { PPolicyEngine } from "../../src/core/policy.js";
@@ -14,19 +16,18 @@ const tool = defineTool({
   description: "test",
   input: z.object({ channel_id: z.string() }),
   output: z.object({ result: z.string() }),
-  annotations: {
-    readOnlyHint: true,
-    destructiveHint: false,
-    idempotentHint: true,
-    openWorldHint: true,
-  },
-  mutating: false,
-  handler: async ({ channel_id }) => ({ result: channel_id }),
+  operation_ids: ["test"],
+  credential: "bot",
+  scope: { kind: "channel", param: "channel_id" },
+  effect: "read",
+  idempotent: true,
+  execute: async ({ channel_id }) => ({ result: channel_id }),
 });
+const context = { rest: new PDiscordRestAdapter(""), files: new PAttachmentService([], "") };
 function setup(policy = new PPolicyEngine([], ["messages"], false)) {
   const registry = new PToolRegistry();
   registry.register(tool);
-  return { registry, pipeline: new PToolPipeline(registry, policy, async () => "123") };
+  return { registry, pipeline: new PToolPipeline(registry, policy, context, async () => "123") };
 }
 describe("core", () => {
   it("parses environment settings", () => {
@@ -61,7 +62,7 @@ describe("core", () => {
     expect(registry.list()).toHaveLength(1);
     expect(() => new PPolicyEngine([], [], false).check(tool)).toThrow("Toolset disabled");
     expect(() =>
-      new PPolicyEngine([], ["messages"], true).check({ ...tool, mutating: true }),
+      new PPolicyEngine([], ["messages"], true).check({ ...tool, effect: "write" }),
     ).toThrow("Read-only");
     expect(() => new PPolicyEngine(["2"], ["messages"], false).check(tool, "1")).toThrow("Guild");
     expect(() => new PPolicyEngine(["2"], ["messages"], false).check(tool)).toThrow("Guild");
@@ -72,12 +73,19 @@ describe("core", () => {
     fail.register({
       ...tool,
       handler: async () => {
-        throw new PToolError("bad", "discord", true, "retry", "op", { channel_id: "1" });
+        throw new PToolError("bad", {
+          category: "discord",
+          retryable: true,
+          remediation: "retry",
+          operationId: "op",
+          resourceIds: { channel_id: "1" },
+        });
       },
     });
     const error = await new PToolPipeline(
       fail,
       new PPolicyEngine([], ["messages"], false),
+      context,
       vi.fn(),
     ).call(tool.name, { channel_id: "1" });
     expect(error).toMatchObject({
@@ -92,10 +100,12 @@ describe("core", () => {
       },
     });
     expect(
-      await new PToolPipeline(unknown, new PPolicyEngine([], ["messages"], false), vi.fn()).call(
-        tool.name,
-        { channel_id: "1" },
-      ),
+      await new PToolPipeline(
+        unknown,
+        new PPolicyEngine([], ["messages"], false),
+        context,
+        vi.fn(),
+      ).call(tool.name, { channel_id: "1" }),
     ).not.toHaveProperty("error.message", "secret");
   });
   it("lists and calls tools over MCP", async () => {

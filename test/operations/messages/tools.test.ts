@@ -35,10 +35,11 @@ it("sends, reads, edits and downloads using fresh attachment metadata", async ()
     download: vi.fn(async () => ({ path: "/tmp/test", size: 1, sha256: "hash" })),
   };
   const registry = new PToolRegistry();
-  registerMessageTools(registry, rest, attachments);
+  registerMessageTools(registry);
   const pipeline = new PToolPipeline(
     registry,
     new PPolicyEngine([], ["messages"], false),
+    { rest, files: attachments },
     async () => undefined,
   );
   const call = (name: string, input: object) => pipeline.call(`discord_${name}`, input);

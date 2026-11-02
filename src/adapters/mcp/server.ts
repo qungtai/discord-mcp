@@ -16,7 +16,11 @@ export function createServer(registry: PToolRegistry, pipeline: PToolPipeline): 
       async (input) => {
         const result = await pipeline.call(tool.name, input);
         if (!result.ok)
-          return { isError: true, content: [{ type: "text", text: JSON.stringify(result.error) }] };
+          return {
+            isError: true,
+            content: [{ type: "text", text: JSON.stringify(result.error) }],
+            structuredContent: { error: result.error },
+          };
         return {
           content: [{ type: "text", text: JSON.stringify(result.data) }],
           structuredContent: result.data,

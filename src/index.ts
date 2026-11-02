@@ -17,14 +17,9 @@ const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
-if (policy.toolsets.includes("messages")) {
-  registerMessageTools(
-    registry,
-    rest,
-    new PAttachmentService(roots, process.env.DISCORD_MCP_DOWNLOAD_DIR ?? ""),
-  );
-}
-const pipeline = new PToolPipeline(registry, policy, async (input) => {
+const files = new PAttachmentService(roots, process.env.DISCORD_MCP_DOWNLOAD_DIR ?? "");
+if (policy.toolsets.includes("messages")) registerMessageTools(registry);
+const pipeline = new PToolPipeline(registry, policy, { rest, files }, async (input) => {
   if (typeof input.channel_id !== "string") return undefined;
   const channel = await rest.getChannel(input.channel_id);
   return "guild_id" in channel ? channel.guild_id : undefined;

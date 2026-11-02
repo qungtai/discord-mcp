@@ -27,19 +27,28 @@ export class PPolicyEngine {
   }
   checkStatic(tool: ToolDescriptor): void {
     if (!this.toolsets.includes(tool.toolset))
-      throw new PToolError("Toolset disabled", "policy", false, "Enable the toolset", tool.name);
-    if (this.readOnly && tool.mutating)
-      throw new PToolError("Read-only mode", "policy", false, "Disable read-only mode", tool.name);
+      throw new PToolError("Toolset disabled", {
+        category: "policy",
+        retryable: false,
+        remediation: "Enable the toolset",
+        operationId: tool.name,
+      });
+    if (this.readOnly && tool.effect !== "read")
+      throw new PToolError("Read-only mode", {
+        category: "policy",
+        retryable: false,
+        remediation: "Disable read-only mode",
+        operationId: tool.name,
+      });
   }
   checkResource(tool: ToolDescriptor, guildId?: string): void {
     if (this.allowedGuilds.length && (!guildId || !this.allowedGuilds.includes(guildId)))
-      throw new PToolError(
-        "Guild is not allowed",
-        "policy",
-        false,
-        "Choose an allowed guild",
-        tool.name,
-      );
+      throw new PToolError("Guild is not allowed", {
+        category: "policy",
+        retryable: false,
+        remediation: "Choose an allowed guild",
+        operationId: tool.name,
+      });
   }
   check(tool: ToolDescriptor, guildId?: string): void {
     this.checkStatic(tool);
