@@ -19,7 +19,7 @@ it("expires a poll immediately without approval and returns the message", async 
     respond: () => MESSAGE,
   });
   const result = await client.callTool({
-    name: "discord_poll_expire",
+    name: "discord_end_poll",
     arguments: { channel_id: channelId, message_id: messageId },
   });
   const req = request();
@@ -39,7 +39,7 @@ it.each([
     policy: new PPolicyEngine([], ["messages"], false),
   });
   const result = await client.callTool({
-    name: "discord_poll_expire",
+    name: "discord_end_poll",
     arguments: args,
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
@@ -52,7 +52,7 @@ it("maps 403 to permission error with ViewChannel", async () => {
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
-    name: "discord_poll_expire",
+    name: "discord_end_poll",
     arguments: { channel_id: channelId, message_id: messageId },
   });
   expect(errorOf(result)).toMatchObject({
@@ -69,7 +69,7 @@ it("maps 404 to not_found", async () => {
     makeRequest: async () => json({ message: "Unknown Message", code: 10008 }, { status: 404 }),
   });
   const result = await client.callTool({
-    name: "discord_poll_expire",
+    name: "discord_end_poll",
     arguments: { channel_id: channelId, message_id: messageId },
   });
   expect(errorOf(result)).toMatchObject({
@@ -89,7 +89,7 @@ it("allows access under an allowed guild and denies under disallowed guild", asy
     },
   });
   const allowedResult = await allowed.client.callTool({
-    name: "discord_poll_expire",
+    name: "discord_end_poll",
     arguments: { channel_id: channelId, message_id: messageId },
   });
   expect(allowedResult.structuredContent).toEqual({ message: MESSAGE });
@@ -103,7 +103,7 @@ it("allows access under an allowed guild and denies under disallowed guild", asy
     respond: () => ({ id: channelId, guild_id: "999" }),
   });
   const deniedResult = await denied.client.callTool({
-    name: "discord_poll_expire",
+    name: "discord_end_poll",
     arguments: { channel_id: channelId, message_id: messageId },
   });
   expect(errorOf(deniedResult)).toMatchObject({

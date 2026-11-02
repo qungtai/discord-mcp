@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
 import { PToolRegistry } from "../../../src/core/tool-registry.js";
-import { actionGuildJoinRequest } from "../../../src/operations/members/action-guild-join-request.js";
+import { reviewGuildJoinRequest } from "../../../src/operations/members/review-guild-join-request.js";
 import { errorOf, harness, json } from "../../support/harness.js";
 
 beforeEach(() => {
@@ -29,7 +29,7 @@ it("refuses to run when the client cannot ask for approval", async () => {
     policy: new PPolicyEngine([], ["members"], false),
   });
   expect(
-    await pipeline.call("discord_action_guild_join_request", {
+    await pipeline.call("discord_review_guild_join_request", {
       guild_id: "123",
       request_id: "501",
       action: "APPROVED",
@@ -47,14 +47,14 @@ it("refuses to run when the client cannot ask for approval", async () => {
 
 it("approves or rejects a guild join request with body after the client accepts approval", async () => {
   const registry = new PToolRegistry();
-  registry.register(actionGuildJoinRequest);
+  registry.register(reviewGuildJoinRequest);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
     respond: () => ACTIONED_REQUEST,
   });
   const result = await client.callTool({
-    name: "discord_action_guild_join_request",
+    name: "discord_review_guild_join_request",
     arguments: {
       guild_id: "123",
       request_id: "501",
@@ -74,14 +74,14 @@ it("approves or rejects a guild join request with body after the client accepts 
 
 it("passes allowlist check when guild is allowed", async () => {
   const registry = new PToolRegistry();
-  registry.register(actionGuildJoinRequest);
+  registry.register(reviewGuildJoinRequest);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine(["123"], ["members"], false),
     respond: () => ACTIONED_REQUEST,
   });
   const result = await client.callTool({
-    name: "discord_action_guild_join_request",
+    name: "discord_review_guild_join_request",
     arguments: {
       guild_id: "123",
       request_id: "501",
@@ -99,13 +99,13 @@ it("passes allowlist check when guild is allowed", async () => {
 
 it("denies access when guild is not allowed", async () => {
   const registry = new PToolRegistry();
-  registry.register(actionGuildJoinRequest);
+  registry.register(reviewGuildJoinRequest);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine(["999"], ["members"], false),
   });
   const result = await client.callTool({
-    name: "discord_action_guild_join_request",
+    name: "discord_review_guild_join_request",
     arguments: {
       guild_id: "123",
       request_id: "501",
@@ -121,12 +121,12 @@ it("denies access when guild is not allowed", async () => {
 
 it("blocks execution in read-only mode", async () => {
   const registry = new PToolRegistry();
-  registry.register(actionGuildJoinRequest);
+  registry.register(reviewGuildJoinRequest);
   const { pipeline, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], true),
   });
-  const result = await pipeline.call("discord_action_guild_join_request", {
+  const result = await pipeline.call("discord_review_guild_join_request", {
     guild_id: "123",
     request_id: "501",
     action: "APPROVED",
@@ -146,13 +146,13 @@ it.each([
   ],
 ])("validates input strictly: %s", async (_, args) => {
   const registry = new PToolRegistry();
-  registry.register(actionGuildJoinRequest);
+  registry.register(reviewGuildJoinRequest);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
   });
   const result = await client.callTool({
-    name: "discord_action_guild_join_request",
+    name: "discord_review_guild_join_request",
     arguments: args,
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
@@ -161,14 +161,14 @@ it.each([
 
 it("handles 403 missing permissions error", async () => {
   const registry = new PToolRegistry();
-  registry.register(actionGuildJoinRequest);
+  registry.register(reviewGuildJoinRequest);
   const { client } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
-    name: "discord_action_guild_join_request",
+    name: "discord_review_guild_join_request",
     arguments: {
       guild_id: "123",
       request_id: "501",
@@ -185,14 +185,14 @@ it("handles 403 missing permissions error", async () => {
 
 it("handles 404 error", async () => {
   const registry = new PToolRegistry();
-  registry.register(actionGuildJoinRequest);
+  registry.register(reviewGuildJoinRequest);
   const { client } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
     makeRequest: async () => json({ message: "Unknown Request", code: 10004 }, { status: 404 }),
   });
   const result = await client.callTool({
-    name: "discord_action_guild_join_request",
+    name: "discord_review_guild_join_request",
     arguments: {
       guild_id: "123",
       request_id: "501",

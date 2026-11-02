@@ -4,8 +4,8 @@ import { defineTool } from "../../core/tool-registry.js";
 import { snowflake, user } from "../schemas.js";
 import { messageIds } from "./schemas.js";
 
-export const getAnswerVoters = defineTool({
-  name: "discord_get_answer_voters",
+export const listPollAnswerVoters = defineTool({
+  name: "discord_list_poll_answer_voters",
   description: "Get a list of users that voted for a specific poll answer",
   operationIds: ["get_answer_voters"],
   toolset: "messages",

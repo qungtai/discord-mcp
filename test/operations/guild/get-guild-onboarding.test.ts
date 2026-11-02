@@ -41,7 +41,7 @@ it("gets onboarding settings and retains all prompt details", async () => {
     respond: () => ONBOARDING,
   });
   const result = await client.callTool({
-    name: "discord_get_guilds_onboarding",
+    name: "discord_get_guild_onboarding",
     arguments: { guild_id: "123" },
   });
   expect(request().method).toBe("GET");
@@ -54,7 +54,7 @@ it("validates guild_id", async () => {
     policy: new PPolicyEngine([], ["guild"], false),
   });
   const result = await client.callTool({
-    name: "discord_get_guilds_onboarding",
+    name: "discord_get_guild_onboarding",
     arguments: { guild_id: "bad" },
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
@@ -67,7 +67,7 @@ it("maps a 403 error to permission with ManageGuild", async () => {
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
-    name: "discord_get_guilds_onboarding",
+    name: "discord_get_guild_onboarding",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -84,7 +84,7 @@ it("maps a 404 error to not_found", async () => {
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
   const result = await client.callTool({
-    name: "discord_get_guilds_onboarding",
+    name: "discord_get_guild_onboarding",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -100,7 +100,7 @@ it("allows access when guild is in allowlist", async () => {
     respond: () => ONBOARDING,
   });
   const result = await client.callTool({
-    name: "discord_get_guilds_onboarding",
+    name: "discord_get_guild_onboarding",
     arguments: { guild_id: "123" },
   });
   expect(result.structuredContent).toEqual({ onboarding: ONBOARDING });
@@ -113,7 +113,7 @@ it("denies access when guild is not in allowlist", async () => {
     policy: new PPolicyEngine(["999"], ["guild"], false),
   });
   const result = await client.callTool({
-    name: "discord_get_guilds_onboarding",
+    name: "discord_get_guild_onboarding",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({

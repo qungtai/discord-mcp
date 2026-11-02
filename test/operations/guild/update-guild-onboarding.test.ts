@@ -26,7 +26,7 @@ const ONBOARDING = {
 };
 
 it("refuses to run when the client cannot ask for approval", async () => {
-  const tool = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
+  const tool = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
   expect(tool?.effect).toBe("destructive");
   expect(tool?.approval).toBe(true);
 
@@ -35,7 +35,7 @@ it("refuses to run when the client cannot ask for approval", async () => {
     policy: new PPolicyEngine([], ["guild"], false),
   });
   const result = await client.callTool({
-    name: "discord_put_guilds_onboarding",
+    name: "discord_update_guild_onboarding",
     arguments: { guild_id: "123", enabled: true },
   });
   expect(errorOf(result)).toMatchObject({
@@ -46,7 +46,7 @@ it("refuses to run when the client cannot ask for approval", async () => {
 });
 
 it("puts onboarding after the client accepts approval and preserves response fields", async () => {
-  const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
+  const base = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
   registry.register(base);
@@ -57,7 +57,7 @@ it("puts onboarding after the client accepts approval and preserves response fie
     respond: () => ONBOARDING,
   });
   const result = await client.callTool({
-    name: "discord_put_guilds_onboarding",
+    name: "discord_update_guild_onboarding",
     arguments: {
       guild_id: "123",
       enabled: true,
@@ -93,7 +93,7 @@ it("puts onboarding after the client accepts approval and preserves response fie
 });
 
 it("validates prompt options min count", async () => {
-  const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
+  const base = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
   registry.register(base);
@@ -103,7 +103,7 @@ it("validates prompt options min count", async () => {
     policy: new PPolicyEngine([], ["guild"], false),
   });
   const result = await client.callTool({
-    name: "discord_put_guilds_onboarding",
+    name: "discord_update_guild_onboarding",
     arguments: {
       guild_id: "123",
       prompts: [{ id: "555", title: "Select", options: [] }],
@@ -114,7 +114,7 @@ it("validates prompt options min count", async () => {
 });
 
 it("maps a 403 error to permission with ManageGuild", async () => {
-  const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
+  const base = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
   registry.register(base);
@@ -125,7 +125,7 @@ it("maps a 403 error to permission with ManageGuild", async () => {
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
-    name: "discord_put_guilds_onboarding",
+    name: "discord_update_guild_onboarding",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -137,7 +137,7 @@ it("maps a 403 error to permission with ManageGuild", async () => {
 });
 
 it("maps a 404 error to not_found", async () => {
-  const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
+  const base = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
   registry.register(base);
@@ -148,7 +148,7 @@ it("maps a 404 error to not_found", async () => {
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
   const result = await client.callTool({
-    name: "discord_put_guilds_onboarding",
+    name: "discord_update_guild_onboarding",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -159,7 +159,7 @@ it("maps a 404 error to not_found", async () => {
 });
 
 it("allows access when guild and default channels are in allowlist", async () => {
-  const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
+  const base = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
   registry.register(base);
@@ -173,7 +173,7 @@ it("allows access when guild and default channels are in allowlist", async () =>
     },
   });
   const result = await client.callTool({
-    name: "discord_put_guilds_onboarding",
+    name: "discord_update_guild_onboarding",
     arguments: { guild_id: "123", default_channel_ids: ["789"] },
   });
   expect(result.structuredContent).toEqual({ onboarding: ONBOARDING });
@@ -182,7 +182,7 @@ it("allows access when guild and default channels are in allowlist", async () =>
 });
 
 it("denies access when guild is not in allowlist", async () => {
-  const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
+  const base = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
   registry.register(base);
@@ -192,7 +192,7 @@ it("denies access when guild is not in allowlist", async () => {
     policy: new PPolicyEngine(["999"], ["guild"], false),
   });
   const result = await client.callTool({
-    name: "discord_put_guilds_onboarding",
+    name: "discord_update_guild_onboarding",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -203,7 +203,7 @@ it("denies access when guild is not in allowlist", async () => {
 });
 
 it("denies access when default channel belongs to another guild", async () => {
-  const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
+  const base = (await PToolRegistry.load()).get("discord_update_guild_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
   registry.register(base);
@@ -217,7 +217,7 @@ it("denies access when default channel belongs to another guild", async () => {
     },
   });
   const result = await client.callTool({
-    name: "discord_put_guilds_onboarding",
+    name: "discord_update_guild_onboarding",
     arguments: { guild_id: "123", default_channel_ids: ["789"] },
   });
   expect(errorOf(result)).toMatchObject({

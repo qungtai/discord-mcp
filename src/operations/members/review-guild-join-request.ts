@@ -3,8 +3,8 @@ import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
 import { type JoinRequest, joinRequest, joinRequestAction } from "./schemas.js";
 
-export const actionGuildJoinRequest = defineTool({
-  name: "discord_action_guild_join_request",
+export const reviewGuildJoinRequest = defineTool({
+  name: "discord_review_guild_join_request",
   description:
     "Approve or reject a guild join request. rejection_reason is only used when action is REJECTED",
   operationIds: ["action_guild_join_request"],

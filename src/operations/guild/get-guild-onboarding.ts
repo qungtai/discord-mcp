@@ -3,8 +3,8 @@ import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { guildIds, onboarding } from "./guild-settings-schemas.js";
 
-export const getGuildsOnboarding = defineTool({
-  name: "discord_get_guilds_onboarding",
+export const getGuildOnboarding = defineTool({
+  name: "discord_get_guild_onboarding",
   description: "Get the onboarding configuration for a guild",
   operationIds: ["get_guilds_onboarding"],
   toolset: "guild",

@@ -3,8 +3,8 @@ import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { messageIds, messageResult } from "./schemas.js";
 
-export const pollExpire = defineTool({
-  name: "discord_poll_expire",
+export const endPoll = defineTool({
+  name: "discord_end_poll",
   description: "Immediately end a poll on a message",
   operationIds: ["poll_expire"],
   toolset: "messages",

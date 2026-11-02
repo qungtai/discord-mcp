@@ -22,7 +22,7 @@ it("searches threads in a channel with query filters and next_offset cursor", as
     respond: () => SEARCH_RESULT,
   });
   const result = await client.callTool({
-    name: "discord_thread_search",
+    name: "discord_search_threads",
     arguments: {
       channel_id: "1",
       name: "found",
@@ -51,7 +51,7 @@ it("returns null next_offset when has_more is false", async () => {
     respond: () => ({ ...SEARCH_RESULT, has_more: false }),
   });
   const result = await client.callTool({
-    name: "discord_thread_search",
+    name: "discord_search_threads",
     arguments: { channel_id: "1", offset: 5 },
   });
   expect(result.structuredContent).toEqual({
@@ -72,7 +72,7 @@ it("handles 202 SearchIndexNotReady response by returning retryable rate_limited
     respond: () => notReady202,
   });
   const result = await client.callTool({
-    name: "discord_thread_search",
+    name: "discord_search_threads",
     arguments: { channel_id: "1", name: "indexing" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -88,7 +88,7 @@ it("handles 202 SearchIndexNotReady response by returning retryable rate_limited
 it("validates limit range (min 1, max 25)", async () => {
   const { client, makeRequest } = await threadHarness();
   const result = await client.callTool({
-    name: "discord_thread_search",
+    name: "discord_search_threads",
     arguments: { channel_id: "1", limit: 30 },
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
@@ -100,7 +100,7 @@ it("handles 403 error with literal message", async () => {
     makeRequest: async () => json({ message: "Missing Access", code: 50001 }, { status: 403 }),
   });
   const result = await client.callTool({
-    name: "discord_thread_search",
+    name: "discord_search_threads",
     arguments: { channel_id: "1" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -116,7 +116,7 @@ it("handles 404 error with literal message", async () => {
     makeRequest: async () => json({ message: "Unknown Channel", code: 10003 }, { status: 404 }),
   });
   const result = await client.callTool({
-    name: "discord_thread_search",
+    name: "discord_search_threads",
     arguments: { channel_id: "999" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -138,7 +138,7 @@ it("succeeds under an allowlist containing the guild with literal routes", async
     },
   });
   const result = await client.callTool({
-    name: "discord_thread_search",
+    name: "discord_search_threads",
     arguments: { channel_id: "1" },
   });
   expect(result.structuredContent).toEqual({
@@ -161,7 +161,7 @@ it("denies channel in a guild outside the allowlist", async () => {
     makeRequest: async () => json({ id: "1", guild_id: "300" }),
   });
   const result = await client.callTool({
-    name: "discord_thread_search",
+    name: "discord_search_threads",
     arguments: { channel_id: "1" },
   });
   expect(errorOf(result)).toMatchObject({

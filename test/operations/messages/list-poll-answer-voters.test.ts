@@ -26,7 +26,7 @@ it("gets poll answer voters with query parameters and paging cursor", async () =
     respond: () => votersResult,
   });
   const result = await client.callTool({
-    name: "discord_get_answer_voters",
+    name: "discord_list_poll_answer_voters",
     arguments: {
       channel_id: channelId,
       message_id: messageId,
@@ -52,7 +52,7 @@ it("returns null next_after when voters list is empty", async () => {
     respond: () => ({ users: [] }),
   });
   const result = await client.callTool({
-    name: "discord_get_answer_voters",
+    name: "discord_list_poll_answer_voters",
     arguments: { channel_id: channelId, message_id: messageId, answer_id: answerId },
   });
   expect(result.structuredContent).toEqual({
@@ -75,7 +75,7 @@ it.each([
     policy: new PPolicyEngine([], ["messages"], false),
   });
   const result = await client.callTool({
-    name: "discord_get_answer_voters",
+    name: "discord_list_poll_answer_voters",
     arguments: args,
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
@@ -88,7 +88,7 @@ it("maps 403 to permission error with ViewChannel and ReadMessageHistory", async
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
-    name: "discord_get_answer_voters",
+    name: "discord_list_poll_answer_voters",
     arguments: { channel_id: channelId, message_id: messageId, answer_id: answerId },
   });
   expect(errorOf(result)).toMatchObject({
@@ -105,7 +105,7 @@ it("maps 404 to not_found", async () => {
     makeRequest: async () => json({ message: "Unknown Message", code: 10008 }, { status: 404 }),
   });
   const result = await client.callTool({
-    name: "discord_get_answer_voters",
+    name: "discord_list_poll_answer_voters",
     arguments: { channel_id: channelId, message_id: messageId, answer_id: answerId },
   });
   expect(errorOf(result)).toMatchObject({
@@ -125,7 +125,7 @@ it("allows access under an allowed guild and denies under disallowed guild", asy
     },
   });
   const allowedResult = await allowed.client.callTool({
-    name: "discord_get_answer_voters",
+    name: "discord_list_poll_answer_voters",
     arguments: { channel_id: channelId, message_id: messageId, answer_id: answerId },
   });
   expect(allowedResult.structuredContent).toEqual({
@@ -144,7 +144,7 @@ it("allows access under an allowed guild and denies under disallowed guild", asy
     respond: () => ({ id: channelId, guild_id: "999" }),
   });
   const deniedResult = await denied.client.callTool({
-    name: "discord_get_answer_voters",
+    name: "discord_list_poll_answer_voters",
     arguments: { channel_id: channelId, message_id: messageId, answer_id: answerId },
   });
   expect(errorOf(deniedResult)).toMatchObject({

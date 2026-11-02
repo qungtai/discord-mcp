@@ -25,8 +25,8 @@ const promptInput = z.strictObject({
   in_onboarding: z.boolean().nullish(),
 });
 
-export const putGuildsOnboarding = defineTool({
-  name: "discord_put_guilds_onboarding",
+export const updateGuildOnboarding = defineTool({
+  name: "discord_update_guild_onboarding",
   description: "Set the onboarding configuration for a guild",
   operationIds: ["put_guilds_onboarding"],
   toolset: "guild",

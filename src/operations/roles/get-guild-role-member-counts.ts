@@ -4,8 +4,8 @@ import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
 import { roleMemberCountsResult } from "./schemas.js";
 
-export const guildRoleMemberCounts = defineTool({
-  name: "discord_guild_role_member_counts",
+export const getGuildRoleMemberCounts = defineTool({
+  name: "discord_get_guild_role_member_counts",
   description: "Get role member counts for a guild",
   operationIds: ["guild_role_member_counts"],
   toolset: "roles",

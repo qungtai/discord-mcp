@@ -23,7 +23,7 @@ it("gets guild role member counts", async () => {
     respond: () => COUNTS,
   });
   const result = await client.callTool({
-    name: "discord_guild_role_member_counts",
+    name: "discord_get_guild_role_member_counts",
     arguments: { guild_id: "123" },
   });
   expect(result.structuredContent).toEqual({ counts: COUNTS });
@@ -37,7 +37,7 @@ it("gets guild role member counts", async () => {
 it("rejects invalid guild_id", async () => {
   const { client, makeRequest } = await harness({ policy });
   const result = await client.callTool({
-    name: "discord_guild_role_member_counts",
+    name: "discord_get_guild_role_member_counts",
     arguments: { guild_id: "invalid" },
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
@@ -50,7 +50,7 @@ it("allows guilds in the allowlist and sends expected request", async () => {
     respond: () => COUNTS,
   });
   const result = await client.callTool({
-    name: "discord_guild_role_member_counts",
+    name: "discord_get_guild_role_member_counts",
     arguments: { guild_id: "123" },
   });
   expect(result.structuredContent).toEqual({ counts: COUNTS });
@@ -66,7 +66,7 @@ it("blocks guilds outside the allowlist", async () => {
     policy: new PPolicyEngine(["999"], ["core", "roles"], false),
   });
   const result = await client.callTool({
-    name: "discord_guild_role_member_counts",
+    name: "discord_get_guild_role_member_counts",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -82,7 +82,7 @@ it("maps 403 to permission error with exact message and remediation", async () =
     makeRequest: async () => json({ message: "Missing Access", code: 50001 }, { status: 403 }),
   });
   const result = await client.callTool({
-    name: "discord_guild_role_member_counts",
+    name: "discord_get_guild_role_member_counts",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({
@@ -101,7 +101,7 @@ it("maps 404 to not_found error with exact message and remediation", async () =>
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
   const result = await client.callTool({
-    name: "discord_guild_role_member_counts",
+    name: "discord_get_guild_role_member_counts",
     arguments: { guild_id: "123" },
   });
   expect(errorOf(result)).toMatchObject({

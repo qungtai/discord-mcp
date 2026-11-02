@@ -17,8 +17,8 @@ interface RawThreadSearchResponse {
   retry_after?: number;
 }
 
-export const threadSearch = defineTool({
-  name: "discord_thread_search",
+export const searchThreads = defineTool({
+  name: "discord_search_threads",
   description: "Search threads in a channel. Page with offset=next_offset",
   operationIds: ["thread_search"],
   toolset: "threads",
