@@ -7,8 +7,9 @@ This project follows the rules in `AGENTS.md`. Summary:
 - Lint/format: Biome (`pnpm lint` runs `biome check .`).
 - Type check: `pnpm typecheck`.
 - Tests: vitest (`pnpm test` runs `vitest run --coverage`).
+- Before opening a PR run: `pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm coverage:check`.
 - Coverage gates: at least 80% lines and branches overall, 90% for `src/core`.
-  CI fails below these.
+  Coverage gates are enforced locally before opening a PR.
 - Live tests are opt-in via env vars. Contributors run them against their own
   test guild with their own credentials; the owner's test server
   (`1381945630808604713` with `lequangtaibot`) is for maintainers only.

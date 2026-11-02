@@ -8,8 +8,6 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- CI workflow (`.github/workflows/ci.yml`) running lint, typecheck, build,
-  tests and coverage check.
 - Community documentation: README, client configurations, contributing guide,
   security policy, changelog and license.
 - Note on package name: published as `@qungtai/discord-mcp` (bin `discord-mcp`).
