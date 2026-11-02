@@ -1,25 +1,27 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { errorOf, json } from "../../support/harness.js";
+import { SAMPLE_THREAD, setupTestLifecycle, threadHarness } from "./support.js";
 
-beforeEach(() => {
-  vi.spyOn(process.stderr, "write").mockReturnValue(true);
-});
+beforeEach(setupTestLifecycle);
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 
 const THREAD_LIST = {
-  threads: [{ id: "101", name: "active-thread", type: 11, guild_id: "200" }],
-  members: [{ id: "101", user_id: "999", join_timestamp: "2026-11-03T00:00:00.000Z", flags: 0 }],
+  threads: [SAMPLE_THREAD],
+  members: [
+    {
+      id: "101",
+      user_id: "999",
+      join_timestamp: "2026-11-03T00:00:00.000Z",
+      flags: 0,
+      member: { user: { id: "999", username: "alice" } },
+    },
+  ],
+  has_more: false,
 };
-
-const threadHarness = (options: Parameters<typeof harness>[0] = {}) =>
-  harness({
-    ...options,
-    policy: options.policy ?? new PPolicyEngine([], ["threads"], false),
-  });
 
 it("gets active guild threads", async () => {
   const { client, request } = await threadHarness({
@@ -47,7 +49,7 @@ it("validates guild_id format", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("handles 403 error", async () => {
+it("handles 403 error with literal message", async () => {
   const { client } = await threadHarness({
     makeRequest: async () => json({ message: "Missing Access", code: 50001 }, { status: 403 }),
   });
@@ -55,10 +57,15 @@ it("handles 403 error", async () => {
     name: "discord_get_active_guild_threads",
     arguments: { guild_id: "200" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "permission", status: 403 });
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    discord_code: 50001,
+    message: "Discord rejected the request (HTTP 403): Missing Access",
+  });
 });
 
-it("handles 404 error", async () => {
+it("handles 404 error with literal message", async () => {
   const { client } = await threadHarness({
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
@@ -66,10 +73,15 @@ it("handles 404 error", async () => {
     name: "discord_get_active_guild_threads",
     arguments: { guild_id: "999" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "not_found", status: 404 });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10004,
+    message: "Discord rejected the request (HTTP 404): Unknown Guild",
+  });
 });
 
-it("succeeds under an allowlist containing the guild", async () => {
+it("succeeds under an allowlist containing the guild with literal route", async () => {
   const { client, request } = await threadHarness({
     policy: new PPolicyEngine(["200"], ["threads"], false),
     respond: () => THREAD_LIST,
@@ -79,7 +91,10 @@ it("succeeds under an allowlist containing the guild", async () => {
     arguments: { guild_id: "200" },
   });
   expect(result.structuredContent).toEqual(THREAD_LIST);
-  expect(request().method).toBe("GET");
+  expect([request(0).method, request(0).url]).toEqual([
+    "GET",
+    "https://discord.com/api/v10/guilds/200/threads/active",
+  ]);
 });
 
 it("denies guild outside the allowlist", async () => {

@@ -1,10 +1,9 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { errorOf, json } from "../../support/harness.js";
+import { setupTestLifecycle, threadHarness } from "./support.js";
 
-beforeEach(() => {
-  vi.spyOn(process.stderr, "write").mockReturnValue(true);
-});
+beforeEach(setupTestLifecycle);
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
@@ -15,13 +14,10 @@ const MEMBER = {
   user_id: "501",
   join_timestamp: "2026-11-03T00:00:00.000Z",
   flags: 0,
+  member: {
+    user: { id: "501", username: "bob" },
+  },
 };
-
-const threadHarness = (options: Parameters<typeof harness>[0] = {}) =>
-  harness({
-    ...options,
-    policy: options.policy ?? new PPolicyEngine([], ["threads"], false),
-  });
 
 it("gets a thread member with query options", async () => {
   const { client, request } = await threadHarness({
@@ -53,7 +49,7 @@ it("validates user_id format", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("handles 403 error", async () => {
+it("handles 403 error with literal message", async () => {
   const { client } = await threadHarness({
     makeRequest: async () => json({ message: "Missing Access", code: 50001 }, { status: 403 }),
   });
@@ -61,10 +57,15 @@ it("handles 403 error", async () => {
     name: "discord_get_thread_member",
     arguments: { channel_id: "101", user_id: "501" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "permission", status: 403 });
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    discord_code: 50001,
+    message: "Discord rejected the request (HTTP 403): Missing Access",
+  });
 });
 
-it("handles 404 error", async () => {
+it("handles 404 error with literal message", async () => {
   const { client } = await threadHarness({
     makeRequest: async () => json({ message: "Unknown Member", code: 10007 }, { status: 404 }),
   });
@@ -72,10 +73,15 @@ it("handles 404 error", async () => {
     name: "discord_get_thread_member",
     arguments: { channel_id: "101", user_id: "999" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "not_found", status: 404 });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10007,
+    message: "Discord rejected the request (HTTP 404): Unknown Member",
+  });
 });
 
-it("succeeds under an allowlist containing the guild", async () => {
+it("succeeds under an allowlist containing the guild with literal routes", async () => {
   const { client, request } = await threadHarness({
     policy: new PPolicyEngine(["200"], ["threads"], false),
     makeRequest: async (url) => {
@@ -90,11 +96,18 @@ it("succeeds under an allowlist containing the guild", async () => {
     arguments: { channel_id: "101", user_id: "501" },
   });
   expect(result.structuredContent).toEqual({ member: MEMBER });
-  expect(request(1).method).toBe("GET");
+  expect([request(0).method, request(0).url]).toEqual([
+    "GET",
+    "https://discord.com/api/v10/channels/101",
+  ]);
+  expect([request(1).method, request(1).url]).toEqual([
+    "GET",
+    "https://discord.com/api/v10/channels/101/thread-members/501",
+  ]);
 });
 
 it("denies channel in a guild outside the allowlist", async () => {
-  const { client, makeRequest } = await threadHarness({
+  const { client, request, makeRequest } = await threadHarness({
     policy: new PPolicyEngine(["200"], ["threads"], false),
     makeRequest: async () => json({ id: "101", guild_id: "300" }),
   });
@@ -107,4 +120,8 @@ it("denies channel in a guild outside the allowlist", async () => {
     message: "Guild is not allowed",
   });
   expect(makeRequest).toHaveBeenCalledTimes(1);
+  expect([request(0).method, request(0).url]).toEqual([
+    "GET",
+    "https://discord.com/api/v10/channels/101",
+  ]);
 });

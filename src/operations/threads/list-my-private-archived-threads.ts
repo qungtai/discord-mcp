@@ -6,7 +6,8 @@ import { threadList } from "./msg-threads-schemas.js";
 
 export const listMyPrivateArchivedThreads = defineTool({
   name: "discord_list_my_private_archived_threads",
-  description: "List private archived threads that the bot has joined in a channel",
+  description:
+    "List private archived threads that the bot has joined in a channel. Page with before=next_before",
   operationIds: ["list_my_private_archived_threads"],
   toolset: "threads",
   scope: { channel: "channel_id" },
@@ -19,10 +20,15 @@ export const listMyPrivateArchivedThreads = defineTool({
     limit: z.number().int().min(2).max(100).optional(),
   }),
   output: threadList,
-  execute: async ({ channel_id, ...query }, { discord }) =>
-    discord<RESTGetAPIChannelUsersThreadsArchivedResult>({
+  execute: async ({ channel_id, ...query }, { discord }) => {
+    const res = await discord<RESTGetAPIChannelUsersThreadsArchivedResult>({
       method: "GET",
       route: Routes.channelJoinedArchivedThreads(channel_id),
       query,
-    }),
+    });
+    return {
+      ...res,
+      next_before: res.has_more ? (res.threads.at(-1)?.id ?? null) : null,
+    };
+  },
 });

@@ -6,7 +6,8 @@ import { threadMember } from "./msg-threads-schemas.js";
 
 export const listThreadMembers = defineTool({
   name: "discord_list_thread_members",
-  description: "List members of a thread",
+  description:
+    "List members of a thread. Note: after and limit pagination only apply when with_member is true and the bot has GUILD_MEMBERS intent. Page with after=next_after",
   operationIds: ["list_thread_members"],
   toolset: "threads",
   scope: { channel: "channel_id" },
@@ -21,12 +22,17 @@ export const listThreadMembers = defineTool({
   }),
   output: z.object({
     members: z.array(threadMember),
+    next_after: snowflake.nullable(),
   }),
-  execute: async ({ channel_id, ...query }, { discord }) => ({
-    members: await discord<RESTGetAPIChannelThreadMembersResult>({
+  execute: async ({ channel_id, ...query }, { discord }) => {
+    const members = await discord<RESTGetAPIChannelThreadMembersResult>({
       method: "GET",
       route: Routes.threadMembers(channel_id),
       query,
-    }),
-  }),
+    });
+    return {
+      members,
+      next_after: members.at(-1)?.user_id ?? null,
+    };
+  },
 });

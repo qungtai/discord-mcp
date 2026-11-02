@@ -11,7 +11,7 @@ export const leaveThread = defineTool({
   scope: { channel: "channel_id" },
   permissions: [],
   effect: "destructive",
-  approval: false, // Leaving a thread as the bot itself does not destroy external resources
+  approval: false, // Safe without approval because it removes only the bot's own membership of a public thread; private threads need a new invite to rejoin
   idempotent: true,
   input: z.object({
     channel_id: snowflake,
@@ -23,7 +23,7 @@ export const leaveThread = defineTool({
   execute: async ({ channel_id }, { discord }) => {
     await discord<RESTDeleteAPIChannelThreadMembersResult>({
       method: "DELETE",
-      route: `${Routes.threadMembers(channel_id)}/@me`,
+      route: Routes.threadMembers(channel_id, "@me"),
     });
     return { left: true as const, channel_id };
   },

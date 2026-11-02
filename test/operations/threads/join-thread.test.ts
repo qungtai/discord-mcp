@@ -1,25 +1,17 @@
-import type { ResponseLike } from "@discordjs/rest";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { errorOf, json } from "../../support/harness.js";
+import { empty204, setupTestLifecycle, threadHarness } from "./support.js";
 
-beforeEach(() => {
-  vi.spyOn(process.stderr, "write").mockReturnValue(true);
-});
+beforeEach(setupTestLifecycle);
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 
-const threadHarness = (options: Parameters<typeof harness>[0] = {}) =>
-  harness({
-    ...options,
-    policy: options.policy ?? new PPolicyEngine([], ["threads"], false),
-  });
-
 it("joins a thread and returns joined status", async () => {
   const { client, request } = await threadHarness({
-    makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
+    makeRequest: async () => empty204(),
   });
   const result = await client.callTool({
     name: "discord_join_thread",
@@ -29,7 +21,7 @@ it("joins a thread and returns joined status", async () => {
   const req = request();
   expect([req.method, req.url]).toEqual([
     "PUT",
-    "https://discord.com/api/v10/channels/1/thread-members/@me",
+    "https://discord.com/api/v10/channels/1/thread-members/%40me",
   ]);
 });
 
@@ -43,7 +35,7 @@ it("validates channel_id format", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("handles 403 error", async () => {
+it("handles 403 error with literal message", async () => {
   const { client } = await threadHarness({
     makeRequest: async () => json({ message: "Missing Access", code: 50001 }, { status: 403 }),
   });
@@ -51,10 +43,15 @@ it("handles 403 error", async () => {
     name: "discord_join_thread",
     arguments: { channel_id: "1" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "permission", status: 403 });
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    discord_code: 50001,
+    message: "Discord rejected the request (HTTP 403): Missing Access",
+  });
 });
 
-it("handles 404 error", async () => {
+it("handles 404 error with literal message", async () => {
   const { client } = await threadHarness({
     makeRequest: async () => json({ message: "Unknown Channel", code: 10003 }, { status: 404 }),
   });
@@ -62,17 +59,22 @@ it("handles 404 error", async () => {
     name: "discord_join_thread",
     arguments: { channel_id: "999" },
   });
-  expect(errorOf(result)).toMatchObject({ category: "not_found", status: 404 });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10003,
+    message: "Discord rejected the request (HTTP 404): Unknown Channel",
+  });
 });
 
-it("succeeds under an allowlist containing the guild", async () => {
+it("succeeds under an allowlist containing the guild with literal routes", async () => {
   const { client, request } = await threadHarness({
     policy: new PPolicyEngine(["200"], ["threads"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/channels/1")) {
         return json({ id: "1", guild_id: "200" });
       }
-      return new Response(null, { status: 204 }) as unknown as ResponseLike;
+      return empty204();
     },
   });
   const result = await client.callTool({
@@ -80,11 +82,18 @@ it("succeeds under an allowlist containing the guild", async () => {
     arguments: { channel_id: "1" },
   });
   expect(result.structuredContent).toEqual({ joined: true, channel_id: "1" });
-  expect(request(1).method).toBe("PUT");
+  expect([request(0).method, request(0).url]).toEqual([
+    "GET",
+    "https://discord.com/api/v10/channels/1",
+  ]);
+  expect([request(1).method, request(1).url]).toEqual([
+    "PUT",
+    "https://discord.com/api/v10/channels/1/thread-members/%40me",
+  ]);
 });
 
 it("denies channel in a guild outside the allowlist before sending write", async () => {
-  const { client, makeRequest } = await threadHarness({
+  const { client, request, makeRequest } = await threadHarness({
     policy: new PPolicyEngine(["200"], ["threads"], false),
     makeRequest: async () => json({ id: "1", guild_id: "300" }),
   });
@@ -97,4 +106,8 @@ it("denies channel in a guild outside the allowlist before sending write", async
     message: "Guild is not allowed",
   });
   expect(makeRequest).toHaveBeenCalledTimes(1);
+  expect([request(0).method, request(0).url]).toEqual([
+    "GET",
+    "https://discord.com/api/v10/channels/1",
+  ]);
 });

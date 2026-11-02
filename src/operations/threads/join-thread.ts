@@ -22,7 +22,7 @@ export const joinThread = defineTool({
   execute: async ({ channel_id }, { discord }) => {
     await discord<RESTPutAPIChannelThreadMembersResult>({
       method: "PUT",
-      route: `${Routes.threadMembers(channel_id)}/@me`,
+      route: Routes.threadMembers(channel_id, "@me"),
     });
     return { joined: true as const, channel_id };
   },
