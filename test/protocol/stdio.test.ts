@@ -15,7 +15,7 @@ it("writes only JSON-RPC messages to stdout", async () => {
   const listed = new Promise<void>((resolve) => {
     createInterface({ input: child.stdout }).on("line", (line) => {
       lines.push(line);
-      if (line.includes('"id":2')) resolve();
+      if (line.includes('"id":3')) resolve();
     });
   });
   const send = (message: object) =>
@@ -24,16 +24,26 @@ it("writes only JSON-RPC messages to stdout", async () => {
     id: 1,
     method: "initialize",
     params: {
-      protocolVersion: "2025-06-18",
+      protocolVersion: "2025-11-25",
       capabilities: {},
       clientInfo: { name: "t", version: "1" },
     },
   });
   send({ method: "notifications/initialized" });
   send({ id: 2, method: "tools/list" });
+  send({
+    id: 3,
+    method: "tools/call",
+    params: { name: "discord_get_message", arguments: { channel_id: "x", message_id: "1" } },
+  });
   await listed;
   child.kill();
   const messages = lines.map((line) => JSON.parse(line));
   expect(messages.every((m) => m.jsonrpc === "2.0")).toBe(true);
-  expect(messages.at(-1).result.tools).toHaveLength(5);
+  expect(messages[0].result.protocolVersion).toBe("2025-11-25");
+  expect(messages.find((m) => m.id === 2).result.tools).toHaveLength(5);
+  expect(JSON.parse(messages.at(-1).result.content[0].text).error).toMatchObject({
+    category: "validation",
+    tool: "discord_get_message",
+  });
 });

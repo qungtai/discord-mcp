@@ -1,6 +1,5 @@
 import { randomBytes } from "node:crypto";
 import {
-  AllowedMentionsTypes,
   type RESTGetAPIChannelMessageResult,
   type RESTGetAPIChannelMessagesResult,
   type RESTPatchAPIChannelMessageResult,
@@ -10,21 +9,21 @@ import {
 import { z } from "zod/v4";
 import { PToolError } from "../../core/tool-error.js";
 import { defineTool } from "../../core/tool-registry.js";
-import { attachmentUpdate, fileUpload, message, snowflake } from "../schemas.js";
+import { allowedMentions, attachmentUpdate, fileUpload, message, snowflake } from "../schemas.js";
 
 const messageIds = { channel_id: snowflake, message_id: snowflake };
 const body = {
   content: z.string().optional(),
   embeds: z.array(z.record(z.string(), z.unknown())).optional(),
+  allowed_mentions: allowedMentions,
 };
 const messageResult = z.object({ message });
 
 export const sendMessage = defineTool({
   name: "discord_send_message",
   description: "Send a message",
-  operation_ids: ["create_message"],
+  operationIds: ["create_message"],
   toolset: "messages",
-  credential: "bot",
   scope: { channel: "channel_id" },
   permissions: ["ViewChannel", "SendMessages"],
   effect: "write",
@@ -33,16 +32,8 @@ export const sendMessage = defineTool({
   input: z.object({
     channel_id: snowflake,
     ...body,
-    allowed_mentions: z
-      .object({
-        parse: z.array(z.enum(AllowedMentionsTypes)).optional(),
-        roles: z.array(snowflake).optional(),
-        users: z.array(snowflake).optional(),
-        replied_user: z.boolean().optional(),
-      })
-      .optional(),
     message_reference: z
-      .object({
+      .strictObject({
         message_id: snowflake,
         channel_id: snowflake.optional(),
         guild_id: snowflake.optional(),
@@ -53,7 +44,7 @@ export const sendMessage = defineTool({
     nonce: z
       .string()
       .max(25)
-      .default(() => randomBytes(12).toString("hex"))
+      .optional()
       .describe("Pass the nonce from an uncertain result to retry without a duplicate"),
   }),
   execute: async ({ channel_id, files: uploads, ...p }, { discord, files }) => {
@@ -64,8 +55,8 @@ export const sendMessage = defineTool({
         route: Routes.channelMessages(channel_id),
         body: {
           ...p,
+          nonce: p.nonce ?? randomBytes(12).toString("hex"),
           enforce_nonce: true,
-          allowed_mentions: p.allowed_mentions ?? { parse: [] },
           attachments,
         },
         files: raw,
@@ -76,12 +67,13 @@ export const sendMessage = defineTool({
 export const editMessage = defineTool({
   name: "discord_edit_message",
   description: "Edit a message's content, embeds and attachment metadata, or add attachments",
-  operation_ids: ["get_message", "update_message"],
+  operationIds: ["get_message", "update_message"],
   toolset: "messages",
-  credential: "bot",
   scope: { channel: "channel_id", message: "message_id" },
   permissions: ["ViewChannel", "ReadMessageHistory"],
-  effect: "write",
+  // Replacing content is not additive, but editing the bot's own message needs no approval.
+  effect: "destructive",
+  approval: false,
   idempotent: false,
   output: messageResult,
   input: z.object({
@@ -118,9 +110,8 @@ export const editMessage = defineTool({
 export const getMessage = defineTool({
   name: "discord_get_message",
   description: "Get a message",
-  operation_ids: ["get_message"],
+  operationIds: ["get_message"],
   toolset: "messages",
-  credential: "bot",
   scope: { channel: "channel_id", message: "message_id" },
   permissions: ["ViewChannel", "ReadMessageHistory"],
   effect: "read",
@@ -137,9 +128,8 @@ export const getMessage = defineTool({
 export const listMessages = defineTool({
   name: "discord_list_messages",
   description: "List messages, newest first. Page with before=next_before",
-  operation_ids: ["list_messages"],
+  operationIds: ["list_messages"],
   toolset: "messages",
-  credential: "bot",
   scope: { channel: "channel_id" },
   permissions: ["ViewChannel", "ReadMessageHistory"],
   effect: "read",
@@ -156,10 +146,7 @@ export const listMessages = defineTool({
     after: snowflake.optional(),
     around: snowflake.optional(),
   }),
-  execute: async ({ channel_id, ...p }, { discord }) => {
-    const query = new URLSearchParams();
-    for (const [key, value] of Object.entries(p))
-      if (value !== undefined) query.set(key, String(value));
+  execute: async ({ channel_id, ...query }, { discord }) => {
     const messages = await discord<RESTGetAPIChannelMessagesResult>({
       method: "GET",
       route: Routes.channelMessages(channel_id),
@@ -175,9 +162,8 @@ export const listMessages = defineTool({
 export const downloadAttachment = defineTool({
   name: "discord_download_attachment",
   description: "Download a message attachment into DISCORD_MCP_DOWNLOAD_DIR",
-  operation_ids: ["get_message"],
+  operationIds: ["get_message"],
   toolset: "messages",
-  credential: "bot",
   scope: { channel: "channel_id", message: "message_id" },
   permissions: ["ViewChannel", "ReadMessageHistory"],
   effect: "local_write",
@@ -191,7 +177,7 @@ export const downloadAttachment = defineTool({
     sha256: z.string(),
   }),
   input: z.object({ ...messageIds, attachment_id: snowflake }),
-  execute: async (p, { discord, files, signal }) => {
+  execute: async (p, { discord, files }) => {
     const { attachments } = await discord<RESTGetAPIChannelMessageResult>({
       method: "GET",
       route: Routes.channelMessage(p.channel_id, p.message_id),
@@ -206,7 +192,7 @@ export const downloadAttachment = defineTool({
       });
     const filename = `${p.message_id}-${attachment.id}-${attachment.filename}`;
     return {
-      ...(await files.download(attachment.url, filename, signal)),
+      ...(await files.download(attachment.url, filename)),
       attachment_id: attachment.id,
       filename,
       content_type: attachment.content_type ?? null,

@@ -8,7 +8,7 @@ import type {
   DiscordTransport,
   ScopeResolver,
 } from "./ports.js";
-import { PToolError, redact } from "./tool-error.js";
+import { type ErrorCategory, PToolError, redact } from "./tool-error.js";
 import {
   type CredentialProfile,
   type LogLevel,
@@ -19,10 +19,10 @@ import {
 
 export interface ToolErrorResult {
   message: string;
-  category: string;
+  category: ErrorCategory;
   retryable: boolean;
   remediation: string;
-  operation_id: string;
+  tool: string;
   correlation_id: string;
   resource_ids: Record<string, string>;
   status?: number;
@@ -54,14 +54,27 @@ export class PToolPipeline {
     return this.registry.list().filter((tool) => this.policy.allows(tool));
   }
   async call(name: string, input: unknown, session: CallSession = {}): Promise<ToolResult> {
-    const correlation_id = randomUUID();
+    const correlationId = randomUUID();
     const log = async (level: LogLevel, message: string) => {
       const data = redact(message);
-      process.stderr.write(`[${level}] ${correlation_id} ${name}: ${data}\n`);
+      process.stderr.write(`[${level}] ${correlationId} ${name}: ${data}\n`);
       await session.log?.(level, data);
     };
     const tool = this.registry.get(name);
     let resources: Record<string, string> = {};
+    let committed = false;
+    let committedId: string | undefined;
+    const audit = (outcome: string) => {
+      if (!tool || tool.effect === "read") return;
+      const record = {
+        correlation_id: correlationId,
+        tool: name,
+        credential: tool.credential,
+        resource_ids: { ...resources, ...(committedId ? { id: committedId } : {}) },
+        outcome,
+      };
+      process.stderr.write(`[audit] ${JSON.stringify(record)}\n`);
+    };
     try {
       if (!tool)
         throw new PToolError(`Unknown tool: ${name}`, {
@@ -87,39 +100,64 @@ export class PToolPipeline {
           remediation: `Configure the ${tool.credential} credential`,
         });
       const signal = session.signal ?? new AbortController().signal;
-      const nonce = typeof parsed.data.nonce === "string" ? parsed.data.nonce : undefined;
-      let committed = false;
+      const progress = async (value: number, total?: number) => session.progress?.(value, total);
+      let nonce: string | undefined;
       const discord: DiscordRequest = async <T>(request: DiscordRequestInit) => {
         if (request.method === "GET") return transport.request<T>(request, signal);
+        nonce = nonceOf(request.body) ?? nonce;
+        if (request.files?.length) await progress(0, 1);
         try {
           const response = await transport.request<T>(request, signal);
           committed = true;
+          committedId = responseId(response).id ?? committedId;
+          if (request.files?.length) await progress(1, 1);
           return response;
         } catch (error) {
           if (tool.idempotent || !mayHaveCommitted(error)) throw error;
-          throw new PToolError("The write may have been applied", {
-            category: "uncertain",
-            retryable: false,
-            remediation: nonce
-              ? "Check the result before retrying, or retry with the same nonce"
-              : "Check the resource before retrying",
-            resourceIds: { ...resources, ...(nonce ? { nonce } : {}) },
-            cause: error,
-          });
+          throw uncertain(error);
         }
       };
+      const uncertain = (cause: unknown) =>
+        new PToolError("The write may have been applied", {
+          category: "uncertain",
+          retryable: false,
+          remediation: nonce
+            ? "Check the result before retrying, or retry with the same nonce"
+            : "Check the resource before retrying",
+          resourceIds: {
+            ...resources,
+            ...(committedId ? { id: committedId } : {}),
+            ...(nonce ? { nonce } : {}),
+          },
+          cause,
+        });
       if (this.policy.allowedGuilds.length)
-        this.policy.checkResource(tool, await this.services.resolveScope(ids.byKind, discord));
-      const output = await tool.execute(parsed.data, {
-        discord,
-        files: this.services.files,
-        signal,
-        progress: async (progress, total) => session.progress?.(progress, total),
-        log,
-        correlation_id,
-      });
+        this.policy.checkResource(await this.services.resolveScope(ids.byKind, discord));
+      const { files } = this.services;
+      const output = await tool
+        .execute(parsed.data, {
+          discord,
+          files: {
+            prepare: (uploads) => files.prepare(uploads),
+            merge: (existing, change) => files.merge(existing, change),
+            download: (url, filename) => files.download(url, filename, signal),
+          },
+          signal,
+          progress,
+          log,
+          correlationId,
+        })
+        .catch((error: unknown) => {
+          // A failure after an earlier write committed leaves a partial change behind.
+          if (!committed || tool.idempotent) throw error;
+          if (error instanceof PToolError && error.category === "uncertain") throw error;
+          throw uncertain(error);
+        });
       const result = tool.output.safeParse(output);
-      if (result.success) return { ok: true, data: result.data };
+      if (result.success) {
+        audit("ok");
+        return { ok: true, data: result.data };
+      }
       throw new PToolError(
         committed
           ? "Discord accepted the request but the response did not match the output schema"
@@ -129,7 +167,7 @@ export class PToolPipeline {
           retryable: false,
           remediation: committed
             ? "Do not repeat the request; read the resource back to verify it"
-            : `Check server logs for correlation ID ${correlation_id}`,
+            : `Check server logs for correlation ID ${correlationId}`,
           resourceIds: { ...resources, ...responseId(output) },
           cause: new Error(describe(result.error)),
         },
@@ -145,8 +183,9 @@ export class PToolPipeline {
         new PToolError("Operation failed", {
           category: "internal",
           retryable: false,
-          remediation: `Check server logs for correlation ID ${correlation_id}`,
+          remediation: `Check server logs for correlation ID ${correlationId}`,
         });
+      audit(mapped.category);
       const permissions = mapped.status === 403 ? tool?.permissions : undefined;
       return {
         ok: false,
@@ -157,8 +196,8 @@ export class PToolPipeline {
           remediation: permissions?.length
             ? `${mapped.remediation}; this tool needs ${permissions.join(", ")}`
             : mapped.remediation,
-          operation_id: mapped.operationId ?? name,
-          correlation_id,
+          tool: name,
+          correlation_id: correlationId,
           resource_ids: { ...resources, ...mapped.resourceIds },
           ...(mapped.status === undefined ? {} : { status: mapped.status }),
           ...(mapped.discordCode === undefined ? {} : { discord_code: mapped.discordCode }),
@@ -173,6 +212,14 @@ function mayHaveCommitted(error: unknown): boolean {
   if (!(error instanceof PToolError)) return true;
   if (error.category === "cancelled") return true;
   return error.category === "discord" && (error.status === undefined || error.status >= 500);
+}
+function nonceOf(body: unknown): string | undefined {
+  return typeof body === "object" &&
+    body !== null &&
+    "nonce" in body &&
+    typeof body.nonce === "string"
+    ? body.nonce
+    : undefined;
 }
 function responseId(output: unknown): Record<string, string> {
   if (typeof output !== "object" || output === null) return {};

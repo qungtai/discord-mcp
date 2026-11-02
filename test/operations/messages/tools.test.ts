@@ -22,21 +22,31 @@ describe("message tools over MCP", () => {
     const { client, request } = await harness({
       files: new PAttachmentService([join(dir, "root")], ""),
     });
-    const result = await client.callTool({
-      name: "discord_send_message",
-      arguments: {
-        channel_id: "1",
-        content: "hello",
-        files: [
-          {
-            path: join(dir, "root", "a.txt"),
-            description: "alt",
-            is_spoiler: true,
-            content_type: "text/plain",
-          },
-        ],
+    const onprogress = vi.fn();
+    const result = await client.callTool(
+      {
+        name: "discord_send_message",
+        arguments: {
+          channel_id: "1",
+          content: "hello",
+          files: [
+            {
+              path: join(dir, "root", "a.txt"),
+              description: "alt",
+              title: "greeting",
+              is_spoiler: true,
+              content_type: "text/plain",
+            },
+          ],
+        },
       },
-    });
+      undefined,
+      { onprogress },
+    );
+    expect(onprogress.mock.calls).toEqual([
+      [{ progress: 0, total: 1 }],
+      [{ progress: 1, total: 1 }],
+    ]);
     expect(result.structuredContent).toEqual({ message: MESSAGE });
     const { url, method, body } = request();
     expect([method, url]).toEqual(["POST", "https://discord.com/api/v10/channels/1/messages"]);
@@ -46,7 +56,9 @@ describe("message tools over MCP", () => {
       enforce_nonce: true,
       content: "hello",
       allowed_mentions: { parse: [] },
-      attachments: [{ id: "0", filename: "a.txt", description: "alt", is_spoiler: true }],
+      attachments: [
+        { id: "0", filename: "a.txt", description: "alt", title: "greeting", is_spoiler: true },
+      ],
     });
     const part = form.get("files[0]") as Blob;
     expect([await part.text(), part.type]).toEqual(["hello", "text/plain"]);
@@ -78,8 +90,38 @@ describe("message tools over MCP", () => {
     expect(request(0).method).toBe("GET");
     expect(request(1).method).toBe("PATCH");
     expect(JSON.parse(String(request(1).body))).toEqual({
+      allowed_mentions: { parse: [] },
       attachments: [{ id: "11", description: "new", is_spoiler: true }, { id: "12" }],
     });
+  });
+
+  it("keeps the spoiler on an attachment it does not change", async () => {
+    const spoiler = { ...MESSAGE.attachments[1], flags: 8 };
+    const { client, request } = await harness({
+      respond: () => ({ ...MESSAGE, attachments: [MESSAGE.attachments[0], spoiler] }),
+    });
+    await client.callTool({
+      name: "discord_edit_message",
+      arguments: {
+        channel_id: "1",
+        message_id: "2",
+        update_attachments: [{ id: "11", description: "new" }],
+      },
+    });
+    expect(JSON.parse(String(request(1).body)).attachments).toEqual([
+      { id: "11", description: "new" },
+      { id: "12", is_spoiler: true },
+    ]);
+  });
+
+  it("rejects misspelled keys in nested objects", async () => {
+    const { client, makeRequest } = await harness();
+    const result = await client.callTool({
+      name: "discord_send_message",
+      arguments: { channel_id: "1", content: "x", allowed_mentions: { pars: ["users"] } },
+    });
+    expect(errorOf(result)).toMatchObject({ category: "validation" });
+    expect(makeRequest).not.toHaveBeenCalled();
   });
 
   it("appends new files after the existing attachments", async () => {
@@ -125,7 +167,10 @@ describe("message tools over MCP", () => {
     });
     expect(result.structuredContent).toEqual({ message: MESSAGE });
     expect(makeRequest).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(String(request().body))).toEqual({ content: "change" });
+    expect(JSON.parse(String(request().body))).toEqual({
+      content: "change",
+      allowed_mentions: { parse: [] },
+    });
   });
 
   it("lists messages with the query parameters and paging cursors", async () => {

@@ -3,9 +3,31 @@ import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { PermissionFlagsBits } from "discord-api-types/v10";
 import type { z } from "zod/v4";
-import type { AttachmentPort, DiscordRequest, ScopeKind } from "./ports.js";
+import type { DiscordRequest, ScopeKind, ToolFiles } from "./ports.js";
 
-export const TOOLSETS = ["core", "messages"] as const;
+// Every PRD toolset is listed up front so toolset work never edits this line.
+export const TOOLSETS = [
+  "core",
+  "messages",
+  "reactions",
+  "threads",
+  "channels",
+  "webhooks",
+  "guild",
+  "members",
+  "roles",
+  "moderation",
+  "events",
+  "invites",
+  "expressions",
+  "voice",
+  "commands",
+  "monetization",
+  "oauth_user",
+  "social_sdk",
+  "utility",
+  "realtime",
+] as const;
 export const DEFAULT_TOOLSETS: readonly Toolset[] = ["core", "messages"];
 export type Toolset = (typeof TOOLSETS)[number];
 export type CredentialProfile = "bot" | "webhook" | "oauth_user" | "app_owner";
@@ -16,37 +38,37 @@ type Key<I extends z.ZodObject> = keyof z.infer<I> & string;
 export type ResourceScope<K extends string = string> =
   | "none"
   | Partial<Record<ScopeKind, K | readonly K[]>>;
-export interface ChangeSummary {
-  summary: string;
-  resource_ids: Record<string, string>;
-}
 export interface ToolContext {
   discord: DiscordRequest;
-  files: AttachmentPort;
+  files: ToolFiles;
   signal: AbortSignal;
   progress: (progress: number, total?: number) => Promise<void>;
   log: (level: LogLevel, message: string) => Promise<void>;
-  correlation_id: string;
+  correlationId: string;
 }
 export interface ToolSpec<I extends z.ZodObject, O extends z.ZodObject> {
   name: `discord_${string}`;
   description: string;
-  operation_ids: readonly string[];
+  operationIds: readonly string[];
   toolset: Toolset;
-  credential: CredentialProfile;
+  credential?: CredentialProfile;
   scope: ResourceScope<Key<I>>;
   permissions: readonly Permission[];
+  // Drives the MCP annotations and read-only mode.
   effect: Effect;
+  // Server-side approval gate; defaults to effect === "destructive".
+  approval?: boolean;
   idempotent: boolean;
   input: I;
   output: O;
   execute(input: z.infer<I>, context: ToolContext): Promise<z.input<O>>;
-  // Required before a destructive tool can run once the approval flow exists.
-  preview?(input: z.infer<I>, context: ToolContext): Promise<ChangeSummary>;
 }
-export interface ToolDescriptor extends Omit<ToolSpec<z.ZodObject, z.ZodObject>, "name" | "scope"> {
+export interface ToolDescriptor
+  extends Omit<ToolSpec<z.ZodObject, z.ZodObject>, "name" | "scope" | "credential" | "approval"> {
   name: string;
   scope: ResourceScope;
+  credential: CredentialProfile;
+  approval: boolean;
   annotations: {
     readOnlyHint: boolean;
     destructiveHint: boolean;
@@ -62,6 +84,8 @@ export function defineTool<I extends z.ZodObject, O extends z.ZodObject>(
     throw new Error(`Invalid tool name: ${spec.name}`);
   const tool: ToolDescriptor = {
     ...spec,
+    credential: spec.credential ?? "bot",
+    approval: spec.approval ?? spec.effect === "destructive",
     input: spec.input.strict(),
     annotations: {
       readOnlyHint: spec.effect === "read",
@@ -80,9 +104,13 @@ export function scopeIds(tool: ToolDescriptor, input: Record<string, unknown>) {
   for (const [kind, keys] of Object.entries(tool.scope) as [ScopeKind, string | string[]][])
     for (const key of typeof keys === "string" ? [keys] : keys) {
       const value = input[key];
-      if (typeof value !== "string") continue;
-      resources[key] = value;
-      byKind[kind] = [...(byKind[kind] ?? []), value];
+      if (value === undefined) continue;
+      const values = typeof value === "string" ? [value] : value;
+      // Fail closed: a scope key that is not a string or string[] would escape the allowlist.
+      if (!Array.isArray(values) || values.some((v) => typeof v !== "string"))
+        throw new Error(`Scope key ${key} of ${tool.name} must be a string or string[]`);
+      resources[key] = values.join(",");
+      byKind[kind] = [...(byKind[kind] ?? []), ...(values as string[])];
     }
   return { byKind, resources };
 }

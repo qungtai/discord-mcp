@@ -52,14 +52,24 @@ describe("uploads", () => {
     await rejects(service.upload("a.txt"), "validation", "Invalid upload path");
     await rejects(service.upload(`${root}/../outside`), "validation", "Invalid upload path");
   });
-  it("rejects files over the 25 MiB cap", async () => {
+  it("rejects files over the configured cap, 20 MiB by default", async () => {
     await writeFile(join(root, "big"), "");
-    await truncate(join(root, "big"), 25 * 1024 * 1024 + 1);
+    await truncate(join(root, "big"), 20 * 1024 * 1024 + 1);
     await rejects(
       new PAttachmentService([root], "").upload(join(root, "big")),
       "validation",
-      "Upload must be a regular file under 25 MiB",
+      "Upload must be a regular file of at most 20971520 bytes",
     );
+    await rejects(
+      new PAttachmentService([root], "", 4).upload(join(root, "a.txt")),
+      "validation",
+      "Upload must be a regular file of at most 4 bytes",
+    );
+  });
+  it("does not reveal whether a path outside the roots exists", async () => {
+    const service = new PAttachmentService([root], "");
+    for (const path of [join(dir, "outside"), join(dir, "missing")])
+      await rejects(service.upload(path), "policy", "Upload outside allowed roots");
   });
   it("reports a missing file as not_found", async () => {
     await rejects(
@@ -102,6 +112,14 @@ describe("downloads", () => {
       "validation",
       "Invalid download location",
     );
+  });
+  it("refuses redirects", async () => {
+    const fetch = vi.fn(async (_: URL, init?: RequestInit) =>
+      init?.redirect === "error" ? new Response("ok") : new Response("", { status: 302 }),
+    );
+    vi.stubGlobal("fetch", fetch);
+    await new PAttachmentService([], dir).download("https://cdn.discordapp.com/a", "r");
+    expect(fetch.mock.calls[0]?.[1]).toMatchObject({ redirect: "error" });
   });
   it("maps non-OK responses to a retryable Discord error", async () => {
     vi.stubGlobal(

@@ -6,55 +6,81 @@ import { z } from "zod/v4";
 import { PAttachmentService } from "../../src/adapters/files/attachment-service.js";
 import { PToolPipeline } from "../../src/core/pipeline.js";
 import { PPolicyEngine } from "../../src/core/policy.js";
-import { resolveScope } from "../../src/core/scope.js";
+import type { DiscordRequest } from "../../src/core/ports.js";
+import { createScopeResolver } from "../../src/core/scope.js";
 import { redact } from "../../src/core/tool-error.js";
 import { defineTool, PToolRegistry, type ToolDescriptor } from "../../src/core/tool-registry.js";
-import { errorOf, harness, json } from "../support/harness.js";
+import { errorOf, harness, json, MESSAGE } from "../support/harness.js";
 
 const probe = defineTool({
   name: "discord_probe_test",
   description: "test",
-  operation_ids: ["test"],
+  operationIds: ["test"],
   toolset: "core",
-  credential: "bot",
   scope: "none",
   permissions: [],
   effect: "read",
   idempotent: true,
   input: z.object({ fail: z.enum(["none", "plain", "string", "output"]).default("none") }),
   output: z.object({ correlation_id: z.string().min(1) }),
-  execute: async ({ fail }, { progress, log, correlation_id }) => {
+  execute: async ({ fail }, { progress, log, correlationId }) => {
     await progress(1, 2);
     await log("info", "using Bot abc.def");
     if (fail === "plain") throw new Error("boom Bot secret.token");
     if (fail === "string") throw "raw";
-    return { correlation_id: fail === "output" ? "" : correlation_id };
+    return { correlation_id: fail === "output" ? "" : correlationId };
   },
 });
-const create = (idempotent: boolean, effect: "write" | "destructive" = "write") =>
+const create = (
+  idempotent: boolean,
+  effect: "write" | "destructive" = "write",
+  approval?: boolean,
+) =>
   defineTool({
     name: idempotent ? "discord_put_probe" : "discord_create_probe",
     description: "test",
-    operation_ids: ["test"],
+    operationIds: ["test"],
     toolset: "core",
-    credential: "bot",
     scope: { channel: ["channel_id"] },
     permissions: ["ManageChannels"],
     effect,
+    approval,
     idempotent,
-    input: z.object({ channel_id: z.string(), read_first: z.boolean().default(false) }),
+    input: z.object({
+      channel_id: z.string(),
+      read_first: z.boolean().default(false),
+      then_put: z.boolean().default(false),
+    }),
     output: z.object({ channel: z.object({ id: z.string(), name: z.string() }) }),
     execute: async (p, { discord }) => {
       if (p.read_first) await discord({ method: "GET", route: `/channels/${p.channel_id}` });
-      return {
-        channel: await discord<{ id: string; name: string }>({
-          method: idempotent ? "PUT" : "POST",
-          route: `/guilds/1/channels`,
-          body: { name: "x" },
-        }),
-      };
+      const channel = await discord<{ id: string; name: string }>({
+        method: idempotent ? "PUT" : "POST",
+        route: `/guilds/1/channels`,
+        body: { name: "x" },
+        reason: "probe reason",
+      });
+      if (p.then_put) await discord({ method: "PUT", route: `/channels/${channel.id}/x` });
+      return { channel };
     },
   });
+// A tool that scopes a guild and several channels, as pin or overwrite tools would.
+const scoped = defineTool({
+  ...probe,
+  name: "discord_scoped_probe",
+  scope: { guild: "guild_id", channel: ["channel_id", "target_ids"] },
+  input: z.object({
+    guild_id: z.string().optional(),
+    channel_id: z.string(),
+    target_ids: z.array(z.string()).default([]),
+  }),
+  output: z.object({}),
+  execute: async (p, { discord }) => {
+    for (const id of [p.channel_id, ...p.target_ids])
+      await discord({ method: "PUT", route: `/channels/${id}/pins/1` });
+    return {};
+  },
+});
 function registryOf(...tools: ToolDescriptor[]) {
   const registry = new PToolRegistry();
   for (const tool of tools) registry.register(tool);
@@ -138,7 +164,7 @@ describe("registry", () => {
     });
     expect(Object.fromEntries(tools.map((tool) => [tool.name, tool.annotations]))).toEqual({
       discord_download_attachment: hints(false, false),
-      discord_edit_message: hints(false, false),
+      discord_edit_message: { ...hints(false, false), destructiveHint: true },
       discord_get_message: hints(true, true),
       discord_list_messages: hints(true, true),
       discord_send_message: hints(false, false),
@@ -155,6 +181,25 @@ describe("registry", () => {
     ]);
     expect(tool("discord_get_message")?.inputSchema.additionalProperties).toBe(false);
     expect(JSON.stringify(tools)).not.toContain("$ref");
+  });
+  it("advertises strict nested input objects and no generated defaults", async () => {
+    const { client } = await harness();
+    const loose: string[] = [];
+    const visit = (schema: unknown, path: string): void => {
+      if (typeof schema !== "object" || schema === null) return;
+      const node = schema as Record<string, unknown>;
+      if (node.properties && node.additionalProperties !== false) loose.push(path);
+      for (const [key, child] of Object.entries(node)) visit(child, `${path}.${key}`);
+    };
+    const tools = (await client.listTools()).tools;
+    for (const tool of tools) visit(tool.inputSchema, tool.name);
+    expect(loose).toEqual([]);
+    const second = await harness();
+    expect((await second.client.listTools()).tools.map((t) => t.inputSchema)).toEqual(
+      tools.map((t) => t.inputSchema),
+    );
+    const send = tools.find((t) => t.name === "discord_send_message");
+    expect(send?.inputSchema.properties?.nonce).not.toHaveProperty("default");
   });
   it("lists only tools the policy allows", async () => {
     const names = async (policy: PPolicyEngine) =>
@@ -186,7 +231,7 @@ describe("pipeline over MCP", () => {
       category: "validation",
       retryable: false,
       remediation: "Fix the arguments to match the tool input schema",
-      operation_id: "discord_get_message",
+      tool: "discord_get_message",
       correlation_id: expect.stringMatching(/^[0-9a-f-]{36}$/),
       resource_ids: {},
     });
@@ -281,7 +326,7 @@ describe("pipeline without an MCP session", () => {
     });
     vi.restoreAllMocks();
   });
-  it("denies disabled toolsets and destructive tools", async () => {
+  it("denies disabled toolsets and tools that need approval", async () => {
     const { pipeline } = await harness({
       registry: registryOf(probe, create(false, "destructive")),
       policy: new PPolicyEngine([], ["messages"], false),
@@ -295,14 +340,23 @@ describe("pipeline without an MCP session", () => {
     });
     expect(await core.call("discord_create_probe", { channel_id: "1" })).toMatchObject({
       ok: false,
-      error: { category: "policy", message: "Destructive tools require approval support" },
+      error: { category: "policy", message: "This tool requires approval support" },
+    });
+    expect(core.tools()).toEqual([]);
+    const { pipeline: optOut } = await harness({
+      registry: registryOf(create(false, "destructive", false)),
+      respond: () => ({ id: "5", name: "x" }),
+    });
+    expect(optOut.tools().map((t) => t.annotations.destructiveHint)).toEqual([true]);
+    expect(await optOut.call("discord_create_probe", { channel_id: "1" })).toMatchObject({
+      ok: true,
     });
   });
   it("fails when the tool's credential profile is not configured", async () => {
     const pipeline = new PToolPipeline(registryOf(probe), new PPolicyEngine([], ["core"], false), {
       credentials: {},
       files: new PAttachmentService([], ""),
-      resolveScope,
+      resolveScope: createScopeResolver(),
     });
     expect(await pipeline.call(probe.name, {})).toMatchObject({
       ok: false,
@@ -350,6 +404,66 @@ describe("uncertain writes", () => {
     ).toMatchObject({ error: { category: "discord", retryable: true, status: 502 } });
     vi.restoreAllMocks();
   });
+  it("reports a failure after a committed write as uncertain with the created ID", async () => {
+    vi.spyOn(process.stderr, "write").mockReturnValue(true);
+    const { pipeline } = await harness({
+      registry: registryOf(create(false)),
+      makeRequest: async (_, init) =>
+        init.method === "POST"
+          ? json({ id: "55", name: "x" })
+          : json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+    });
+    expect(
+      await pipeline.call("discord_create_probe", { channel_id: "7", then_put: true }),
+    ).toMatchObject({
+      ok: false,
+      error: {
+        category: "uncertain",
+        retryable: false,
+        resource_ids: { channel_id: "7", id: "55" },
+      },
+    });
+    vi.restoreAllMocks();
+  });
+  it("keeps a rate-limited non-idempotent write retryable", async () => {
+    vi.spyOn(process.stderr, "write").mockReturnValue(true);
+    const { pipeline } = await harness({
+      registry: registryOf(create(false)),
+      rateLimitWaitMs: 1,
+      makeRequest: async () =>
+        json(
+          { message: "You are being rate limited.", retry_after: 3, global: false },
+          { status: 429, headers: { "retry-after": "3" } },
+        ),
+    });
+    expect(await pipeline.call("discord_create_probe", { channel_id: "7" })).toMatchObject({
+      error: { category: "rate_limited", retryable: true },
+    });
+    vi.restoreAllMocks();
+  });
+  it("sends the audit log reason and writes one audit line per mutating call", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockReturnValue(true);
+    const { pipeline, request } = await harness({
+      registry: registryOf(create(false)),
+      respond: () => ({ id: "55", name: "x" }),
+    });
+    const result = await pipeline.call("discord_create_probe", { channel_id: "7" });
+    expect(new Headers(request().headers as HeadersInit).get("x-audit-log-reason")).toBe(
+      "probe%20reason",
+    );
+    const lines = stderr.mock.calls.map(([c]) => String(c)).filter((c) => c.startsWith("[audit]"));
+    expect(lines.map((line) => JSON.parse(line.slice(8)))).toEqual([
+      {
+        correlation_id: expect.any(String),
+        tool: "discord_create_probe",
+        credential: "bot",
+        resource_ids: { channel_id: "7", id: "55" },
+        outcome: "ok",
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    vi.restoreAllMocks();
+  });
   it("tells the agent not to repeat a write whose response fails the output schema", async () => {
     vi.spyOn(process.stderr, "write").mockReturnValue(true);
     const { pipeline } = await harness({
@@ -375,7 +489,8 @@ describe("guild allowlist", () => {
     const call = async (channel: unknown) => {
       const { pipeline, request } = await harness({
         policy,
-        makeRequest: async (url) => json(String(url).endsWith("/channels/1") ? channel : {}),
+        makeRequest: async (url) =>
+          json(String(url).endsWith("/channels/1") ? channel : { ...MESSAGE, channel_id: "1" }),
       });
       return {
         result: await pipeline.call("discord_get_message", { channel_id: "1", message_id: "2" }),
@@ -383,6 +498,7 @@ describe("guild allowlist", () => {
       };
     };
     const allowed = await call({ id: "1", guild_id: "200" });
+    expect(allowed.result.ok).toBe(true);
     expect(allowed.request(0).url).toBe("https://discord.com/api/v10/channels/1");
     expect(allowed.request(1).url).toBe("https://discord.com/api/v10/channels/1/messages/2");
     for (const channel of [{ id: "1", guild_id: "300" }, { id: "1" }])
@@ -390,14 +506,59 @@ describe("guild allowlist", () => {
         error: { category: "policy", message: "Guild is not allowed" },
       });
   });
-  it("uses a guild ID from the input without a lookup", async () => {
-    const discord = vi.fn();
-    expect(await resolveScope({ guild: ["5"], channel: ["1"] }, discord)).toEqual({
-      guildIds: ["5"],
+  const guilds: Record<string, unknown> = {
+    "/channels/1": { id: "1", guild_id: "200" },
+    "/channels/9": { id: "9", guild_id: "999" },
+    "/channels/8": { id: "8" },
+  };
+  const scopedCall = async (input: Record<string, unknown>) => {
+    const { pipeline, makeRequest } = await harness({
+      registry: registryOf(scoped),
+      policy: new PPolicyEngine(["200"], ["core"], false),
+      makeRequest: async (url) => json(guilds[new URL(String(url)).pathname.slice(8)] ?? {}),
+    });
+    const result = await pipeline.call("discord_scoped_probe", input);
+    return { result, methods: makeRequest.mock.calls.map(([, init]) => init.method) };
+  };
+  it.each([
+    ["an allowed guild ID with a channel elsewhere", { guild_id: "200", channel_id: "9" }],
+    ["a channel elsewhere in an array key", { channel_id: "1", target_ids: ["9"] }],
+    ["a DM next to an allowed channel", { channel_id: "1", target_ids: ["8"] }],
+  ])("denies %s before any write", async (_, input) => {
+    const { result, methods } = await scopedCall(input);
+    expect(result).toMatchObject({ error: { category: "policy" } });
+    expect(methods.every((m) => m === "GET")).toBe(true);
+  });
+  it("allows channels in the allowed guild and looks each channel up once", async () => {
+    let lookups = 0;
+    const discord: DiscordRequest = async <T>() => {
+      lookups++;
+      return { guild_id: "200" } as T;
+    };
+    const resolve = createScopeResolver();
+    await resolve({ channel: ["1"] }, discord);
+    expect(await resolve({ guild: ["200"], channel: ["1"] }, discord)).toEqual({
+      guildIds: ["200"],
       channelIds: ["1"],
       isDm: false,
     });
-    expect(discord).not.toHaveBeenCalled();
+    expect(lookups).toBe(1);
+    const { result } = await scopedCall({ guild_id: "200", channel_id: "1", target_ids: ["1"] });
+    expect(result).toEqual({ ok: true, data: {} });
+  });
+  it("fails closed on a scope key that is not a string or string[]", async () => {
+    const bad = defineTool({
+      ...scoped,
+      name: "discord_bad_probe",
+      scope: { channel: "channel_id" },
+      input: z.object({ channel_id: z.number() }),
+    });
+    vi.spyOn(process.stderr, "write").mockReturnValue(true);
+    const { pipeline } = await harness({ registry: registryOf(bad) });
+    expect(await pipeline.call("discord_bad_probe", { channel_id: 1 })).toMatchObject({
+      error: { category: "internal" },
+    });
+    vi.restoreAllMocks();
   });
 });
 

@@ -16,6 +16,7 @@ export class PAttachmentService implements AttachmentPort {
   constructor(
     private readonly roots: string[],
     private readonly downloadDir: string,
+    private readonly maxUploadBytes = 20 * 1024 * 1024,
   ) {}
   async prepare(uploads: readonly FileUpload[]): Promise<Multipart> {
     const files = await Promise.all(
@@ -37,7 +38,7 @@ export class PAttachmentService implements AttachmentPort {
   }
   // Keeps every existing attachment, applies metadata updates and appends new uploads.
   async merge(
-    existing: readonly { id: string; description?: string | null }[],
+    existing: readonly { id: string; description?: string | null; flags?: number }[],
     change: { add?: readonly FileUpload[]; update?: readonly AttachmentUpdate[] },
   ): Promise<Multipart> {
     for (const { id } of change.update ?? [])
@@ -57,7 +58,8 @@ export class PAttachmentService implements AttachmentPort {
           return {
             id: a.id,
             description: update?.description ?? a.description ?? undefined,
-            is_spoiler: update?.is_spoiler,
+            // Flag 8 is IS_SPOILER; resend it so a kept attachment never loses its spoiler.
+            is_spoiler: update?.is_spoiler ?? ((a.flags ?? 0) & 8 ? true : undefined),
           };
         }),
         ...added.attachments,
@@ -71,6 +73,19 @@ export class PAttachmentService implements AttachmentPort {
         retryable: false,
         remediation: "Use an absolute upload path",
       });
+    if (this.roots.some((root) => !isAbsolute(root)))
+      throw new PToolError("Upload roots must be absolute", {
+        category: "validation",
+        retryable: false,
+        remediation: "Configure absolute upload roots",
+      });
+    const outside = new PToolError("Upload outside allowed roots", {
+      category: "policy",
+      retryable: false,
+      remediation: "Choose a file inside an allowed root",
+    });
+    // Lexical check first, so paths outside the roots never reveal whether they exist.
+    if (!within(this.roots, path)) throw outside;
     const target = await realpath(path).catch((error: unknown) => {
       throw code(error) === "ENOENT"
         ? new PToolError("Upload file not found", {
@@ -81,36 +96,19 @@ export class PAttachmentService implements AttachmentPort {
           })
         : error;
     });
-    if (this.roots.some((root) => !isAbsolute(root)))
-      throw new PToolError("Upload roots must be absolute", {
-        category: "validation",
-        retryable: false,
-        remediation: "Configure absolute upload roots",
-      });
-    const roots = await Promise.all(this.roots.map((root) => realpath(root)));
-    if (
-      !roots.some(
-        (root) =>
-          target === root ||
-          (!relative(root, target).startsWith(`..${sep}`) &&
-            relative(root, target) !== ".." &&
-            !isAbsolute(relative(root, target))),
-      )
-    )
-      throw new PToolError("Upload outside allowed roots", {
-        category: "policy",
-        retryable: false,
-        remediation: "Choose a file inside an allowed root",
-      });
+    if (!within(await Promise.all(this.roots.map((root) => realpath(root))), target)) throw outside;
     const handle = await open(target, constants.O_RDONLY | constants.O_NOFOLLOW);
     try {
       const info = await handle.stat();
-      if (!info.isFile() || info.size > 25 * 1024 * 1024)
-        throw new PToolError("Upload must be a regular file under 25 MiB", {
-          category: "validation",
-          retryable: false,
-          remediation: "Choose a smaller regular file",
-        });
+      if (!info.isFile() || info.size > this.maxUploadBytes)
+        throw new PToolError(
+          `Upload must be a regular file of at most ${this.maxUploadBytes} bytes`,
+          {
+            category: "validation",
+            retryable: false,
+            remediation: "Choose a smaller regular file",
+          },
+        );
       return { name: filename ?? basename(target), data: await handle.readFile() };
     } finally {
       await handle.close();
@@ -196,6 +194,12 @@ async function fetchAttachment(url: URL, signal?: AbortSignal): Promise<Buffer> 
           cause: error,
         });
   }
+}
+function within(roots: readonly string[], target: string): boolean {
+  return roots.some((root) => {
+    const rel = relative(root, target);
+    return rel === "" || (rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel));
+  });
 }
 function code(error: unknown): unknown {
   return error instanceof Error && "code" in error ? error.code : undefined;

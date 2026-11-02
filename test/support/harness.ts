@@ -7,7 +7,7 @@ import { PAttachmentService } from "../../src/adapters/files/attachment-service.
 import { createServer } from "../../src/adapters/mcp/server.js";
 import { PToolPipeline } from "../../src/core/pipeline.js";
 import { PPolicyEngine } from "../../src/core/policy.js";
-import { resolveScope } from "../../src/core/scope.js";
+import { createScopeResolver } from "../../src/core/scope.js";
 import { PToolRegistry } from "../../src/core/tool-registry.js";
 
 export const MESSAGE = {
@@ -61,7 +61,11 @@ export async function harness(
   const pipeline = new PToolPipeline(
     registry,
     options.policy ?? new PPolicyEngine([], ["core", "messages"], false),
-    { credentials: { bot }, files: options.files ?? new PAttachmentService([], ""), resolveScope },
+    {
+      credentials: { bot },
+      files: options.files ?? new PAttachmentService([], ""),
+      resolveScope: createScopeResolver(),
+    },
   );
   const server = createServer(pipeline);
   const client = new Client({ name: "test", version: "1" });
@@ -70,7 +74,7 @@ export async function harness(
   await client.listTools();
   const request = (index = 0) => {
     const [url, init] = makeRequest.mock.calls[index] ?? [];
-    return { url, method: init?.method, body: init?.body };
+    return { url, method: init?.method, body: init?.body, headers: init?.headers };
   };
   return { client, makeRequest, request, pipeline };
 }

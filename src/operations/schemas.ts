@@ -1,5 +1,7 @@
 // Shared Discord schemas. Outputs require identifiers only, so a Discord response that adds,
-// drops or nulls an optional field never turns a successful call into a failure.
+// drops or nulls an optional field never turns a successful call into a failure. Input objects
+// are strict so a misspelled nested key fails instead of being dropped.
+import { AllowedMentionsTypes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 
 export const snowflake = z.string().regex(/^\d+$/, "Expected a Discord snowflake");
@@ -63,7 +65,16 @@ export const member = z.object({
   joined_at: z.string().nullish(),
 });
 
-export const fileUpload = z.object({
+// No pings unless the caller opts in (FR-AUTH-07). A constant default is safe to advertise.
+export const allowedMentions = z
+  .strictObject({
+    parse: z.array(z.enum(AllowedMentionsTypes)).optional(),
+    roles: z.array(snowflake).optional(),
+    users: z.array(snowflake).optional(),
+    replied_user: z.boolean().optional(),
+  })
+  .default({ parse: [] });
+export const fileUpload = z.strictObject({
   path: z.string().describe("Absolute path inside DISCORD_MCP_FILE_ROOTS"),
   filename: z.string().optional(),
   description: z.string().optional(),
@@ -71,7 +82,7 @@ export const fileUpload = z.object({
   title: z.string().optional(),
   content_type: z.string().optional(),
 });
-export const attachmentUpdate = z.object({
+export const attachmentUpdate = z.strictObject({
   id: snowflake,
   description: z.string().optional(),
   is_spoiler: z.boolean().optional(),

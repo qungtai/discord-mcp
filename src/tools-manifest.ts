@@ -5,8 +5,9 @@ const registry = await PToolRegistry.load();
 const manifest = registry.list().map((t) => ({
   name: t.name,
   toolset: t.toolset,
-  operation_ids: t.operation_ids,
+  operation_ids: t.operationIds,
   effect: t.effect,
+  approval: t.approval,
   credential: t.credential,
   permissions: t.permissions,
 }));

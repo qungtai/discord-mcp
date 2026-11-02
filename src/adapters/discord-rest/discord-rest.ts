@@ -40,11 +40,10 @@ export class PDiscordRestAdapter implements DiscordTransport {
       return (await this.rest.request({
         fullRoute: request.route,
         method: request.method as RequestMethod,
-        query: request.query,
+        query: request.query && toQuery(request.query),
         body: request.body,
         files: request.files,
         reason: request.reason,
-        auth: request.auth ?? true,
         signal: AbortSignal.any([signal, deadline]),
       })) as T;
     } catch (error) {
@@ -59,7 +58,14 @@ const BY_STATUS: Record<number, [ErrorCategory, string]> = {
   403: ["permission", "Check the bot permissions"],
   404: ["not_found", "Check the IDs in the request"],
   409: ["conflict", "Check the current state of the resource"],
+  413: ["validation", "Send smaller files; Discord rejected the upload size"],
 };
+function toQuery(query: NonNullable<DiscordRequestInit["query"]>): URLSearchParams {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query))
+    if (value !== undefined) params.set(key, String(value));
+  return params;
+}
 function toToolError(error: unknown, cancelled: boolean): PToolError {
   if (error instanceof RateLimitError)
     return new PToolError("Discord rate limit exceeded", {

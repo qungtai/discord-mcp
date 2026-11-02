@@ -18,11 +18,11 @@ export class PPolicyEngine {
     if (readOnly !== undefined && readOnly !== "true" && readOnly !== "false")
       throw new Error("DISCORD_MCP_READ_ONLY must be true or false");
     const toolsets = split(env.DISCORD_MCP_TOOLSETS ?? DEFAULT_TOOLSETS.join(","));
-    if (!toolsets.length || toolsets.some((t) => !(TOOLSETS as readonly string[]).includes(t)))
+    if (!toolsets.length || !toolsets.every(isToolset))
       throw new Error("Invalid DISCORD_MCP_TOOLSETS");
     return new PPolicyEngine(
       split(env.DISCORD_MCP_ALLOWED_GUILDS ?? ""),
-      toolsets as Toolset[],
+      toolsets,
       readOnly === "true",
     );
   }
@@ -36,10 +36,9 @@ export class PPolicyEngine {
         category: "policy",
         retryable: false,
         remediation: denial[1],
-        operationId: tool.name,
       });
   }
-  checkResource(tool: ToolDescriptor, scope: ResolvedScope): void {
+  checkResource(scope: ResolvedScope): void {
     if (
       this.allowedGuilds.length &&
       (!scope.guildIds.length ||
@@ -50,15 +49,16 @@ export class PPolicyEngine {
         category: "policy",
         retryable: false,
         remediation: "Choose an allowed guild",
-        operationId: tool.name,
       });
   }
   private denial(tool: ToolDescriptor): [string, string] | undefined {
     if (!this.toolsets.includes(tool.toolset)) return ["Toolset disabled", "Enable the toolset"];
     if (this.readOnly && tool.effect !== "read")
       return ["Read-only mode", "Disable read-only mode"];
-    if (tool.effect === "destructive")
-      return ["Destructive tools require approval support", "Wait for the approval flow"];
+    if (tool.approval) return ["This tool requires approval support", "Wait for the approval flow"];
     return undefined;
   }
+}
+function isToolset(value: string): value is Toolset {
+  return (TOOLSETS as readonly string[]).includes(value);
 }
