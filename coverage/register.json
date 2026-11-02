@@ -11,7 +11,7 @@
       "path": "/applications/{application_id}/commands/{command_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -38,7 +38,7 @@
       "path": "/applications/{application_id}/emojis/{emoji_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -59,7 +59,7 @@
       "path": "/applications/{application_id}/entitlements/{entitlement_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -86,7 +86,7 @@
       "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -113,7 +113,7 @@
       "path": "/applications/{application_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -134,7 +134,7 @@
       "path": "/applications/{application_id}/activity-instances/{instance_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -155,7 +155,7 @@
       "path": "/applications/{application_id}/commands",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -182,7 +182,7 @@
       "path": "/applications/{application_id}/commands/{command_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -209,7 +209,7 @@
       "path": "/applications/{application_id}/emojis",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -230,7 +230,7 @@
       "path": "/applications/{application_id}/emojis/{emoji_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -251,7 +251,7 @@
       "path": "/applications/{application_id}/entitlements",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -278,7 +278,7 @@
       "path": "/applications/{application_id}/entitlements/{entitlement_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -305,7 +305,7 @@
       "path": "/applications/{application_id}/guilds/{guild_id}/commands",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -332,7 +332,7 @@
       "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -359,7 +359,7 @@
       "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -386,7 +386,7 @@
       "path": "/applications/{application_id}/guilds/{guild_id}/commands/permissions",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -413,7 +413,7 @@
       "path": "/applications/{application_id}/role-connections/metadata",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -434,7 +434,7 @@
       "path": "/applications/@me",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -455,7 +455,7 @@
       "path": "/applications/{application_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -476,7 +476,7 @@
       "path": "/applications/{application_id}/commands/{command_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -503,7 +503,7 @@
       "path": "/applications/{application_id}/emojis/{emoji_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -524,7 +524,7 @@
       "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -551,7 +551,7 @@
       "path": "/applications/@me",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -572,7 +572,7 @@
       "path": "/applications/{application_id}/attachment",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -632,7 +632,7 @@
       "path": "/applications/{application_id}/commands",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -659,7 +659,7 @@
       "path": "/applications/{application_id}/emojis",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -680,7 +680,7 @@
       "path": "/applications/{application_id}/entitlements",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -701,7 +701,7 @@
       "path": "/applications/{application_id}/entitlements/{entitlement_id}/consume",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -728,7 +728,7 @@
       "path": "/applications/{application_id}/guilds/{guild_id}/commands",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -755,7 +755,7 @@
       "path": "/applications/{application_id}/commands",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -782,7 +782,7 @@
       "path": "/applications/{application_id}/guilds/{guild_id}/commands",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -809,7 +809,7 @@
       "path": "/applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -836,7 +836,7 @@
       "path": "/applications/{application_id}/role-connections/metadata",
       "group": "applications",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/application",
+      "doc_link": "https://discord.com/developers/docs/resources/application",
       "auth": [
         {
           "type": "bot"
@@ -857,7 +857,7 @@
       "path": "/channels/{channel_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -878,7 +878,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -899,7 +899,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}/reactions",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -920,7 +920,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -941,7 +941,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/{user_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -962,7 +962,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/@me",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -983,7 +983,7 @@
       "path": "/channels/{channel_id}/messages/pins/{message_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1004,7 +1004,7 @@
       "path": "/channels/{channel_id}/permissions/{overwrite_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1025,7 +1025,7 @@
       "path": "/channels/{channel_id}/pins/{message_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1046,7 +1046,7 @@
       "path": "/channels/{channel_id}/recipients/{user_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1067,7 +1067,7 @@
       "path": "/channels/{channel_id}/thread-members/{user_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1088,7 +1088,7 @@
       "path": "/channels/{channel_id}/thread-members/@me",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1109,7 +1109,7 @@
       "path": "/channels/{channel_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1130,7 +1130,7 @@
       "path": "/channels/{channel_id}/invites",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1151,7 +1151,7 @@
       "path": "/channels/{channel_id}/messages",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1176,7 +1176,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1197,7 +1197,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1218,7 +1218,7 @@
       "path": "/channels/{channel_id}/messages/pins",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1239,7 +1239,7 @@
       "path": "/channels/{channel_id}/permissions/member/{user_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1260,7 +1260,7 @@
       "path": "/channels/{channel_id}/permissions/role/{role_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1281,7 +1281,7 @@
       "path": "/channels/{channel_id}/pins",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1302,7 +1302,7 @@
       "path": "/channels/{channel_id}/polls/{message_id}/answers/{answer_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1323,7 +1323,7 @@
       "path": "/channels/{channel_id}/thread-members",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1344,7 +1344,7 @@
       "path": "/channels/{channel_id}/thread-members/{user_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1365,7 +1365,7 @@
       "path": "/channels/{channel_id}/threads/archived/private",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1386,7 +1386,7 @@
       "path": "/channels/{channel_id}/threads/archived/public",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1407,7 +1407,7 @@
       "path": "/channels/{channel_id}/threads/search",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1428,7 +1428,7 @@
       "path": "/channels/{channel_id}/users/@me/threads/archived/private",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1449,7 +1449,7 @@
       "path": "/channels/{channel_id}/webhooks",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1470,7 +1470,7 @@
       "path": "/channels/{channel_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1491,7 +1491,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1512,7 +1512,7 @@
       "path": "/channels/{channel_id}/followers",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1533,7 +1533,7 @@
       "path": "/channels/{channel_id}/invites",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1554,7 +1554,7 @@
       "path": "/channels/{channel_id}/messages",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1575,7 +1575,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}/crosspost",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1596,7 +1596,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}/threads",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1617,7 +1617,7 @@
       "path": "/channels/{channel_id}/messages/bulk-delete",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1638,7 +1638,7 @@
       "path": "/channels/{channel_id}/polls/{message_id}/expire",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1659,7 +1659,7 @@
       "path": "/channels/{channel_id}/send-soundboard-sound",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1680,7 +1680,7 @@
       "path": "/channels/{channel_id}/threads",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1701,7 +1701,7 @@
       "path": "/channels/{channel_id}/typing",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1722,7 +1722,7 @@
       "path": "/channels/{channel_id}/webhooks",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1743,7 +1743,7 @@
       "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/@me",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1764,7 +1764,7 @@
       "path": "/channels/{channel_id}/messages/pins/{message_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1785,7 +1785,7 @@
       "path": "/channels/{channel_id}/permissions/{overwrite_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1806,7 +1806,7 @@
       "path": "/channels/{channel_id}/pins/{message_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1827,7 +1827,7 @@
       "path": "/channels/{channel_id}/recipients/{user_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1848,7 +1848,7 @@
       "path": "/channels/{channel_id}/thread-members/{user_id}",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1869,7 +1869,7 @@
       "path": "/channels/{channel_id}/thread-members/@me",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1890,7 +1890,7 @@
       "path": "/channels/{channel_id}/voice-status",
       "group": "channels",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/channel",
+      "doc_link": "https://discord.com/developers/docs/resources/channel",
       "auth": [
         {
           "type": "bot"
@@ -1911,7 +1911,7 @@
       "path": "/gateway",
       "group": "gateway",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/topics/gateway",
+      "doc_link": "https://discord.com/developers/docs/topics/gateway",
       "auth": [
         {
           "type": "none"
@@ -1935,7 +1935,7 @@
       "path": "/gateway/bot",
       "group": "gateway",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/topics/gateway",
+      "doc_link": "https://discord.com/developers/docs/topics/gateway",
       "auth": [
         {
           "type": "bot"
@@ -1956,7 +1956,7 @@
       "path": "/guilds/{guild_id}/auto-moderation/rules/{rule_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -1977,7 +1977,7 @@
       "path": "/guilds/{guild_id}/bans/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -1998,7 +1998,7 @@
       "path": "/guilds/{guild_id}/emojis/{emoji_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2019,7 +2019,7 @@
       "path": "/guilds/{guild_id}/integrations/{integration_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2040,7 +2040,7 @@
       "path": "/guilds/{guild_id}/members/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2061,7 +2061,7 @@
       "path": "/guilds/{guild_id}/members/{user_id}/roles/{role_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2082,7 +2082,7 @@
       "path": "/guilds/{guild_id}/roles/{role_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2103,7 +2103,7 @@
       "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2124,7 +2124,7 @@
       "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/exceptions/{exception_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2145,7 +2145,7 @@
       "path": "/guilds/{guild_id}/soundboard-sounds/{sound_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2166,7 +2166,7 @@
       "path": "/guilds/{guild_id}/stickers/{sticker_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2187,7 +2187,7 @@
       "path": "/guilds/{guild_id}/templates/{code}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2208,7 +2208,7 @@
       "path": "/guilds/{guild_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2229,7 +2229,7 @@
       "path": "/guilds/{guild_id}/audit-logs",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2250,7 +2250,7 @@
       "path": "/guilds/{guild_id}/auto-moderation/rules",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2271,7 +2271,7 @@
       "path": "/guilds/{guild_id}/auto-moderation/rules/{rule_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2292,7 +2292,7 @@
       "path": "/guilds/{guild_id}/bans",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2313,7 +2313,7 @@
       "path": "/guilds/{guild_id}/bans/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2334,7 +2334,7 @@
       "path": "/guilds/{guild_id}/channels",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2359,7 +2359,7 @@
       "path": "/guilds/{guild_id}/emojis",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2380,7 +2380,7 @@
       "path": "/guilds/{guild_id}/emojis/{emoji_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2401,7 +2401,7 @@
       "path": "/guilds/{guild_id}/integrations",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2422,7 +2422,7 @@
       "path": "/guilds/{guild_id}/invites",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2443,7 +2443,7 @@
       "path": "/guilds/{guild_id}/members",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2464,7 +2464,7 @@
       "path": "/guilds/{guild_id}/members/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2485,7 +2485,7 @@
       "path": "/guilds/{guild_id}/members/search",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2506,7 +2506,7 @@
       "path": "/guilds/{guild_id}/messages/search",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2531,7 +2531,7 @@
       "path": "/guilds/{guild_id}/new-member-welcome",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2552,7 +2552,7 @@
       "path": "/guilds/{guild_id}/onboarding",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2573,7 +2573,7 @@
       "path": "/guilds/{guild_id}/permissions/member/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2594,7 +2594,7 @@
       "path": "/guilds/{guild_id}/permissions/role/{role_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2615,7 +2615,7 @@
       "path": "/guilds/{guild_id}/preview",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2636,7 +2636,7 @@
       "path": "/guilds/{guild_id}/prune",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2657,7 +2657,7 @@
       "path": "/guilds/{guild_id}/regions",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2678,7 +2678,7 @@
       "path": "/guilds/{guild_id}/requests",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2699,7 +2699,7 @@
       "path": "/guilds/{guild_id}/roles",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2720,7 +2720,7 @@
       "path": "/guilds/{guild_id}/roles/{role_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2741,7 +2741,7 @@
       "path": "/guilds/{guild_id}/roles/member-counts",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2762,7 +2762,7 @@
       "path": "/guilds/{guild_id}/scheduled-events",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2783,7 +2783,7 @@
       "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2804,7 +2804,7 @@
       "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/{guild_scheduled_event_exception_id}/users",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2825,7 +2825,7 @@
       "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/users",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2846,7 +2846,7 @@
       "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/users/counts",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2867,7 +2867,7 @@
       "path": "/guilds/{guild_id}/soundboard-sounds",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2888,7 +2888,7 @@
       "path": "/guilds/{guild_id}/soundboard-sounds/{sound_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2909,7 +2909,7 @@
       "path": "/guilds/{guild_id}/stickers",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2930,7 +2930,7 @@
       "path": "/guilds/{guild_id}/stickers/{sticker_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2951,7 +2951,7 @@
       "path": "/guilds/{guild_id}/templates",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2972,7 +2972,7 @@
       "path": "/guilds/{guild_id}/threads/active",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -2993,7 +2993,7 @@
       "path": "/guilds/{guild_id}/vanity-url",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3014,7 +3014,7 @@
       "path": "/guilds/{guild_id}/voice-states/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3035,7 +3035,7 @@
       "path": "/guilds/{guild_id}/voice-states/@me",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3056,7 +3056,7 @@
       "path": "/guilds/{guild_id}/webhooks",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3077,7 +3077,7 @@
       "path": "/guilds/{guild_id}/welcome-screen",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3098,7 +3098,7 @@
       "path": "/guilds/{guild_id}/widget",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3119,7 +3119,7 @@
       "path": "/guilds/{guild_id}/widget.json",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "none"
@@ -3143,7 +3143,7 @@
       "path": "/guilds/{guild_id}/widget.png",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "none"
@@ -3167,7 +3167,7 @@
       "path": "/guilds/templates/{code}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "none"
@@ -3191,7 +3191,7 @@
       "path": "/guilds/{guild_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3212,7 +3212,7 @@
       "path": "/guilds/{guild_id}/auto-moderation/rules/{rule_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3233,7 +3233,7 @@
       "path": "/guilds/{guild_id}/channels",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3254,7 +3254,7 @@
       "path": "/guilds/{guild_id}/emojis/{emoji_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3275,7 +3275,7 @@
       "path": "/guilds/{guild_id}/members/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3296,7 +3296,7 @@
       "path": "/guilds/{guild_id}/members/@me",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3317,7 +3317,7 @@
       "path": "/guilds/{guild_id}/requests/{request_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3338,7 +3338,7 @@
       "path": "/guilds/{guild_id}/roles",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3359,7 +3359,7 @@
       "path": "/guilds/{guild_id}/roles/{role_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3380,7 +3380,7 @@
       "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3401,7 +3401,7 @@
       "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/exceptions/{exception_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3422,7 +3422,7 @@
       "path": "/guilds/{guild_id}/soundboard-sounds/{sound_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3443,7 +3443,7 @@
       "path": "/guilds/{guild_id}/stickers/{sticker_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3464,7 +3464,7 @@
       "path": "/guilds/{guild_id}/templates/{code}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3485,7 +3485,7 @@
       "path": "/guilds/{guild_id}/voice-states/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3506,7 +3506,7 @@
       "path": "/guilds/{guild_id}/voice-states/@me",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3527,7 +3527,7 @@
       "path": "/guilds/{guild_id}/welcome-screen",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3548,7 +3548,7 @@
       "path": "/guilds/{guild_id}/widget",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3569,7 +3569,7 @@
       "path": "/guilds/{guild_id}/auto-moderation/rules",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3590,7 +3590,7 @@
       "path": "/guilds/{guild_id}/bulk-ban",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3611,7 +3611,7 @@
       "path": "/guilds/{guild_id}/channels",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3632,7 +3632,7 @@
       "path": "/guilds/{guild_id}/emojis",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3653,7 +3653,7 @@
       "path": "/guilds/{guild_id}/prune",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3674,7 +3674,7 @@
       "path": "/guilds/{guild_id}/roles",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3695,7 +3695,7 @@
       "path": "/guilds/{guild_id}/scheduled-events",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3716,7 +3716,7 @@
       "path": "/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/exceptions",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3737,7 +3737,7 @@
       "path": "/guilds/{guild_id}/soundboard-sounds",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3758,7 +3758,7 @@
       "path": "/guilds/{guild_id}/stickers",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3779,7 +3779,7 @@
       "path": "/guilds/{guild_id}/templates",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3800,7 +3800,7 @@
       "path": "/guilds/{guild_id}/bans/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3821,7 +3821,7 @@
       "path": "/guilds/{guild_id}/incident-actions",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3842,7 +3842,7 @@
       "path": "/guilds/{guild_id}/members/{user_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3863,7 +3863,7 @@
       "path": "/guilds/{guild_id}/members/{user_id}/roles/{role_id}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3884,7 +3884,7 @@
       "path": "/guilds/{guild_id}/onboarding",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3905,7 +3905,7 @@
       "path": "/guilds/{guild_id}/templates/{code}",
       "group": "guilds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/guild",
+      "doc_link": "https://discord.com/developers/docs/resources/guild",
       "auth": [
         {
           "type": "bot"
@@ -3926,7 +3926,7 @@
       "path": "/interactions/{interaction_id}/{interaction_token}/callback",
       "group": "interactions",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/interactions/receiving-and-responding",
+      "doc_link": "https://discord.com/developers/docs/interactions/receiving-and-responding",
       "auth": [
         {
           "type": "interaction_token"
@@ -3950,7 +3950,7 @@
       "path": "/invites/{code}",
       "group": "invites",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/invite",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
       "auth": [
         {
           "type": "bot"
@@ -3971,7 +3971,7 @@
       "path": "/invites/{code}/target-users/{user_id}",
       "group": "invites",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/invite",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
       "auth": [
         {
           "type": "bot"
@@ -3992,7 +3992,7 @@
       "path": "/invites/{code}",
       "group": "invites",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/invite",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
       "auth": [
         {
           "type": "none"
@@ -4016,7 +4016,7 @@
       "path": "/invites/{code}/target-users",
       "group": "invites",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/invite",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
       "auth": [
         {
           "type": "bot"
@@ -4037,7 +4037,7 @@
       "path": "/invites/{code}/target-users/job-status",
       "group": "invites",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/invite",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
       "auth": [
         {
           "type": "bot"
@@ -4058,7 +4058,7 @@
       "path": "/invites/{code}/target-users/bulk-add",
       "group": "invites",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/invite",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
       "auth": [
         {
           "type": "bot"
@@ -4079,7 +4079,7 @@
       "path": "/invites/{code}/target-users/bulk-delete",
       "group": "invites",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/invite",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
       "auth": [
         {
           "type": "bot"
@@ -4100,7 +4100,7 @@
       "path": "/invites/{code}/target-users",
       "group": "invites",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/invite",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
       "auth": [
         {
           "type": "bot"
@@ -4121,7 +4121,7 @@
       "path": "/invites/{code}/target-users/{user_id}",
       "group": "invites",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/invite",
+      "doc_link": "https://discord.com/developers/docs/resources/invite",
       "auth": [
         {
           "type": "bot"
@@ -4142,7 +4142,7 @@
       "path": "/lobbies/{lobby_id}",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4163,7 +4163,7 @@
       "path": "/lobbies/{lobby_id}/members/{user_id}",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4184,7 +4184,7 @@
       "path": "/lobbies/{lobby_id}/members/@me",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4209,7 +4209,7 @@
       "path": "/lobbies/{lobby_id}",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4230,7 +4230,7 @@
       "path": "/lobbies/{lobby_id}/messages",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4255,7 +4255,7 @@
       "path": "/lobbies/{lobby_id}",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4276,7 +4276,7 @@
       "path": "/lobbies/{lobby_id}/channel-linking",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4301,7 +4301,7 @@
       "path": "/lobbies",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4322,7 +4322,7 @@
       "path": "/lobbies/{lobby_id}/members/{user_id}/invites",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4343,7 +4343,7 @@
       "path": "/lobbies/{lobby_id}/members/@me/invites",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4368,7 +4368,7 @@
       "path": "/lobbies/{lobby_id}/members/bulk",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4389,7 +4389,7 @@
       "path": "/lobbies/{lobby_id}/messages",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4414,7 +4414,7 @@
       "path": "/lobbies",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4439,7 +4439,7 @@
       "path": "/lobbies/{lobby_id}/members/{user_id}",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4460,7 +4460,7 @@
       "path": "/lobbies/{lobby_id}/messages/{message_id}/moderation-metadata",
       "group": "lobbies",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/lobby",
+      "doc_link": "https://discord.com/developers/docs/resources/lobby",
       "auth": [
         {
           "type": "bot"
@@ -4481,7 +4481,7 @@
       "path": "/oauth2/@me",
       "group": "oauth2",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/topics/oauth2",
+      "doc_link": "https://discord.com/developers/docs/topics/oauth2",
       "auth": [
         {
           "type": "bot"
@@ -4541,7 +4541,7 @@
       "path": "/oauth2/applications/@me",
       "group": "oauth2",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/topics/oauth2",
+      "doc_link": "https://discord.com/developers/docs/topics/oauth2",
       "auth": [
         {
           "type": "bot"
@@ -4562,7 +4562,7 @@
       "path": "/oauth2/keys",
       "group": "oauth2",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/topics/oauth2",
+      "doc_link": "https://discord.com/developers/docs/topics/oauth2",
       "auth": [
         {
           "type": "none"
@@ -4586,7 +4586,7 @@
       "path": "/oauth2/userinfo",
       "group": "oauth2",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/topics/oauth2",
+      "doc_link": "https://discord.com/developers/docs/topics/oauth2",
       "auth": [
         {
           "type": "bot"
@@ -4613,7 +4613,7 @@
       "path": "/partner-sdk/provisional-accounts/unmerge",
       "group": "partner-sdk",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/.../partner-sdk",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
       "auth": [
         {
           "type": "none"
@@ -4637,7 +4637,7 @@
       "path": "/partner-sdk/provisional-accounts/unmerge/bot",
       "group": "partner-sdk",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/.../partner-sdk",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
       "auth": [
         {
           "type": "bot"
@@ -4658,7 +4658,7 @@
       "path": "/partner-sdk/token",
       "group": "partner-sdk",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/.../partner-sdk",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
       "auth": [
         {
           "type": "none"
@@ -4682,7 +4682,7 @@
       "path": "/partner-sdk/token/bot",
       "group": "partner-sdk",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/.../partner-sdk",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
       "auth": [
         {
           "type": "bot"
@@ -4703,7 +4703,7 @@
       "path": "/partner-sdk/dms/{user_id_1}/{user_id_2}/messages/{message_id}/moderation-metadata",
       "group": "partner-sdk",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/.../partner-sdk",
+      "doc_link": "https://discord.com/developers/docs/resources/.../partner-sdk",
       "auth": [
         {
           "type": "bot"
@@ -4724,7 +4724,7 @@
       "path": "/skus/{sku_id}/subscriptions",
       "group": "skus",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/monetization/skus",
+      "doc_link": "https://discord.com/developers/docs/monetization/skus",
       "auth": [
         {
           "type": "bot"
@@ -4784,7 +4784,7 @@
       "path": "/skus/{sku_id}/subscriptions/{subscription_id}",
       "group": "skus",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/monetization/skus",
+      "doc_link": "https://discord.com/developers/docs/monetization/skus",
       "auth": [
         {
           "type": "bot"
@@ -4844,7 +4844,7 @@
       "path": "/soundboard-default-sounds",
       "group": "soundboard-default-sounds",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/soundboard",
+      "doc_link": "https://discord.com/developers/docs/resources/soundboard",
       "auth": [
         {
           "type": "bot"
@@ -4865,7 +4865,7 @@
       "path": "/stage-instances/{channel_id}",
       "group": "stage-instances",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/stage-instance",
+      "doc_link": "https://discord.com/developers/docs/resources/stage-instance",
       "auth": [
         {
           "type": "bot"
@@ -4886,7 +4886,7 @@
       "path": "/stage-instances/{channel_id}",
       "group": "stage-instances",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/stage-instance",
+      "doc_link": "https://discord.com/developers/docs/resources/stage-instance",
       "auth": [
         {
           "type": "bot"
@@ -4907,7 +4907,7 @@
       "path": "/stage-instances/{channel_id}",
       "group": "stage-instances",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/stage-instance",
+      "doc_link": "https://discord.com/developers/docs/resources/stage-instance",
       "auth": [
         {
           "type": "bot"
@@ -4928,7 +4928,7 @@
       "path": "/stage-instances",
       "group": "stage-instances",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/stage-instance",
+      "doc_link": "https://discord.com/developers/docs/resources/stage-instance",
       "auth": [
         {
           "type": "bot"
@@ -4949,7 +4949,7 @@
       "path": "/sticker-packs",
       "group": "sticker-packs",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/sticker",
+      "doc_link": "https://discord.com/developers/docs/resources/sticker",
       "auth": [
         {
           "type": "none"
@@ -4973,7 +4973,7 @@
       "path": "/sticker-packs/{pack_id}",
       "group": "sticker-packs",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/sticker",
+      "doc_link": "https://discord.com/developers/docs/resources/sticker",
       "auth": [
         {
           "type": "bot"
@@ -4994,7 +4994,7 @@
       "path": "/stickers/{sticker_id}",
       "group": "stickers",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/sticker",
+      "doc_link": "https://discord.com/developers/docs/resources/sticker",
       "auth": [
         {
           "type": "bot"
@@ -5015,7 +5015,7 @@
       "path": "/users/@me/applications/{application_id}/role-connection",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "oauth2",
@@ -5039,7 +5039,7 @@
       "path": "/users/@me/guilds/{guild_id}",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "bot"
@@ -5060,7 +5060,7 @@
       "path": "/users/{user_id}",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "bot"
@@ -5081,7 +5081,7 @@
       "path": "/users/@me",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "bot"
@@ -5108,7 +5108,7 @@
       "path": "/users/@me/applications/{application_id}/entitlements",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "oauth2",
@@ -5165,7 +5165,7 @@
       "path": "/users/@me/applications/{application_id}/role-connection",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "oauth2",
@@ -5189,7 +5189,7 @@
       "path": "/users/@me/connections",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "bot"
@@ -5216,7 +5216,7 @@
       "path": "/users/@me/guilds",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "bot"
@@ -5243,7 +5243,7 @@
       "path": "/users/@me/guilds/{guild_id}/member",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "oauth2",
@@ -5267,7 +5267,7 @@
       "path": "/users/@me",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "bot"
@@ -5288,7 +5288,7 @@
       "path": "/users/@me/channels",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "bot"
@@ -5309,7 +5309,7 @@
       "path": "/users/@me/applications/{application_id}/role-connection",
       "group": "users",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/user",
+      "doc_link": "https://discord.com/developers/docs/resources/user",
       "auth": [
         {
           "type": "oauth2",
@@ -5333,7 +5333,7 @@
       "path": "/voice/regions",
       "group": "voice",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/voice",
+      "doc_link": "https://discord.com/developers/docs/resources/voice",
       "auth": [
         {
           "type": "bot"
@@ -5354,7 +5354,7 @@
       "path": "/webhooks/{webhook_id}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "bot"
@@ -5375,7 +5375,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5399,7 +5399,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5423,7 +5423,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}/messages/@original",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5447,7 +5447,7 @@
       "path": "/webhooks/{webhook_id}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "bot"
@@ -5468,7 +5468,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5492,7 +5492,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5516,7 +5516,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}/messages/@original",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5540,7 +5540,7 @@
       "path": "/webhooks/{webhook_id}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "bot"
@@ -5561,7 +5561,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5585,7 +5585,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5609,7 +5609,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}/messages/@original",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5633,7 +5633,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5657,7 +5657,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}/github",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"
@@ -5681,7 +5681,7 @@
       "path": "/webhooks/{webhook_id}/{webhook_token}/slack",
       "group": "webhooks",
       "source_commit": "4e75626a4cedfbc397d66f5491c79a9a62a71fd5",
-      "doc_link": "https://docs.discord.com/developers/docs/resources/webhook",
+      "doc_link": "https://discord.com/developers/docs/resources/webhook",
       "auth": [
         {
           "type": "webhook_token"

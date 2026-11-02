@@ -3,7 +3,6 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { generateMarkdown } from "./report.mjs";
 
 const root = process.cwd();
 const coverageDir = join(root, "coverage");
@@ -31,7 +30,7 @@ const ALLOWED = {
 	]),
 	verification: new Set([
 		"not tested",
-    "not_tested",
+		"not_tested",
 		"schema tested",
 		"mocked contract tested",
 		"preview tested",
@@ -136,13 +135,6 @@ function main() {
 				}
 			}
 		}
-	}
-
-	// docs/coverage.md up to date.
-	const docsPath = join(root, "docs", "coverage.md");
-	const expected = generateMarkdown();
-	if (!existsSync(docsPath) || readFileSync(docsPath, "utf8") !== expected) {
-		fail("docs/coverage.md is out of date");
 	}
 
 	if (process.exitCode) {

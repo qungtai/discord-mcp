@@ -128,28 +128,27 @@ function deriveAuth(op, path) {
 }
 
 const DOC_LINKS = {
-	applications:
-		"https://docs.discord.com/developers/docs/resources/application",
-	channels: "https://docs.discord.com/developers/docs/resources/channel",
-	gateway: "https://docs.discord.com/developers/docs/topics/gateway",
-	guilds: "https://docs.discord.com/developers/docs/resources/guild",
+	applications: "https://discord.com/developers/docs/resources/application",
+	channels: "https://discord.com/developers/docs/resources/channel",
+	gateway: "https://discord.com/developers/docs/topics/gateway",
+	guilds: "https://discord.com/developers/docs/resources/guild",
 	interactions:
-		"https://docs.discord.com/developers/docs/interactions/receiving-and-responding",
-	invites: "https://docs.discord.com/developers/docs/resources/invite",
-	lobbies: "https://docs.discord.com/developers/docs/resources/lobby",
-	oauth2: "https://docs.discord.com/developers/docs/topics/oauth2",
+		"https://discord.com/developers/docs/interactions/receiving-and-responding",
+	invites: "https://discord.com/developers/docs/resources/invite",
+	lobbies: "https://discord.com/developers/docs/resources/lobby",
+	oauth2: "https://discord.com/developers/docs/topics/oauth2",
 	"partner-sdk":
-		"https://docs.discord.com/developers/docs/resources/.../partner-sdk",
-	skus: "https://docs.discord.com/developers/docs/monetization/skus",
+		"https://discord.com/developers/docs/resources/.../partner-sdk",
+	skus: "https://discord.com/developers/docs/monetization/skus",
 	"soundboard-default-sounds":
-		"https://docs.discord.com/developers/docs/resources/soundboard",
+		"https://discord.com/developers/docs/resources/soundboard",
 	"stage-instances":
-		"https://docs.discord.com/developers/docs/resources/stage-instance",
-	"sticker-packs": "https://docs.discord.com/developers/docs/resources/sticker",
-	stickers: "https://docs.discord.com/developers/docs/resources/sticker",
-	users: "https://docs.discord.com/developers/docs/resources/user",
-	voice: "https://docs.discord.com/developers/docs/resources/voice",
-	webhooks: "https://docs.discord.com/developers/docs/resources/webhook",
+		"https://discord.com/developers/docs/resources/stage-instance",
+	"sticker-packs": "https://discord.com/developers/docs/resources/sticker",
+	stickers: "https://discord.com/developers/docs/resources/sticker",
+	users: "https://discord.com/developers/docs/resources/user",
+	voice: "https://discord.com/developers/docs/resources/voice",
+	webhooks: "https://discord.com/developers/docs/resources/webhook",
 };
 
 function groupOf(path) {
@@ -175,7 +174,7 @@ function buildRegister(spec, commit) {
 			doc_link:
 				op.externalDocs?.url ||
 				DOC_LINKS[group] ||
-				"https://docs.discord.com/developers/docs",
+				"https://discord.com/developers/docs",
 			auth: deriveAuth(op, path),
 			permissions: null,
 			mcp_tool: null,

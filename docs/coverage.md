@@ -6,7 +6,7 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 
 - Repository: `discord/discord-api-spec`
 - Commit: `4e75626a4cedfbc397d66f5491c79a9a62a71fd5`
-- Retrieved at: 2026-11-02T17:55:39.922Z
+- Retrieved at: 2026-11-02T17:56:36.927Z
 - Stable operations: 250
 - Preview-only operations: 0
 
