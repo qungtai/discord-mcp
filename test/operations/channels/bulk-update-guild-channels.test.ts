@@ -1,3 +1,4 @@
+import type { ResponseLike } from "@discordjs/rest";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
 import { PToolRegistry } from "../../../src/core/tool-registry.js";
@@ -9,8 +10,13 @@ beforeEach(() => {
 });
 afterEach(() => {
   vi.restoreAllMocks();
-  vi.unstubAllGlobals();
 });
+
+const approvalFreeRegistry = () => {
+  const registry = new PToolRegistry();
+  registry.register({ ...bulkUpdateGuildChannels, approval: false });
+  return registry;
+};
 
 it("has approval enabled by default and is blocked by policy until approval flow is supported", async () => {
   const { pipeline } = await harness({
@@ -31,13 +37,11 @@ it("has approval enabled by default and is blocked by policy until approval flow
   });
 });
 
-it("modifies channel positions with reason header when approval is satisfied", async () => {
-  const registry = new PToolRegistry();
-  registry.register({ ...bulkUpdateGuildChannels, approval: false });
+it("modifies channel positions with reason header when approval is satisfied and returns 204", async () => {
   const { client, request } = await harness({
-    registry,
+    registry: approvalFreeRegistry(),
     policy: new PPolicyEngine([], ["channels"], false),
-    respond: () => undefined,
+    makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
   });
   const result = await client.callTool({
     name: "discord_bulk_update_guild_channels",
@@ -61,16 +65,18 @@ it("modifies channel positions with reason header when approval is satisfied", a
     { id: "100", position: 1, parent_id: "10", lock_permissions: true },
     { id: "101", position: 2 },
   ]);
-  expect(result.structuredContent).toEqual({ updated: true, guild_id: "200" });
+  expect(result.structuredContent).toEqual({
+    updated: true,
+    guild_id: "200",
+    channel_ids: ["100", "101"],
+  });
 });
 
 it("passes allowlist check when guild is allowed", async () => {
-  const registry = new PToolRegistry();
-  registry.register({ ...bulkUpdateGuildChannels, approval: false });
   const { client, request } = await harness({
-    registry,
+    registry: approvalFreeRegistry(),
     policy: new PPolicyEngine(["200"], ["channels"], false),
-    respond: () => undefined,
+    makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
   });
   const result = await client.callTool({
     name: "discord_bulk_update_guild_channels",
@@ -79,15 +85,17 @@ it("passes allowlist check when guild is allowed", async () => {
       channels: [{ id: "100", position: 0 }],
     },
   });
-  expect(result.structuredContent).toEqual({ updated: true, guild_id: "200" });
+  expect(result.structuredContent).toEqual({
+    updated: true,
+    guild_id: "200",
+    channel_ids: ["100"],
+  });
   expect(request().method).toBe("PATCH");
 });
 
 it("denies access when guild is not allowed", async () => {
-  const registry = new PToolRegistry();
-  registry.register({ ...bulkUpdateGuildChannels, approval: false });
   const { client, makeRequest } = await harness({
-    registry,
+    registry: approvalFreeRegistry(),
     policy: new PPolicyEngine(["999"], ["channels"], false),
   });
   const result = await client.callTool({
@@ -105,10 +113,8 @@ it("denies access when guild is not allowed", async () => {
 });
 
 it("blocks execution in read-only mode", async () => {
-  const registry = new PToolRegistry();
-  registry.register({ ...bulkUpdateGuildChannels, approval: false });
   const { pipeline, makeRequest } = await harness({
-    registry,
+    registry: approvalFreeRegistry(),
     policy: new PPolicyEngine([], ["channels"], true),
   });
   const result = await pipeline.call("discord_bulk_update_guild_channels", {
@@ -121,31 +127,39 @@ it("blocks execution in read-only mode", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("validates channels array is not empty", async () => {
-  const registry = new PToolRegistry();
-  registry.register({ ...bulkUpdateGuildChannels, approval: false });
+it.each([
+  { input: { guild_id: "200", channels: [] }, desc: "empty channels array" },
+  {
+    input: { guild_id: "200", channels: [{ id: "100", position: -1 }] },
+    desc: "negative position",
+  },
+  {
+    input: { guild_id: "200", channels: [{ id: "100", lock_permission: true }] },
+    desc: "misspelled nested key",
+  },
+  { input: { guild_id: "not-a-snowflake", channels: [{ id: "100" }] }, desc: "invalid guild_id" },
+  { input: { guild_id: "200", channels: [{ id: "not-a-snowflake" }] }, desc: "invalid channel id" },
+])("validates input: $desc", async ({ input }) => {
   const { client, makeRequest } = await harness({
-    registry,
+    registry: approvalFreeRegistry(),
     policy: new PPolicyEngine([], ["channels"], false),
   });
   const result = await client.callTool({
     name: "discord_bulk_update_guild_channels",
-    arguments: {
-      guild_id: "200",
-      channels: [],
-    },
+    arguments: input,
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("handles 403 missing permissions error", async () => {
-  const registry = new PToolRegistry();
-  registry.register({ ...bulkUpdateGuildChannels, approval: false });
+it.each([
+  [403, 50013, "permission", "Check the bot permissions; this tool needs ManageChannels"],
+  [404, 10004, "not_found", "Check the IDs in the request"],
+])("handles HTTP %i error", async (status, code, category, remediation) => {
   const { pipeline } = await harness({
-    registry,
+    registry: approvalFreeRegistry(),
     policy: new PPolicyEngine([], ["channels"], false),
-    makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+    makeRequest: async () => json({ message: "Discord error", code }, { status }),
   });
   expect(
     await pipeline.call("discord_bulk_update_guild_channels", {
@@ -155,10 +169,10 @@ it("handles 403 missing permissions error", async () => {
   ).toMatchObject({
     ok: false,
     error: {
-      category: "permission",
-      status: 403,
-      discord_code: 50013,
-      remediation: "Check the bot permissions; this tool needs ManageChannels",
+      category,
+      status,
+      discord_code: code,
+      remediation,
     },
   });
 });

@@ -9,7 +9,7 @@ export const listGuildChannels = defineTool({
   operationIds: ["list_guild_channels"],
   toolset: "channels",
   scope: { guild: "guild_id" },
-  permissions: ["ManageChannels"],
+  permissions: [],
   effect: "read",
   idempotent: true,
   input: z.object({ guild_id: snowflake }),

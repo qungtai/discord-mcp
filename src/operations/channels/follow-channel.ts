@@ -1,7 +1,7 @@
 import { type RESTPostAPIChannelFollowersResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { snowflake } from "../schemas.js";
+import { reason, snowflake } from "../schemas.js";
 
 export const followChannel = defineTool({
   name: "discord_follow_channel",
@@ -15,20 +15,17 @@ export const followChannel = defineTool({
   input: z.object({
     channel_id: snowflake,
     webhook_channel_id: snowflake,
+    reason,
   }),
   output: z.object({
     channel_id: snowflake,
     webhook_id: snowflake,
   }),
-  execute: async ({ channel_id, webhook_channel_id }, { discord }) => {
-    const follower = await discord<RESTPostAPIChannelFollowersResult>({
+  execute: async ({ channel_id, reason, ...body }, { discord }) =>
+    discord<RESTPostAPIChannelFollowersResult>({
       method: "POST",
       route: Routes.channelFollowers(channel_id),
-      body: { webhook_channel_id },
-    });
-    return {
-      channel_id: follower.channel_id,
-      webhook_id: follower.webhook_id,
-    };
-  },
+      body,
+      reason,
+    }),
 });

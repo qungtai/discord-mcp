@@ -2,7 +2,13 @@ import { type RESTPatchAPIGuildChannelPositionsResult, Routes } from "discord-ap
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { channelPosition } from "./ch-channels-schemas.js";
+
+const channelPosition = z.strictObject({
+  id: snowflake,
+  position: z.number().int().min(0).nullish(),
+  parent_id: snowflake.nullish(),
+  lock_permissions: z.boolean().nullish(),
+});
 
 export const bulkUpdateGuildChannels = defineTool({
   name: "discord_bulk_update_guild_channels",
@@ -18,7 +24,11 @@ export const bulkUpdateGuildChannels = defineTool({
     channels: z.array(channelPosition).min(1),
     reason,
   }),
-  output: z.object({ updated: z.literal(true), guild_id: snowflake }),
+  output: z.object({
+    updated: z.literal(true),
+    guild_id: snowflake,
+    channel_ids: z.array(snowflake),
+  }),
   execute: async ({ guild_id, channels, reason }, { discord }) => {
     await discord<RESTPatchAPIGuildChannelPositionsResult>({
       method: "PATCH",
@@ -26,6 +36,10 @@ export const bulkUpdateGuildChannels = defineTool({
       body: channels,
       reason,
     });
-    return { updated: true as const, guild_id };
+    return {
+      updated: true as const,
+      guild_id,
+      channel_ids: channels.map((c) => c.id),
+    };
   },
 });

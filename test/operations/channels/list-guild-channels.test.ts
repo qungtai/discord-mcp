@@ -7,7 +7,6 @@ beforeEach(() => {
 });
 afterEach(() => {
   vi.restoreAllMocks();
-  vi.unstubAllGlobals();
 });
 
 const CHANNELS = [
@@ -75,46 +74,36 @@ it("denies access when guild is not allowed", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("validates guild_id is a snowflake", async () => {
+it.each([
+  { input: { guild_id: "not-a-snowflake" }, desc: "invalid snowflake" },
+  { input: { guild_id: "200", extra: "unknown" }, desc: "unknown key" },
+])("validates input: $desc", async ({ input }) => {
   const { client, makeRequest } = await harness({
     policy: new PPolicyEngine([], ["channels"], false),
   });
   const result = await client.callTool({
     name: "discord_list_guild_channels",
-    arguments: { guild_id: "not-a-snowflake" },
+    arguments: input,
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("handles 403 missing permissions error", async () => {
+it.each([
+  [403, 50013, "permission", "Check the bot permissions"],
+  [404, 10004, "not_found", "Check the IDs in the request"],
+])("handles HTTP %i error", async (status, code, category, remediation) => {
   const { pipeline } = await harness({
     policy: new PPolicyEngine([], ["channels"], false),
-    makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+    makeRequest: async () => json({ message: "Discord error", code }, { status }),
   });
   expect(await pipeline.call("discord_list_guild_channels", { guild_id: "200" })).toMatchObject({
     ok: false,
     error: {
-      category: "permission",
-      status: 403,
-      discord_code: 50013,
-      remediation: "Check the bot permissions; this tool needs ManageChannels",
-    },
-  });
-});
-
-it("handles 404 not found error", async () => {
-  const { pipeline } = await harness({
-    policy: new PPolicyEngine([], ["channels"], false),
-    makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
-  });
-  expect(await pipeline.call("discord_list_guild_channels", { guild_id: "200" })).toMatchObject({
-    ok: false,
-    error: {
-      category: "not_found",
-      status: 404,
-      discord_code: 10004,
-      remediation: "Check the IDs in the request",
+      category,
+      status,
+      discord_code: code,
+      remediation,
     },
   });
 });

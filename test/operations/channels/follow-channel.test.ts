@@ -7,7 +7,6 @@ beforeEach(() => {
 });
 afterEach(() => {
   vi.restoreAllMocks();
-  vi.unstubAllGlobals();
 });
 
 const FOLLOWER_RESPONSE = {
@@ -15,7 +14,7 @@ const FOLLOWER_RESPONSE = {
   webhook_id: "300",
 };
 
-it("follows an announcement channel to send messages to a target webhook channel", async () => {
+it("follows an announcement channel to send messages to a target webhook channel with reason header", async () => {
   const { client, request } = await harness({
     policy: new PPolicyEngine([], ["channels"], false),
     respond: () => FOLLOWER_RESPONSE,
@@ -25,12 +24,16 @@ it("follows an announcement channel to send messages to a target webhook channel
     arguments: {
       channel_id: "100",
       webhook_channel_id: "200",
+      reason: "Following announcement channel",
     },
   });
 
   const req = request();
   expect(req.method).toBe("POST");
   expect(req.url).toBe("https://discord.com/api/v10/channels/100/followers");
+  expect(new Headers(req.headers as HeadersInit).get("x-audit-log-reason")).toBe(
+    encodeURIComponent("Following announcement channel"),
+  );
   expect(JSON.parse(String(req.body))).toEqual({
     webhook_channel_id: "200",
   });
@@ -101,25 +104,32 @@ it("blocks execution in read-only mode", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("validates snowflake format", async () => {
+it.each([
+  { input: { channel_id: "invalid", webhook_channel_id: "200" }, desc: "invalid channel_id" },
+  {
+    input: { channel_id: "100", webhook_channel_id: "invalid" },
+    desc: "invalid webhook_channel_id",
+  },
+  { input: { channel_id: "100", webhook_channel_id: "200", extra: "extra" }, desc: "unknown key" },
+])("validates input: $desc", async ({ input }) => {
   const { client, makeRequest } = await harness({
     policy: new PPolicyEngine([], ["channels"], false),
   });
   const result = await client.callTool({
     name: "discord_follow_channel",
-    arguments: {
-      channel_id: "invalid",
-      webhook_channel_id: "200",
-    },
+    arguments: input,
   });
   expect(errorOf(result)).toMatchObject({ category: "validation" });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("handles 403 missing permissions error", async () => {
+it.each([
+  [403, 50013, "permission", "Check the bot permissions; this tool needs ManageWebhooks"],
+  [404, 10003, "not_found", "Check the IDs in the request"],
+])("handles HTTP %i error", async (status, code, category, remediation) => {
   const { pipeline } = await harness({
     policy: new PPolicyEngine([], ["channels"], false),
-    makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+    makeRequest: async () => json({ message: "Discord error", code }, { status }),
   });
   expect(
     await pipeline.call("discord_follow_channel", {
@@ -129,10 +139,10 @@ it("handles 403 missing permissions error", async () => {
   ).toMatchObject({
     ok: false,
     error: {
-      category: "permission",
-      status: 403,
-      discord_code: 50013,
-      remediation: "Check the bot permissions; this tool needs ManageWebhooks",
+      category,
+      status,
+      discord_code: code,
+      remediation,
     },
   });
 });

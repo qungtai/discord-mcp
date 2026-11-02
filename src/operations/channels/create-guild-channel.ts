@@ -2,7 +2,18 @@ import { type RESTPostAPIGuildChannelResult, Routes } from "discord-api-types/v1
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { channelResult } from "./ch-channels-schemas.js";
+import {
+  channelResult,
+  channelTypeEnum,
+  defaultReactionEmoji,
+  forumLayoutEnum,
+  forumTag,
+  permissionOverwrite,
+  threadAutoArchiveDurationEnum,
+  threadSearchTagSettingEnum,
+  threadSortOrderEnum,
+  videoQualityModeEnum,
+} from "./ch-channels-schemas.js";
 
 export const createGuildChannel = defineTool({
   name: "discord_create_guild_channel",
@@ -16,17 +27,24 @@ export const createGuildChannel = defineTool({
   input: z.object({
     guild_id: snowflake,
     name: z.string().min(1).max(100),
-    type: z.number().int().optional(),
-    topic: z.string().max(4096).optional(),
-    bitrate: z.number().int().min(8000).optional(),
-    user_limit: z.number().int().min(0).max(99).optional(),
-    rate_limit_per_user: z.number().int().min(0).max(21600).optional(),
-    position: z.number().int().min(0).optional(),
-    parent_id: snowflake.optional(),
-    nsfw: z.boolean().optional(),
+    type: channelTypeEnum.optional(),
+    topic: z.string().max(4096).nullish(),
+    bitrate: z.number().int().min(8000).nullish(),
+    user_limit: z.number().int().min(0).max(10000).nullish(),
+    rate_limit_per_user: z.number().int().min(0).max(21600).nullish(),
+    position: z.number().int().min(0).nullish(),
+    parent_id: snowflake.nullish(),
+    nsfw: z.boolean().nullish(),
     rtc_region: z.string().nullish(),
-    video_quality_mode: z.number().int().optional(),
-    default_auto_archive_duration: z.number().int().optional(),
+    video_quality_mode: videoQualityModeEnum.nullish(),
+    default_auto_archive_duration: threadAutoArchiveDurationEnum.nullish(),
+    permission_overwrites: z.array(permissionOverwrite).max(100).nullish(),
+    available_tags: z.array(forumTag).max(20).nullish(),
+    default_reaction_emoji: defaultReactionEmoji.nullish(),
+    default_thread_rate_limit_per_user: z.number().int().min(0).max(21600).nullish(),
+    default_sort_order: threadSortOrderEnum.nullish(),
+    default_forum_layout: forumLayoutEnum.nullish(),
+    default_tag_setting: threadSearchTagSettingEnum.nullish(),
     reason,
   }),
   output: channelResult,

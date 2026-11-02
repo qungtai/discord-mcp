@@ -2,7 +2,18 @@ import { type RESTPatchAPIChannelResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { channelResult } from "./ch-channels-schemas.js";
+import {
+  channelResult,
+  channelTypeEnum,
+  defaultReactionEmoji,
+  forumLayoutEnum,
+  forumTag,
+  permissionOverwrite,
+  threadAutoArchiveDurationEnum,
+  threadSearchTagSettingEnum,
+  threadSortOrderEnum,
+  videoQualityModeEnum,
+} from "./ch-channels-schemas.js";
 
 export const updateChannel = defineTool({
   name: "discord_update_channel",
@@ -10,29 +21,36 @@ export const updateChannel = defineTool({
   operationIds: ["update_channel"],
   toolset: "channels",
   scope: { channel: "channel_id" },
-  permissions: ["ManageChannels"],
+  permissions: ["ManageChannels", "ManageThreads"],
   effect: "destructive",
-  // Renaming or updating channel settings is safe without human-in-the-loop approval.
-  approval: false,
   idempotent: true,
   input: z.object({
     channel_id: snowflake,
     name: z.string().min(1).max(100).optional(),
-    type: z.number().int().optional(),
+    type: channelTypeEnum.optional(),
     position: z.number().int().min(0).nullish(),
     topic: z.string().max(4096).nullish(),
     nsfw: z.boolean().nullish(),
     rate_limit_per_user: z.number().int().min(0).max(21600).nullish(),
     bitrate: z.number().int().min(8000).nullish(),
-    user_limit: z.number().int().min(0).max(99).nullish(),
+    user_limit: z.number().int().min(0).max(10000).nullish(),
     parent_id: snowflake.nullish(),
     rtc_region: z.string().nullish(),
-    video_quality_mode: z.number().int().nullish(),
-    default_auto_archive_duration: z.number().int().nullish(),
+    video_quality_mode: videoQualityModeEnum.nullish(),
+    default_auto_archive_duration: threadAutoArchiveDurationEnum.nullish(),
+    permission_overwrites: z.array(permissionOverwrite).max(100).nullish(),
+    available_tags: z.array(forumTag).max(20).nullish(),
+    default_reaction_emoji: defaultReactionEmoji.nullish(),
+    default_thread_rate_limit_per_user: z.number().int().min(0).max(21600).nullish(),
+    default_sort_order: threadSortOrderEnum.nullish(),
+    default_forum_layout: forumLayoutEnum.nullish(),
+    default_tag_setting: threadSearchTagSettingEnum.nullish(),
     flags: z.number().int().optional(),
     archived: z.boolean().optional(),
     locked: z.boolean().optional(),
     invitable: z.boolean().optional(),
+    auto_archive_duration: threadAutoArchiveDurationEnum.optional(),
+    applied_tags: z.array(snowflake).max(5).optional(),
     reason,
   }),
   output: channelResult,
