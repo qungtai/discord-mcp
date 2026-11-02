@@ -5,12 +5,14 @@ import {
   AutoModerationRuleTriggerType,
 } from "discord-api-types/v10";
 import { z } from "zod/v4";
-import { snowflake, user } from "../schemas.js";
+import { resource, snowflake, user } from "../schemas.js";
 
-export const ban = z.object({
-  user,
-  reason: z.string().nullish(),
-});
+export const ban = resource(
+  z.looseObject({
+    user,
+    reason: z.string().nullish(),
+  }),
+);
 
 export const autoModerationAction = z.strictObject({
   type: z
@@ -50,16 +52,18 @@ export const autoModerationRuleTriggerTypeSchema = z
   .enum(AutoModerationRuleTriggerType)
   .describe("Trigger type: 1=Keyword, 3=Spam, 4=KeywordPreset, 5=MentionSpam, 6=MemberProfile");
 
-export const autoModerationRule = z.object({
-  id: snowflake,
-  guild_id: snowflake,
-  name: z.string().optional(),
-  creator_id: snowflake.optional(),
-  event_type: z.number().int().optional(),
-  trigger_type: z.number().int().optional(),
-  trigger_metadata: z.unknown().optional(),
-  actions: z.array(z.unknown()).optional(),
-  enabled: z.boolean().optional(),
-  exempt_roles: z.array(snowflake).optional(),
-  exempt_channels: z.array(snowflake).optional(),
-});
+export const autoModerationRule = resource(
+  z.looseObject({
+    id: snowflake,
+    guild_id: snowflake,
+    name: z.string().optional(),
+    creator_id: snowflake.optional(),
+    event_type: z.number().int().optional(),
+    trigger_type: z.number().int().optional(),
+    trigger_metadata: z.unknown().optional(),
+    actions: z.array(z.unknown()).optional(),
+    enabled: z.boolean().optional(),
+    exempt_roles: z.array(snowflake).optional(),
+    exempt_channels: z.array(snowflake).optional(),
+  }),
+);

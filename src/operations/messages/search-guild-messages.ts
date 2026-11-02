@@ -29,7 +29,7 @@ const hasOption = z.enum([
 ]);
 const searchableEmbedType = z.enum(["image", "video", "gif", "sound", "article"]);
 
-const threadMember = z.object({
+const threadMember = z.looseObject({
   id: snowflake,
   user_id: snowflake,
   join_timestamp: z.string().optional(),

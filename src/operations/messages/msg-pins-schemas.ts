@@ -1,7 +1,9 @@
 import { z } from "zod/v4";
-import { message } from "../schemas.js";
+import { message, resource } from "../schemas.js";
 
-export const pinnedMessage = z.object({
-  pinned_at: z.string(),
-  message,
-});
+export const pinnedMessage = resource(
+  z.looseObject({
+    pinned_at: z.string(),
+    message,
+  }),
+);

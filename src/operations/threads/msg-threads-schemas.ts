@@ -1,5 +1,12 @@
 import { z } from "zod/v4";
-import { allowedMentions, channel, member, message, snowflake } from "../schemas.js";
+import {
+  allowedMentions,
+  channelObject,
+  member,
+  message,
+  resource,
+  snowflake,
+} from "../schemas.js";
 
 export const autoArchiveDuration = z.union([
   z.literal(60),
@@ -11,7 +18,7 @@ export const autoArchiveDuration = z.union([
 export const rateLimitPerUser = z.number().int().min(0).max(21600);
 
 export const threadMetadata = z
-  .object({
+  .looseObject({
     archived: z.boolean().optional(),
     archive_timestamp: z.string().nullish(),
     auto_archive_duration: z.number().optional(),
@@ -21,22 +28,26 @@ export const threadMetadata = z
   })
   .partial();
 
-export const thread = channel.extend({
-  owner_id: snowflake.optional(),
-  thread_metadata: threadMetadata.optional(),
-  message_count: z.number().optional(),
-  member_count: z.number().optional(),
-  total_message_sent: z.number().optional(),
-  applied_tags: z.array(snowflake).optional(),
-});
+export const thread = resource(
+  channelObject.extend({
+    owner_id: snowflake.optional(),
+    thread_metadata: threadMetadata.optional(),
+    message_count: z.number().optional(),
+    member_count: z.number().optional(),
+    total_message_sent: z.number().optional(),
+    applied_tags: z.array(snowflake).optional(),
+  }),
+);
 
-export const threadMember = z.object({
-  id: snowflake.optional(),
-  user_id: snowflake.optional(),
-  join_timestamp: z.string().optional(),
-  flags: z.number().optional(),
-  member: member.optional(),
-});
+export const threadMember = resource(
+  z.looseObject({
+    id: snowflake.optional(),
+    user_id: snowflake.optional(),
+    join_timestamp: z.string().optional(),
+    flags: z.number().optional(),
+    member: member.optional(),
+  }),
+);
 
 export const forumInitialMessage = z.strictObject({
   content: z.string().max(4000).optional(),
