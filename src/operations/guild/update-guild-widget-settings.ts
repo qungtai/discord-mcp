@@ -19,7 +19,7 @@ export const updateGuildWidgetSettings = defineTool({
   input: z.object({
     ...guildIds,
     enabled: z.boolean().nullish(),
-    channel_id: snowflake.optional().describe("Widget channel ID"),
+    channel_id: snowflake.nullish().describe("Widget channel ID"),
     reason,
   }),
   output: z.object({ widget_settings: widgetSettings }),

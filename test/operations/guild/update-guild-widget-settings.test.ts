@@ -64,6 +64,25 @@ it("updates widget settings after the client accepts approval", async () => {
   });
 });
 
+it("clears the widget channel with a literal null and no scope lookup", async () => {
+  const base = (await PToolRegistry.load()).get("discord_update_guild_widget_settings");
+  if (!base) throw new Error("Missing tool");
+  const registry = new PToolRegistry();
+  registry.register(base);
+  const { client, request, makeRequest } = await harness({
+    registry,
+    policy: new PPolicyEngine(["123"], ["guild"], false),
+    respond: () => WIDGET_SETTINGS,
+  });
+  const result = await client.callTool({
+    name: "discord_update_guild_widget_settings",
+    arguments: { guild_id: "123", channel_id: null },
+  });
+  expect(JSON.parse(String(request().body))).toEqual({ channel_id: null });
+  expect(makeRequest).toHaveBeenCalledTimes(1);
+  expect(result.structuredContent).toEqual({ widget_settings: WIDGET_SETTINGS });
+});
+
 it("validates channel_id format", async () => {
   const base = (await PToolRegistry.load()).get("discord_update_guild_widget_settings");
   if (!base) throw new Error("Missing tool");

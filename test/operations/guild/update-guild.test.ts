@@ -101,6 +101,34 @@ it("updates a guild and passes comprehensive literal body and reason after the c
   });
 });
 
+it("clears the guild channels with literal nulls and no scope lookup", async () => {
+  const { client, request, makeRequest } = await toolHarness({
+    policy: new PPolicyEngine(["123"], ["guild"], false),
+    respond: () => GUILD,
+  });
+  const result = await client.callTool({
+    name: "discord_update_guild",
+    arguments: {
+      guild_id: "123",
+      afk_channel_id: null,
+      system_channel_id: null,
+      rules_channel_id: null,
+      public_updates_channel_id: null,
+      safety_alerts_channel_id: null,
+    },
+  });
+  expect(JSON.parse(String(request().body))).toEqual({
+    afk_channel_id: null,
+    system_channel_id: null,
+    rules_channel_id: null,
+    public_updates_channel_id: null,
+    safety_alerts_channel_id: null,
+  });
+  // null clears the field, so no channel lookup is made beyond the guild.
+  expect(makeRequest).toHaveBeenCalledTimes(1);
+  expect(result.structuredContent).toEqual({ guild: GUILD });
+});
+
 it("validates input name min length", async () => {
   const { client, makeRequest } = await toolHarness();
   const result = await client.callTool({

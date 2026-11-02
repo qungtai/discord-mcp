@@ -11,11 +11,6 @@ import {
   statusEnum,
 } from "./schemas.js";
 
-// Note on channel_id:
-// Discord accepts channel_id: null when transitioning an event to EXTERNAL (entity_type: 3).
-// However, the core scope validator (scopeIds in src/core/tool-registry.ts) strictly requires all
-// scoped values to be string | string[] (throwing internal error on null).
-// Until scopeIds is updated in core to skip null, channel_id is optional snowflake here.
 export const updateGuildScheduledEvent = defineTool({
   name: "discord_update_guild_scheduled_event",
   description: "Modify a guild scheduled event",

@@ -84,6 +84,23 @@ it("updates a guild member with reason and fields after the client accepts appro
   });
 });
 
+it("disconnects the member with a literal channel_id null and no scope lookup", async () => {
+  const registry = new PToolRegistry();
+  registry.register(updateGuildMember);
+  const { client, request, makeRequest } = await harness({
+    registry,
+    policy: new PPolicyEngine(["123"], ["members"], false),
+    respond: () => UPDATED_MEMBER,
+  });
+  const result = await client.callTool({
+    name: "discord_update_guild_member",
+    arguments: { guild_id: "123", user_id: "456", channel_id: null },
+  });
+  expect(JSON.parse(String(request().body))).toEqual({ channel_id: null });
+  expect(makeRequest).toHaveBeenCalledTimes(1);
+  expect(result.structuredContent).toEqual({ member: UPDATED_MEMBER });
+});
+
 it("passes allowlist check with channel_id in allowed guild", async () => {
   const registry = new PToolRegistry();
   registry.register(updateGuildMember);
