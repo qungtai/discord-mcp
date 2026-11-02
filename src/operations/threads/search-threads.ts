@@ -32,9 +32,8 @@ export const searchThreads = defineTool({
     slop: z.number().int().min(0).max(100).optional(),
     min_id: snowflake.optional(),
     max_id: snowflake.optional(),
-    tag: snowflake
-      .optional()
-      .describe("Thread tag ID. Note: multi-tag search requires core array query support"),
+    // OpenAPI query arrays are style form with explode, so Discord expects one tag key per ID.
+    tag: z.array(snowflake).max(5).optional(),
     tag_setting: z.enum(["match_all", "match_some"]).optional(),
     archived: z.boolean().optional(),
     sort_by: z.enum(["relevance", "creation_time", "last_message_time", "archive_time"]).optional(),

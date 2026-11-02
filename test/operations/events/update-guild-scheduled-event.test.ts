@@ -71,6 +71,23 @@ it("updates a guild scheduled event with body, reason and literal URL", async ()
   expect(result.structuredContent).toEqual({ guild_scheduled_event: EVENT });
 });
 
+it("clears the channel with a literal channel_id null body under an allowlist", async () => {
+  const { client, request, makeRequest } = await harness({
+    registry: toolRegistry(),
+    policy: new PPolicyEngine(["10"], ["events"], false),
+    respond: () => EVENT,
+  });
+  const result = await client.callTool({
+    name: "discord_update_guild_scheduled_event",
+    arguments: { guild_id: "10", guild_scheduled_event_id: "100", channel_id: null },
+  });
+  expect(JSON.parse(String(request().body))).toEqual({ channel_id: null });
+  expect(request().url).toBe("https://discord.com/api/v10/guilds/10/scheduled-events/100");
+  // null clears the field, so no channel lookup is needed beyond the guild check.
+  expect(makeRequest).toHaveBeenCalledTimes(1);
+  expect(result.structuredContent).toEqual({ guild_scheduled_event: EVENT });
+});
+
 it("passes allowlist check for allowed guild and channel", async () => {
   const { client, request } = await harness({
     registry: toolRegistry(),

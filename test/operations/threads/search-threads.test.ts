@@ -31,7 +31,7 @@ it("searches threads in a channel with query filters and next_offset cursor", as
       sort_order: "desc",
       limit: 10,
       offset: 0,
-      tag: "888",
+      tag: ["888", "999"],
       tag_setting: "match_all",
     },
   });
@@ -42,7 +42,7 @@ it("searches threads in a channel with query filters and next_offset cursor", as
   const req = request();
   expect([req.method, req.url]).toEqual([
     "GET",
-    "https://discord.com/api/v10/channels/1/threads/search?name=found&tag=888&tag_setting=match_all&archived=true&sort_by=creation_time&sort_order=desc&limit=10&offset=0",
+    "https://discord.com/api/v10/channels/1/threads/search?name=found&tag=888&tag=999&tag_setting=match_all&archived=true&sort_by=creation_time&sort_order=desc&limit=10&offset=0",
   ]);
 });
 

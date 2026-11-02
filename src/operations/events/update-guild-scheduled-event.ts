@@ -31,7 +31,7 @@ export const updateGuildScheduledEvent = defineTool({
   input: z.object({
     guild_id: snowflake,
     guild_scheduled_event_id: snowflake,
-    channel_id: snowflake.optional(),
+    channel_id: snowflake.nullable().optional(),
     entity_metadata: entityMetadataInput.nullable().optional(),
     name: z.string().min(1).max(100).optional(),
     privacy_level: privacyLevelEnum.optional(),

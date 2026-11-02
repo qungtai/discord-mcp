@@ -22,12 +22,6 @@ export const countGuildScheduledEventUsers = defineTool({
     guild_scheduled_event_exception_ids: z.array(snowflake).max(10).optional(),
   }),
   output: countOutput,
-  // Note on guild_scheduled_event_exception_ids encoding:
-  // Discord's OpenAPI spec models guild_scheduled_event_exception_ids as an array of snowflakes in the query string.
-  // Standard Discord query array parameters use repeated keys (?key=1&key=2).
-  // However, the DiscordRequestInit query type and toQuery serializer in src/adapters/discord-rest/discord-rest.ts:63
-  // accept Record<string, string | number | boolean | undefined> and do not support arrays.
-  // Joining IDs with commas passes a single string to satisfy the adapter's type contract until core supports repeated query keys.
   execute: async (
     { guild_id, guild_scheduled_event_id, guild_scheduled_event_exception_ids },
     { discord },
@@ -35,8 +29,7 @@ export const countGuildScheduledEventUsers = defineTool({
     discord<z.infer<typeof countOutput>>({
       method: "GET",
       route: `/guilds/${guild_id}/scheduled-events/${guild_scheduled_event_id}/users/counts`,
-      query: {
-        guild_scheduled_event_exception_ids: guild_scheduled_event_exception_ids?.join(","),
-      },
+      // OpenAPI query arrays are style form with explode, so Discord expects one key per ID.
+      query: { guild_scheduled_event_exception_ids },
     }),
 });

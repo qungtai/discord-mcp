@@ -16,6 +16,13 @@ describe("scope declarations", () => {
     });
     expect(missing).toEqual([]);
   });
+  it("skips a null scope value because null clears the field (F4)", async () => {
+    const tool = (await PToolRegistry.load()).list()[0];
+    if (!tool) throw new Error("No tools");
+    const scoped = { ...tool, scope: { channel: "channel_id" as const } };
+    expect(scopeIds(scoped, { channel_id: null }).byKind).toEqual({});
+    expect(scopeIds(scoped, { channel_id: "1" }).byKind).toEqual({ channel: ["1"] });
+  });
   it("audits unscoped target IDs (F2)", async () => {
     const tool = (await PToolRegistry.load()).list()[0];
     if (!tool) throw new Error("No tools");
