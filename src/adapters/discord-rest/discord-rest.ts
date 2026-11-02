@@ -1,90 +1,104 @@
-import { DiscordAPIError, HTTPError, RateLimitError, REST } from "@discordjs/rest";
-import type {
-  APIChannel,
-  APIMessage,
-  RESTPostAPIChannelMessageJSONBody,
-} from "discord-api-types/v10";
-import { Routes } from "discord-api-types/v10";
-import { PToolError } from "../../core/tool-error.js";
+import {
+  DiscordAPIError,
+  HTTPError,
+  RateLimitError,
+  REST,
+  type RESTOptions,
+  type RequestMethod,
+} from "@discordjs/rest";
+import type { DiscordRequestInit, DiscordTransport } from "../../core/ports.js";
+import { type ErrorCategory, PToolError } from "../../core/tool-error.js";
 
-export interface DiscordRest {
-  getChannel(channelId: string): Promise<APIChannel>;
-  getMessage(channelId: string, messageId: string): Promise<APIMessage>;
-  listMessages(channelId: string, query: URLSearchParams): Promise<APIMessage[]>;
-  sendMessage(
-    channelId: string,
-    body: RESTPostAPIChannelMessageJSONBody,
-    files?: { name: string; data: Buffer }[],
-  ): Promise<APIMessage>;
-  editMessage(
-    channelId: string,
-    messageId: string,
-    body: Record<string, unknown>,
-    files?: { name: string; data: Buffer }[],
-  ): Promise<APIMessage>;
+// Slowest upload rate we wait for (about 0.5 Mbit/s), so a 25 MiB file gets several minutes.
+const UPLOAD_BYTES_PER_MS = 64;
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+
+export interface DiscordRestOptions {
+  timeoutMs?: number;
+  rateLimitWaitMs?: number;
+  rest?: Partial<RESTOptions>;
 }
-export class PDiscordRestAdapter implements DiscordRest {
+export class PDiscordRestAdapter implements DiscordTransport {
   private readonly rest: REST;
-  constructor(token: string, rest = new REST({ version: "10", retries: 0 })) {
-    this.rest = rest.setToken(token);
+  private readonly timeoutMs: number;
+  constructor(token: string, options: DiscordRestOptions = {}) {
+    this.timeoutMs = options.timeoutMs ?? 15_000;
+    const rateLimitWaitMs = options.rateLimitWaitMs ?? 5_000;
+    this.rest = new REST({
+      version: "10",
+      retries: 0,
+      // The per-request signal enforces the real deadline; this is only an upper bound.
+      timeout: Math.ceil(this.timeoutMs + MAX_UPLOAD_BYTES / UPLOAD_BYTES_PER_MS),
+      rejectOnRateLimit: (data) => Math.max(data.retryAfter, data.timeToReset) > rateLimitWaitMs,
+      ...options.rest,
+    }).setToken(token);
   }
-  async getChannel(id: string) {
-    return (await this.rest.get(Routes.channel(id))) as APIChannel;
-  }
-  async getMessage(channel: string, id: string) {
-    return (await this.rest.get(Routes.channelMessage(channel, id))) as APIMessage;
-  }
-  async listMessages(channel: string, query: URLSearchParams) {
-    return (await this.rest.get(Routes.channelMessages(channel), { query })) as APIMessage[];
-  }
-  async sendMessage(
-    channel: string,
-    body: RESTPostAPIChannelMessageJSONBody,
-    files?: { name: string; data: Buffer }[],
-  ) {
-    return (await this.rest.post(Routes.channelMessages(channel), { body, files })) as APIMessage;
-  }
-  async editMessage(
-    channel: string,
-    id: string,
-    body: Record<string, unknown>,
-    files?: { name: string; data: Buffer }[],
-  ) {
-    return (await this.rest.patch(Routes.channelMessage(channel, id), {
-      body,
-      files,
-    })) as APIMessage;
+  async request<T>(request: DiscordRequestInit, signal: AbortSignal): Promise<T> {
+    const bytes = request.files?.reduce((sum, file) => sum + file.data.length, 0) ?? 0;
+    const deadline = AbortSignal.timeout(Math.ceil(this.timeoutMs + bytes / UPLOAD_BYTES_PER_MS));
+    try {
+      return (await this.rest.request({
+        fullRoute: request.route,
+        method: request.method as RequestMethod,
+        query: request.query,
+        body: request.body,
+        files: request.files,
+        reason: request.reason,
+        auth: request.auth ?? true,
+        signal: AbortSignal.any([signal, deadline]),
+      })) as T;
+    } catch (error) {
+      throw toToolError(error, signal.aborted);
+    }
   }
 }
 
-export function toToolError(error: unknown, operationId: string): PToolError | undefined {
+const BY_STATUS: Record<number, [ErrorCategory, string]> = {
+  400: ["validation", "Fix the request using Discord's error details"],
+  401: ["permission", "Check DISCORD_TOKEN"],
+  403: ["permission", "Check the bot permissions"],
+  404: ["not_found", "Check the IDs in the request"],
+  409: ["conflict", "Check the current state of the resource"],
+};
+function toToolError(error: unknown, cancelled: boolean): PToolError {
   if (error instanceof RateLimitError)
     return new PToolError("Discord rate limit exceeded", {
       category: "rate_limited",
       retryable: true,
-      remediation: "Retry after the rate limit resets",
-      operationId,
-      retryAfter: error.retryAfter,
+      remediation: "Retry after retry_after seconds",
+      retryAfter: Math.ceil(Math.max(error.retryAfter, error.timeToReset) / 1000),
     });
   if (error instanceof DiscordAPIError || error instanceof HTTPError) {
-    const status = error.status;
-    const category =
-      status === 403
-        ? "permission"
-        : status === 404
-          ? "not_found"
-          : status === 429
-            ? "rate_limited"
-            : "discord";
-    return new PToolError(`Discord request failed (HTTP ${status})`, {
-      category,
-      retryable: status === 429 || status >= 500,
-      remediation:
-        status === 403 ? "Check the bot permissions" : "Check the request or retry later",
-      operationId,
-      status,
-      discordCode: error instanceof DiscordAPIError ? error.code : undefined,
-    });
+    const { status } = error;
+    const [category, remediation] = BY_STATUS[status] ?? [
+      "discord",
+      status >= 500 ? "Retry later" : "Check the request",
+    ];
+    return new PToolError(
+      error instanceof DiscordAPIError
+        ? `Discord rejected the request (HTTP ${status}): ${error.message}`
+        : `Discord request failed (HTTP ${status})`,
+      {
+        category,
+        retryable: status >= 500,
+        remediation,
+        status,
+        discordCode: error instanceof DiscordAPIError ? error.code : undefined,
+        cause: error,
+      },
+    );
   }
-  return undefined;
+  if (cancelled)
+    return new PToolError("Request cancelled", {
+      category: "cancelled",
+      retryable: false,
+      remediation: "Send the request again if it is still needed",
+      cause: error,
+    });
+  return new PToolError("Discord request failed before a response", {
+    category: "discord",
+    retryable: true,
+    remediation: "Retry later",
+    cause: error,
+  });
 }

@@ -5,11 +5,23 @@ import { PAttachmentService } from "./adapters/files/attachment-service.js";
 import { createServer } from "./adapters/mcp/server.js";
 import { PToolPipeline } from "./core/pipeline.js";
 import { PPolicyEngine } from "./core/policy.js";
+import { resolveScope } from "./core/scope.js";
 import { PToolRegistry } from "./core/tool-registry.js";
 
 const token = process.env.DISCORD_TOKEN;
 if (!token) throw new Error("DISCORD_TOKEN is required");
-const rest = new PDiscordRestAdapter(token);
+const milliseconds = (name: string) => {
+  const value = process.env[name];
+  if (value === undefined) return undefined;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0)
+    throw new Error(`${name} must be a positive integer`);
+  return parsed;
+};
+const bot = new PDiscordRestAdapter(token, {
+  timeoutMs: milliseconds("DISCORD_MCP_REQUEST_TIMEOUT_MS"),
+  rateLimitWaitMs: milliseconds("DISCORD_MCP_RATE_LIMIT_WAIT_MS"),
+});
 const policy = PPolicyEngine.fromEnv(process.env);
 const registry = await PToolRegistry.load();
 const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
@@ -17,9 +29,9 @@ const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
   .map((s) => s.trim())
   .filter(Boolean);
 const files = new PAttachmentService(roots, process.env.DISCORD_MCP_DOWNLOAD_DIR ?? "");
-const pipeline = new PToolPipeline(registry, policy, { rest, files }, async (input) => {
-  if (typeof input.channel_id !== "string") return undefined;
-  const channel = await rest.getChannel(input.channel_id);
-  return "guild_id" in channel ? channel.guild_id : undefined;
+const pipeline = new PToolPipeline(registry, policy, {
+  credentials: { bot },
+  files,
+  resolveScope,
 });
-await createServer(registry, pipeline).connect(new StdioServerTransport());
+await createServer(pipeline).connect(new StdioServerTransport());

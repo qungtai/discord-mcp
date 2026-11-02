@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, symlink, truncate, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, symlink, truncate, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -111,5 +111,25 @@ describe("downloads", () => {
     await expect(
       new PAttachmentService([], dir).download("https://cdn.discordapp.com/a", "x"),
     ).rejects.toMatchObject({ category: "discord", retryable: true, message: "Download failed" });
+    await expect(access(join(dir, "x"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
+  it("maps network failures and cancellation", async () => {
+    const service = new PAttachmentService([], dir);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("fetch failed");
+      }),
+    );
+    await expect(service.download("https://cdn.discordapp.com/a", "y")).rejects.toMatchObject({
+      category: "discord",
+      retryable: true,
+      message: "Download failed before a response",
+    });
+    const controller = new AbortController();
+    controller.abort();
+    await expect(
+      service.download("https://cdn.discordapp.com/a", "z", controller.signal),
+    ).rejects.toMatchObject({ category: "cancelled", message: "Download cancelled" });
   });
 });

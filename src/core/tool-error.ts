@@ -7,6 +7,7 @@ export type ErrorCategory =
   | "rate_limited"
   | "discord"
   | "uncertain"
+  | "cancelled"
   | "internal";
 export interface ToolErrorOptions {
   category: ErrorCategory;

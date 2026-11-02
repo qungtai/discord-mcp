@@ -1,15 +1,70 @@
 import { createHash } from "node:crypto";
 import { constants } from "node:fs";
-import { open, realpath } from "node:fs/promises";
+import { open, realpath, unlink } from "node:fs/promises";
 import { basename, isAbsolute, relative, resolve, sep } from "node:path";
+import type {
+  AttachmentPort,
+  AttachmentUpdate,
+  DownloadResult,
+  FileUpload,
+  Multipart,
+  RawFile,
+} from "../../core/ports.js";
 import { PToolError } from "../../core/tool-error.js";
 
-export class PAttachmentService {
+export class PAttachmentService implements AttachmentPort {
   constructor(
     private readonly roots: string[],
     private readonly downloadDir: string,
   ) {}
-  async upload(path: string, filename?: string): Promise<{ name: string; data: Buffer }> {
+  async prepare(uploads: readonly FileUpload[]): Promise<Multipart> {
+    const files = await Promise.all(
+      uploads.map(async (f) => ({
+        ...(await this.upload(f.path, f.filename)),
+        contentType: f.content_type,
+      })),
+    );
+    return {
+      files,
+      attachments: files.map((file, i) => ({
+        id: String(i),
+        filename: file.name,
+        description: uploads[i]?.description,
+        title: uploads[i]?.title,
+        is_spoiler: uploads[i]?.is_spoiler,
+      })),
+    };
+  }
+  // Keeps every existing attachment, applies metadata updates and appends new uploads.
+  async merge(
+    existing: readonly { id: string; description?: string | null }[],
+    change: { add?: readonly FileUpload[]; update?: readonly AttachmentUpdate[] },
+  ): Promise<Multipart> {
+    for (const { id } of change.update ?? [])
+      if (!existing.some((a) => a.id === id))
+        throw new PToolError("Unknown attachment", {
+          category: "not_found",
+          retryable: false,
+          remediation: "Choose an existing attachment",
+          resourceIds: { attachment_id: id },
+        });
+    const added = await this.prepare(change.add ?? []);
+    return {
+      files: added.files,
+      attachments: [
+        ...existing.map((a) => {
+          const update = change.update?.find((u) => u.id === a.id);
+          return {
+            id: a.id,
+            description: update?.description ?? a.description ?? undefined,
+            is_spoiler: update?.is_spoiler,
+          };
+        }),
+        ...added.attachments,
+      ],
+    };
+  }
+  async upload(path: string, filename?: string): Promise<RawFile> {
     if (!isAbsolute(path) || path.split(/[\\/]/).includes(".."))
       throw new PToolError("Invalid upload path", {
         category: "validation",
@@ -61,11 +116,7 @@ export class PAttachmentService {
       await handle.close();
     }
   }
-  async download(
-    url: string,
-    filename: string,
-    signal?: AbortSignal,
-  ): Promise<{ path: string; size: number; sha256: string }> {
+  async download(url: string, filename: string, signal?: AbortSignal): Promise<DownloadResult> {
     const parsed = new URL(url);
     if (
       parsed.protocol !== "https:" ||
@@ -87,19 +138,8 @@ export class PAttachmentService {
         retryable: false,
         remediation: "Configure an absolute download directory and valid filename",
       });
-    const response = await fetch(parsed, { redirect: "error", signal });
-    if (!response.ok)
-      throw new PToolError("Download failed", {
-        category: "discord",
-        retryable: true,
-        remediation: "Retry the download",
-      });
-    const data = Buffer.from(await response.arrayBuffer());
     const path = resolve(this.downloadDir, filename);
-    let handle: Awaited<ReturnType<typeof open>>;
-    try {
-      handle = await open(path, "wx");
-    } catch (error) {
+    const handle = await open(path, "wx").catch((error: unknown) => {
       if (code(error) === "EEXIST")
         throw new PToolError("Download already exists", {
           category: "conflict",
@@ -115,13 +155,46 @@ export class PAttachmentService {
           cause: error,
         });
       throw error;
-    }
+    });
+    let data: Buffer;
     try {
+      data = await fetchAttachment(parsed, signal);
       await handle.writeFile(data);
-    } finally {
+    } catch (error) {
       await handle.close();
+      await unlink(path);
+      throw error;
     }
+    await handle.close();
     return { path, size: data.length, sha256: createHash("sha256").update(data).digest("hex") };
+  }
+}
+async function fetchAttachment(url: URL, signal?: AbortSignal): Promise<Buffer> {
+  try {
+    const response = await fetch(url, { redirect: "error", signal });
+    if (!response.ok)
+      throw new PToolError("Download failed", {
+        category: "discord",
+        retryable: true,
+        remediation: "Retry the download",
+        status: response.status,
+      });
+    return Buffer.from(await response.arrayBuffer());
+  } catch (error) {
+    if (error instanceof PToolError) throw error;
+    throw signal?.aborted
+      ? new PToolError("Download cancelled", {
+          category: "cancelled",
+          retryable: false,
+          remediation: "Download again if it is still needed",
+          cause: error,
+        })
+      : new PToolError("Download failed before a response", {
+          category: "discord",
+          retryable: true,
+          remediation: "Retry the download",
+          cause: error,
+        });
   }
 }
 function code(error: unknown): unknown {

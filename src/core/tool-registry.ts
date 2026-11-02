@@ -1,40 +1,52 @@
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import type { z } from "zod";
-import type { DiscordRest } from "../adapters/discord-rest/discord-rest.js";
-import type { PAttachmentService } from "../adapters/files/attachment-service.js";
+import type { PermissionFlagsBits } from "discord-api-types/v10";
+import type { z } from "zod/v4";
+import type { AttachmentPort, DiscordRequest, ScopeKind } from "./ports.js";
 
-export type Toolset = "core" | "messages";
+export const TOOLSETS = ["core", "messages"] as const;
+export const DEFAULT_TOOLSETS: readonly Toolset[] = ["core", "messages"];
+export type Toolset = (typeof TOOLSETS)[number];
 export type CredentialProfile = "bot" | "webhook" | "oauth_user" | "app_owner";
-export type ResourceScope =
-  | { kind: "channel" | "guild"; param: string }
-  | { kind: "none" | "message_reference" };
+export type Permission = keyof typeof PermissionFlagsBits;
 export type Effect = "read" | "write" | "destructive" | "local_write";
 export type LogLevel = "debug" | "info" | "warning" | "error";
+type Key<I extends z.ZodObject> = keyof z.infer<I> & string;
+export type ResourceScope<K extends string = string> =
+  | "none"
+  | Partial<Record<ScopeKind, K | readonly K[]>>;
+export interface ChangeSummary {
+  summary: string;
+  resource_ids: Record<string, string>;
+}
 export interface ToolContext {
-  rest: DiscordRest;
-  files: Pick<PAttachmentService, "upload" | "download">;
+  discord: DiscordRequest;
+  files: AttachmentPort;
   signal: AbortSignal;
   progress: (progress: number, total?: number) => Promise<void>;
   log: (level: LogLevel, message: string) => Promise<void>;
   correlation_id: string;
 }
-export interface ToolSpec<I extends z.AnyZodObject, O extends z.AnyZodObject> {
+export interface ToolSpec<I extends z.ZodObject, O extends z.ZodObject> {
   name: `discord_${string}`;
   description: string;
   operation_ids: readonly string[];
   toolset: Toolset;
   credential: CredentialProfile;
-  scope: ResourceScope;
+  scope: ResourceScope<Key<I>>;
+  permissions: readonly Permission[];
   effect: Effect;
   idempotent: boolean;
   input: I;
   output: O;
   execute(input: z.infer<I>, context: ToolContext): Promise<z.input<O>>;
+  // Required before a destructive tool can run once the approval flow exists.
+  preview?(input: z.infer<I>, context: ToolContext): Promise<ChangeSummary>;
 }
-export interface ToolDescriptor extends Omit<ToolSpec<z.AnyZodObject, z.AnyZodObject>, "name"> {
+export interface ToolDescriptor extends Omit<ToolSpec<z.ZodObject, z.ZodObject>, "name" | "scope"> {
   name: string;
+  scope: ResourceScope;
   annotations: {
     readOnlyHint: boolean;
     destructiveHint: boolean;
@@ -43,22 +55,36 @@ export interface ToolDescriptor extends Omit<ToolSpec<z.AnyZodObject, z.AnyZodOb
   };
 }
 const descriptors = new WeakSet<object>();
-export function defineTool<I extends z.AnyZodObject, O extends z.AnyZodObject>(
+export function defineTool<I extends z.ZodObject, O extends z.ZodObject>(
   spec: ToolSpec<I, O>,
 ): ToolDescriptor {
   if (!/^discord_[a-z0-9]+(?:_[a-z0-9]+)+$/.test(spec.name))
     throw new Error(`Invalid tool name: ${spec.name}`);
   const tool: ToolDescriptor = {
-    ...(spec as unknown as ToolSpec<z.AnyZodObject, z.AnyZodObject>),
+    ...spec,
+    input: spec.input.strict(),
     annotations: {
       readOnlyHint: spec.effect === "read",
       destructiveHint: spec.effect === "destructive",
       idempotentHint: spec.idempotent,
-      openWorldHint: spec.effect !== "local_write",
+      openWorldHint: true,
     },
   };
   descriptors.add(tool);
   return tool;
+}
+export function scopeIds(tool: ToolDescriptor, input: Record<string, unknown>) {
+  const byKind: Partial<Record<ScopeKind, string[]>> = {};
+  const resources: Record<string, string> = {};
+  if (tool.scope === "none") return { byKind, resources };
+  for (const [kind, keys] of Object.entries(tool.scope) as [ScopeKind, string | string[]][])
+    for (const key of typeof keys === "string" ? [keys] : keys) {
+      const value = input[key];
+      if (typeof value !== "string") continue;
+      resources[key] = value;
+      byKind[kind] = [...(byKind[kind] ?? []), value];
+    }
+  return { byKind, resources };
 }
 export class PToolRegistry {
   private readonly tools = new Map<string, ToolDescriptor>();
@@ -66,23 +92,26 @@ export class PToolRegistry {
     dir = fileURLToPath(new URL("../operations/", import.meta.url)),
   ): Promise<PToolRegistry> {
     const registry = new PToolRegistry();
-    const files = (await readdir(dir, { recursive: true }))
-      .filter((file) => /\.[jt]s$/.test(file) && !file.endsWith(".d.ts"))
-      .sort();
+    const files = (await readdir(dir, { recursive: true })).filter(
+      (file) => /\.[jt]s$/.test(file) && !file.endsWith(".d.ts"),
+    );
     for (const file of files)
       for (const value of Object.values(await import(pathToFileURL(join(dir, file)).href)))
         if (typeof value === "object" && value !== null && descriptors.has(value))
           registry.register(value as ToolDescriptor);
+    if (!registry.tools.size) throw new Error(`No tools found in ${dir}`);
     return registry;
   }
   register(tool: ToolDescriptor): void {
-    if (this.tools.has(tool.name)) throw new Error(`Duplicate tool: ${tool.name}`);
+    const existing = this.tools.get(tool.name);
+    if (existing === tool) return;
+    if (existing) throw new Error(`Duplicate tool: ${tool.name}`);
     this.tools.set(tool.name, tool);
   }
   get(name: string): ToolDescriptor | undefined {
     return this.tools.get(name);
   }
   list(): ToolDescriptor[] {
-    return [...this.tools.values()];
+    return [...this.tools.values()].sort((a, b) => a.name.localeCompare(b.name));
   }
 }

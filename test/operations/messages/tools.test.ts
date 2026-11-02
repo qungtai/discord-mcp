@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { PAttachmentService } from "../../../src/adapters/files/attachment-service.js";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { harness, MESSAGE } from "../../support/harness.js";
+import { errorOf, harness, MESSAGE } from "../../support/harness.js";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -27,27 +27,46 @@ describe("message tools over MCP", () => {
       arguments: {
         channel_id: "1",
         content: "hello",
-        files: [{ path: join(dir, "root", "a.txt"), description: "alt", is_spoiler: true }],
+        files: [
+          {
+            path: join(dir, "root", "a.txt"),
+            description: "alt",
+            is_spoiler: true,
+            content_type: "text/plain",
+          },
+        ],
       },
     });
     expect(result.structuredContent).toEqual({ message: MESSAGE });
     const { url, method, body } = request();
     expect([method, url]).toEqual(["POST", "https://discord.com/api/v10/channels/1/messages"]);
     const form = body as FormData;
-    const payload = JSON.parse(String(form.get("payload_json")));
-    expect(payload).toEqual({
+    expect(JSON.parse(String(form.get("payload_json")))).toEqual({
       nonce: expect.stringMatching(/^[a-f0-9]{24}$/),
       enforce_nonce: true,
       content: "hello",
       allowed_mentions: { parse: [] },
       attachments: [{ id: "0", filename: "a.txt", description: "alt", is_spoiler: true }],
     });
-    expect(await (form.get("files[0]") as Blob).text()).toBe("hello");
+    const part = form.get("files[0]") as Blob;
+    expect([await part.text(), part.type]).toEqual(["hello", "text/plain"]);
   });
 
-  it("edits attachment metadata with is_spoiler and keeps unchanged attachments", async () => {
+  it("sends a caller-supplied nonce so a retry deduplicates", async () => {
     const { client, request } = await harness();
     await client.callTool({
+      name: "discord_send_message",
+      arguments: { channel_id: "1", content: "hi", nonce: "retry-1" },
+    });
+    expect(JSON.parse(String(request().body))).toMatchObject({
+      nonce: "retry-1",
+      enforce_nonce: true,
+    });
+  });
+
+  it("edits attachment metadata, keeps the others and returns the message", async () => {
+    const { client, request } = await harness();
+    const result = await client.callTool({
       name: "discord_edit_message",
       arguments: {
         channel_id: "1",
@@ -55,6 +74,7 @@ describe("message tools over MCP", () => {
         update_attachments: [{ id: "11", description: "new", is_spoiler: true }],
       },
     });
+    expect(result.structuredContent).toEqual({ message: MESSAGE });
     expect(request(0).method).toBe("GET");
     expect(request(1).method).toBe("PATCH");
     expect(JSON.parse(String(request(1).body))).toEqual({
@@ -62,91 +82,105 @@ describe("message tools over MCP", () => {
     });
   });
 
+  it("appends new files after the existing attachments", async () => {
+    const dir = await tempDir();
+    const { client, request } = await harness({
+      files: new PAttachmentService([join(dir, "root")], ""),
+    });
+    await client.callTool({
+      name: "discord_edit_message",
+      arguments: {
+        channel_id: "1",
+        message_id: "2",
+        add_files: [{ path: join(dir, "root", "a.txt") }],
+      },
+    });
+    const form = request(1).body as FormData;
+    expect(JSON.parse(String(form.get("payload_json"))).attachments).toEqual([
+      { id: "11", description: "old" },
+      { id: "12" },
+      { id: "0", filename: "a.txt" },
+    ]);
+  });
+
+  it("rejects an update for an unknown attachment before the PATCH", async () => {
+    const { client, makeRequest } = await harness();
+    const result = await client.callTool({
+      name: "discord_edit_message",
+      arguments: { channel_id: "1", message_id: "2", update_attachments: [{ id: "99" }] },
+    });
+    expect(errorOf(result)).toMatchObject({
+      category: "not_found",
+      message: "Unknown attachment",
+      resource_ids: { channel_id: "1", message_id: "2", attachment_id: "99" },
+    });
+    expect(makeRequest).toHaveBeenCalledTimes(1);
+  });
+
   it("does not touch attachments when only the content changes", async () => {
     const { client, request, makeRequest } = await harness();
-    await client.callTool({
+    const result = await client.callTool({
       name: "discord_edit_message",
       arguments: { channel_id: "1", message_id: "2", content: "change" },
     });
+    expect(result.structuredContent).toEqual({ message: MESSAGE });
     expect(makeRequest).toHaveBeenCalledTimes(1);
     expect(JSON.parse(String(request().body))).toEqual({ content: "change" });
   });
 
-  it("rejects attachment removal until approval exists without calling Discord", async () => {
-    const { client, makeRequest } = await harness();
-    const result = await client.callTool({
-      name: "discord_edit_message",
-      arguments: { channel_id: "1", message_id: "2", remove_attachment_ids: ["11"] },
-    });
-    expect(result.isError).toBe(true);
-    expect(result.structuredContent).toMatchObject({
-      error: { category: "policy", message: "Attachment removal requires approval support" },
-    });
-    expect(makeRequest).not.toHaveBeenCalled();
-  });
-
-  it("lists messages with the query parameters and returns them", async () => {
-    const { client, request } = await harness({ respond: () => [MESSAGE] });
+  it("lists messages with the query parameters and paging cursors", async () => {
+    const older = { ...MESSAGE, id: "1" };
+    const { client, request } = await harness({ respond: () => [MESSAGE, older] });
     const result = await client.callTool({
       name: "discord_list_messages",
       arguments: { channel_id: "1", limit: 3, before: "4" },
     });
     expect(request().url).toBe("https://discord.com/api/v10/channels/1/messages?limit=3&before=4");
-    expect(result.structuredContent).toEqual({ messages: [MESSAGE] });
+    expect(result.structuredContent).toEqual({
+      messages: [MESSAGE, older],
+      next_before: "1",
+      next_after: "2",
+    });
   });
 
   it("downloads to a collision-free name with metadata and refuses to overwrite", async () => {
     const dir = await tempDir();
     const downloads = join(dir, "downloads");
     const { client } = await harness({ files: new PAttachmentService([], downloads) });
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () => new Response("hello")),
-    );
+    const fetch = vi.fn(async () => new Response("hello"));
+    vi.stubGlobal("fetch", fetch);
     const call = () =>
       client.callTool({
         name: "discord_download_attachment",
         arguments: { channel_id: "1", message_id: "2", attachment_id: "11" },
       });
-    const first = await call();
-    expect(first.structuredContent).toEqual({
+    expect((await call()).structuredContent).toEqual({
       path: join(downloads, "2-11-one.png"),
+      attachment_id: "11",
       filename: "2-11-one.png",
       size: 5,
       content_type: "image/png",
       sha256: "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
     });
     expect(await readFile(join(downloads, "2-11-one.png"), "utf8")).toBe("hello");
-    expect((await call()).structuredContent).toMatchObject({
-      error: { category: "conflict", retryable: false, message: "Download already exists" },
+    expect(errorOf(await call())).toMatchObject({
+      category: "conflict",
+      retryable: false,
+      message: "Download already exists",
     });
-  });
-
-  it("blocks mutating tools in read-only mode before any request", async () => {
-    const { client, makeRequest } = await harness({
-      policy: new PPolicyEngine([], ["core", "messages"], true),
-    });
-    const result = await client.callTool({
-      name: "discord_send_message",
-      arguments: { channel_id: "1", content: "x" },
-    });
-    expect(result.structuredContent).toMatchObject({
-      error: { category: "policy", message: "Read-only mode", retryable: false },
-    });
-    expect(makeRequest).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 
   it("blocks guilds outside the allowlist before calling the tool", async () => {
     const { client, makeRequest } = await harness({
       policy: new PPolicyEngine(["200"], ["core", "messages"], false),
+      respond: () => ({ id: "1", guild_id: "300" }),
     });
     const result = await client.callTool({
-      name: "discord_get_message",
-      arguments: { channel_id: "1", message_id: "2" },
+      name: "discord_send_message",
+      arguments: { channel_id: "1", content: "x" },
     });
-    expect(result.structuredContent).toMatchObject({
-      error: { category: "policy", message: "Guild is not allowed" },
-    });
-    expect(makeRequest).not.toHaveBeenCalled();
+    expect(errorOf(result)).toMatchObject({ category: "policy", message: "Guild is not allowed" });
+    expect(makeRequest).toHaveBeenCalledTimes(1);
   });
 });
