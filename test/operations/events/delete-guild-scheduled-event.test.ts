@@ -12,9 +12,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const approvalFreeRegistry = () => {
+const toolRegistry = () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteGuildScheduledEvent, approval: false });
+  registry.register(deleteGuildScheduledEvent);
   return registry;
 };
 
@@ -24,22 +24,23 @@ const get = {
   reason: "Event cancelled",
 };
 
-it("denies call when approval is required but unconfigured", async () => {
+it("refuses to run when the client cannot ask for approval", async () => {
   const { pipeline } = await harness({
+    clientCapabilities: {},
     policy: new PPolicyEngine([], ["events"], false),
   });
   expect(await pipeline.call("discord_delete_guild_scheduled_event", get)).toMatchObject({
     ok: false,
     error: {
       category: "policy",
-      message: "This tool requires approval support",
+      message: "This tool needs approval but the client does not support elicitation",
     },
   });
 });
 
 it("deletes a guild scheduled event and sends reason", async () => {
   const { client, request } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
     respond: () => undefined,
   });
@@ -61,7 +62,7 @@ it("deletes a guild scheduled event and sends reason", async () => {
 
 it("passes allowlist check for allowed guild", async () => {
   const { client } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["10"], ["events"], false),
     respond: () => undefined,
   });
@@ -78,7 +79,7 @@ it("passes allowlist check for allowed guild", async () => {
 
 it("denies allowlist check when guild is not allowed", async () => {
   const { client, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["999"], ["events"], false),
   });
   const result = await client.callTool({
@@ -94,7 +95,7 @@ it("denies allowlist check when guild is not allowed", async () => {
 
 it("maps a 403 to permission with required ManageEvents", async () => {
   const { client } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
@@ -111,7 +112,7 @@ it("maps a 403 to permission with required ManageEvents", async () => {
 
 it("maps a 404 to not_found", async () => {
   const { client } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
     makeRequest: async () =>
       json({ message: "Unknown Scheduled Event", code: 10070 }, { status: 404 }),

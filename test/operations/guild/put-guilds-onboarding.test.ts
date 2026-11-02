@@ -25,12 +25,13 @@ const ONBOARDING = {
   mode: 0,
 };
 
-it("is gated pending approval support by default", async () => {
+it("refuses to run when the client cannot ask for approval", async () => {
   const tool = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
   expect(tool?.effect).toBe("destructive");
   expect(tool?.approval).toBe(true);
 
   const { client, makeRequest } = await harness({
+    clientCapabilities: {},
     policy: new PPolicyEngine([], ["guild"], false),
   });
   const result = await client.callTool({
@@ -39,16 +40,16 @@ it("is gated pending approval support by default", async () => {
   });
   expect(errorOf(result)).toMatchObject({
     category: "policy",
-    message: "This tool requires approval support",
+    message: "This tool needs approval but the client does not support elicitation",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("puts onboarding when approval is bypassed and preserves response fields", async () => {
+it("puts onboarding after the client accepts approval and preserves response fields", async () => {
   const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client, request } = await harness({
     registry,
@@ -95,7 +96,7 @@ it("validates prompt options min count", async () => {
   const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client, makeRequest } = await harness({
     registry,
@@ -116,7 +117,7 @@ it("maps a 403 error to permission with ManageGuild", async () => {
   const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client } = await harness({
     registry,
@@ -139,7 +140,7 @@ it("maps a 404 error to not_found", async () => {
   const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client } = await harness({
     registry,
@@ -161,7 +162,7 @@ it("allows access when guild and default channels are in allowlist", async () =>
   const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client, request } = await harness({
     registry,
@@ -184,7 +185,7 @@ it("denies access when guild is not in allowlist", async () => {
   const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client, makeRequest } = await harness({
     registry,
@@ -205,7 +206,7 @@ it("denies access when default channel belongs to another guild", async () => {
   const base = (await PToolRegistry.load()).get("discord_put_guilds_onboarding");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client, makeRequest } = await harness({
     registry,

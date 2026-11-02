@@ -12,9 +12,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const approvalFreeRegistry = () => {
+const toolRegistry = () => {
   const registry = new PToolRegistry();
-  registry.register({ ...updateGuildScheduledEvent, approval: false });
+  registry.register(updateGuildScheduledEvent);
   return registry;
 };
 
@@ -31,22 +31,23 @@ const EVENT = {
   status: 2,
 };
 
-it("denies call when approval is required but unconfigured", async () => {
+it("refuses to run when the client cannot ask for approval", async () => {
   const { pipeline } = await harness({
+    clientCapabilities: {},
     policy: new PPolicyEngine([], ["events"], false),
   });
   expect(await pipeline.call("discord_update_guild_scheduled_event", get)).toMatchObject({
     ok: false,
     error: {
       category: "policy",
-      message: "This tool requires approval support",
+      message: "This tool needs approval but the client does not support elicitation",
     },
   });
 });
 
 it("updates a guild scheduled event with body, reason and literal URL", async () => {
   const { client, request } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
     respond: () => EVENT,
   });
@@ -72,7 +73,7 @@ it("updates a guild scheduled event with body, reason and literal URL", async ()
 
 it("passes allowlist check for allowed guild and channel", async () => {
   const { client, request } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["10"], ["events"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/channels/20")) {
@@ -97,7 +98,7 @@ it("passes allowlist check for allowed guild and channel", async () => {
 
 it("denies allowlist check when channel belongs to a different unallowed guild", async () => {
   const { client, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["10"], ["events"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/channels/20")) {
@@ -124,7 +125,7 @@ it("denies allowlist check when channel belongs to a different unallowed guild",
 
 it("denies allowlist check when guild is not allowed", async () => {
   const { client, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["999"], ["events"], false),
   });
   const result = await client.callTool({
@@ -140,7 +141,7 @@ it("denies allowlist check when guild is not allowed", async () => {
 
 it("maps a 403 to permission with required ManageEvents", async () => {
   const { client } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
@@ -157,7 +158,7 @@ it("maps a 403 to permission with required ManageEvents", async () => {
 
 it("maps a 404 to not_found", async () => {
   const { client } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
     makeRequest: async () =>
       json({ message: "Unknown Scheduled Event", code: 10070 }, { status: 404 }),
@@ -181,7 +182,7 @@ it.each([
   { input: { ...get, entity_type: 99 }, desc: "invalid entity type" },
 ])("validates input: $desc", async ({ input }) => {
   const { client, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
   });
   const result = await client.callTool({

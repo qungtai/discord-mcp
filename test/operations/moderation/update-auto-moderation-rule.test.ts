@@ -14,10 +14,7 @@ afterEach(() => {
 
 function optedOutRegistry() {
   const reg = new PToolRegistry();
-  reg.register({
-    ...updateAutoModerationRule,
-    approval: false,
-  });
+  reg.register(updateAutoModerationRule);
   return reg;
 }
 
@@ -188,8 +185,9 @@ it("denies execution when guild is not in allowlist", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("denies execution under default approval policy", async () => {
+it("refuses to run when the client cannot ask for approval", async () => {
   const { client, makeRequest } = await harness({
+    clientCapabilities: {},
     policy: new PPolicyEngine([], ["core", "moderation"], false),
   });
   const result = await client.callTool({
@@ -198,8 +196,9 @@ it("denies execution under default approval policy", async () => {
   });
   expect(errorOf(result)).toMatchObject({
     category: "policy",
-    message: "This tool requires approval support",
-    remediation: "Wait for the approval flow",
+    message: "This tool needs approval but the client does not support elicitation",
+    remediation:
+      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });

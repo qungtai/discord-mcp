@@ -13,11 +13,11 @@ afterEach(() => {
 
 const GUILD = { id: "123", name: "Updated Guild", description: "A great server" };
 
-async function unapprovedHarness(options = {}) {
+async function toolHarness(options = {}) {
   const base = (await PToolRegistry.load()).get("discord_update_guild");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
   return harness({
     registry,
     policy: new PPolicyEngine([], ["guild"], false),
@@ -25,12 +25,13 @@ async function unapprovedHarness(options = {}) {
   });
 }
 
-it("is gated pending approval support by default", async () => {
+it("refuses to run when the client cannot ask for approval", async () => {
   const tool = (await PToolRegistry.load()).get("discord_update_guild");
   expect(tool?.effect).toBe("destructive");
   expect(tool?.approval).toBe(true);
 
   const { client, makeRequest } = await harness({
+    clientCapabilities: {},
     policy: new PPolicyEngine([], ["guild"], false),
   });
   const result = await client.callTool({
@@ -39,13 +40,13 @@ it("is gated pending approval support by default", async () => {
   });
   expect(errorOf(result)).toMatchObject({
     category: "policy",
-    message: "This tool requires approval support",
+    message: "This tool needs approval but the client does not support elicitation",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("updates a guild and passes comprehensive literal body and reason when approval is bypassed", async () => {
-  const { client, request } = await unapprovedHarness({ respond: () => GUILD });
+it("updates a guild and passes comprehensive literal body and reason after the client accepts approval", async () => {
+  const { client, request } = await toolHarness({ respond: () => GUILD });
   const result = await client.callTool({
     name: "discord_update_guild",
     arguments: {
@@ -101,7 +102,7 @@ it("updates a guild and passes comprehensive literal body and reason when approv
 });
 
 it("validates input name min length", async () => {
-  const { client, makeRequest } = await unapprovedHarness();
+  const { client, makeRequest } = await toolHarness();
   const result = await client.callTool({
     name: "discord_update_guild",
     arguments: { guild_id: "123", name: "a" },
@@ -111,7 +112,7 @@ it("validates input name min length", async () => {
 });
 
 it("maps a 403 error to permission with required permissions", async () => {
-  const { client } = await unapprovedHarness({
+  const { client } = await toolHarness({
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -127,7 +128,7 @@ it("maps a 403 error to permission with required permissions", async () => {
 });
 
 it("maps a 404 error to not_found", async () => {
-  const { client } = await unapprovedHarness({
+  const { client } = await toolHarness({
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
   const result = await client.callTool({
@@ -145,7 +146,7 @@ it("allows update when guild and scoped channels are in allowlist", async () => 
   const base = (await PToolRegistry.load()).get("discord_update_guild");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine(["123"], ["guild"], false),
@@ -167,7 +168,7 @@ it("denies update when guild is not in allowlist", async () => {
   const base = (await PToolRegistry.load()).get("discord_update_guild");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine(["999"], ["guild"], false),
@@ -187,7 +188,7 @@ it("denies update when a scoped channel belongs to another guild before write", 
   const base = (await PToolRegistry.load()).get("discord_update_guild");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine(["123"], ["guild"], false),

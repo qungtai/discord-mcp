@@ -34,11 +34,11 @@ export function threadHarness(options: Parameters<typeof harness>[0] = {}) {
   });
 }
 
-export async function bypassApproval(toolName: string) {
+export async function singleToolRegistry(toolName: string) {
   const base = (await PToolRegistry.load()).get(toolName);
   if (!base) throw new Error(`Missing tool: ${toolName}`);
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
   return registry;
 }
 

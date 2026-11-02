@@ -46,6 +46,10 @@ export function json(body: unknown, init: ResponseInit = {}): ResponseLike {
   }) as unknown as ResponseLike;
 }
 
+// Approval tools need a client that accepts elicitation; pass clientCapabilities: {} to test a client without it.
+export const acceptElicitation = () =>
+  ({ action: "accept", content: { approve: true } }) as ElicitResult;
+
 export async function harness(
   options: {
     policy?: PPolicyEngine;
@@ -76,13 +80,10 @@ export async function harness(
     },
   );
   const server = createServer(pipeline);
-  const capabilities =
-    options.clientCapabilities ?? (options.onElicit ? { elicitation: {} } : undefined);
-  const client = new Client(
-    { name: "test", version: "1" },
-    capabilities ? { capabilities } : undefined,
-  );
-  if (options.onElicit) client.setRequestHandler(ElicitRequestSchema, options.onElicit);
+  const capabilities = options.clientCapabilities ?? { elicitation: {} };
+  const client = new Client({ name: "test", version: "1" }, { capabilities });
+  const onElicit = options.onElicit ?? (capabilities.elicitation ? acceptElicitation : undefined);
+  if (onElicit) client.setRequestHandler(ElicitRequestSchema, onElicit);
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
   await client.listTools();

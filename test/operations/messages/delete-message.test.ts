@@ -15,34 +15,35 @@ afterEach(() => {
 const args = { channel_id: "1", message_id: "2", reason: "cleanup message" };
 const empty204 = () => new Response(null, { status: 204 }) as unknown as ResponseLike;
 
-async function unapprovedHarness(options: Parameters<typeof harness>[0] = {}) {
+async function toolHarness(options: Parameters<typeof harness>[0] = {}) {
   const base = (await PToolRegistry.load()).get("discord_delete_message");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
   return harness({ ...options, registry });
 }
 
-it("is gated pending approval support by default", async () => {
+it("refuses to run when the client cannot ask for approval", async () => {
   const tool = (await PToolRegistry.load()).get("discord_delete_message");
   expect(tool?.effect).toBe("destructive");
   expect(tool?.approval).toBe(true);
 
-  const { client, makeRequest } = await harness();
+  const { client, makeRequest } = await harness({ clientCapabilities: {} });
   const result = await client.callTool({
     name: "discord_delete_message",
     arguments: args,
   });
   expect(errorOf(result)).toMatchObject({
     category: "policy",
-    message: "This tool requires approval support",
-    remediation: "Wait for the approval flow",
+    message: "This tool needs approval but the client does not support elicitation",
+    remediation:
+      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("deletes a message with an audit reason when approval is bypassed", async () => {
-  const { client, request } = await unapprovedHarness({
+it("deletes a message with an audit reason after the client accepts approval", async () => {
+  const { client, request } = await toolHarness({
     makeRequest: async () => empty204(),
   });
   const result = await client.callTool({
@@ -60,7 +61,7 @@ it("deletes a message with an audit reason when approval is bypassed", async () 
 });
 
 it("allows access under an allowed guild", async () => {
-  const { client } = await unapprovedHarness({
+  const { client } = await toolHarness({
     policy: new PPolicyEngine(["100"], ["core", "messages"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/channels/1")) return json({ id: "1", guild_id: "100" });
@@ -79,7 +80,7 @@ it("allows access under an allowed guild", async () => {
 });
 
 it("blocks access when channel belongs to a disallowed guild", async () => {
-  const { client, makeRequest } = await unapprovedHarness({
+  const { client, makeRequest } = await toolHarness({
     policy: new PPolicyEngine(["100"], ["core", "messages"], false),
     respond: () => ({ id: "1", guild_id: "200" }),
   });
@@ -92,7 +93,7 @@ it("blocks access when channel belongs to a disallowed guild", async () => {
 });
 
 it("blocks mutating call in read-only mode", async () => {
-  const { client, makeRequest } = await unapprovedHarness({
+  const { client, makeRequest } = await toolHarness({
     policy: new PPolicyEngine([], ["messages"], true),
   });
   const result = await client.callTool({
@@ -104,7 +105,7 @@ it("blocks mutating call in read-only mode", async () => {
 });
 
 it("maps a 403 to permission error", async () => {
-  const { client } = await unapprovedHarness({
+  const { client } = await toolHarness({
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -125,7 +126,7 @@ it("maps a 403 to permission error", async () => {
 });
 
 it("maps a 404 to not_found error", async () => {
-  const { client } = await unapprovedHarness({
+  const { client } = await toolHarness({
     makeRequest: async () => json({ message: "Unknown Message", code: 10008 }, { status: 404 }),
   });
   const result = await client.callTool({

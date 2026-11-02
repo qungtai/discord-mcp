@@ -21,14 +21,15 @@ const UPDATED_CHANNEL = {
   topic: "Updated topic",
 };
 
-const approvalFreeRegistry = () => {
+const toolRegistry = () => {
   const registry = new PToolRegistry();
-  registry.register({ ...updateChannel, approval: false });
+  registry.register(updateChannel);
   return registry;
 };
 
-it("has approval enabled by default and is blocked by policy until approval flow is supported", async () => {
+it("refuses to run when the client cannot ask for approval", async () => {
   const { pipeline } = await harness({
+    clientCapabilities: {},
     policy: new PPolicyEngine([], ["channels"], false),
   });
   expect(
@@ -40,15 +41,16 @@ it("has approval enabled by default and is blocked by policy until approval flow
     ok: false,
     error: {
       category: "policy",
-      message: "This tool requires approval support",
-      remediation: "Wait for the approval flow",
+      message: "This tool needs approval but the client does not support elicitation",
+      remediation:
+        "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
     },
   });
 });
 
-it("updates channel settings with reason header when approval is satisfied", async () => {
+it("updates channel settings with reason header after the client accepts approval", async () => {
   const { client, request } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["channels"], false),
     respond: () => UPDATED_CHANNEL,
   });
@@ -123,7 +125,7 @@ it("updates channel settings with reason header when approval is satisfied", asy
 
 it("passes allowlist check when guild is allowed", async () => {
   const { client, request, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["200"], ["channels"], false),
     respond: () => UPDATED_CHANNEL,
   });
@@ -142,7 +144,7 @@ it("passes allowlist check when guild is allowed", async () => {
 
 it("denies access when channel is in an unallowed guild", async () => {
   const { client, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["999"], ["channels"], false),
     respond: () => UPDATED_CHANNEL,
   });
@@ -162,7 +164,7 @@ it("denies access when channel is in an unallowed guild", async () => {
 
 it("blocks execution in read-only mode", async () => {
   const { pipeline, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["channels"], true),
   });
   const result = await pipeline.call("discord_update_channel", {
@@ -196,7 +198,7 @@ it.each([
   { input: { channel_id: "100", extra: "dropped" }, desc: "unknown key" },
 ])("validates input: $desc", async ({ input }) => {
   const { client, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["channels"], false),
   });
   const result = await client.callTool({
@@ -216,23 +218,22 @@ it.each([
   ],
   [404, 10003, "not_found", "Check the IDs in the request"],
 ])("handles HTTP %i error", async (status, code, category, remediation) => {
-  const { pipeline } = await harness({
-    registry: approvalFreeRegistry(),
+  const { client } = await harness({
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["channels"], false),
     makeRequest: async () => json({ message: "Discord error", code }, { status }),
   });
-  expect(
-    await pipeline.call("discord_update_channel", {
+  const result = await client.callTool({
+    name: "discord_update_channel",
+    arguments: {
       channel_id: "100",
       name: "renamed-channel",
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category,
-      status,
-      discord_code: code,
-      remediation,
     },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category,
+    status,
+    discord_code: code,
+    remediation,
   });
 });

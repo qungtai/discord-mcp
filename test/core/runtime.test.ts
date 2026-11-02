@@ -840,7 +840,7 @@ describe("approval flow over MCP", () => {
   });
 
   it("fails with category policy and zero REST calls when client lacks elicitation capability or only supports URL", async () => {
-    const noCap = await harness({ registry: registryOf(approvalTool) });
+    const noCap = await harness({ registry: registryOf(approvalTool), clientCapabilities: {} });
     const resNoCap = await noCap.client.callTool({
       name: "discord_delete_probe",
       arguments: { channel_id: "123" },

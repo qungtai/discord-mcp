@@ -15,8 +15,8 @@ afterEach(() => {
 
 const policy = new PPolicyEngine([], ["core", "roles"], false);
 
-it("refuses delete without approval support", async () => {
-  const { client, makeRequest } = await harness({ policy });
+it("refuses to run when the client cannot ask for approval", async () => {
+  const { client, makeRequest } = await harness({ clientCapabilities: {}, policy });
   const result = await client.callTool({
     name: "discord_delete_guild_role",
     arguments: {
@@ -26,8 +26,9 @@ it("refuses delete without approval support", async () => {
   });
   expect(errorOf(result)).toMatchObject({
     category: "policy",
-    message: "This tool requires approval support",
-    remediation: "Wait for the approval flow",
+    message: "This tool needs approval but the client does not support elicitation",
+    remediation:
+      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
@@ -45,19 +46,16 @@ it("rejects invalid role_id", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-function unapprovedRegistry() {
+function toolRegistry() {
   const reg = new PToolRegistry();
-  reg.register({
-    ...deleteGuildRole,
-    approval: false,
-  });
+  reg.register(deleteGuildRole);
   return reg;
 }
 
-it("deletes a guild role with reason when approval is satisfied", async () => {
+it("deletes a guild role with reason after the client accepts approval", async () => {
   const { client, request } = await harness({
     policy,
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
     makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
   });
   const result = await client.callTool({
@@ -81,7 +79,7 @@ it("deletes a guild role with reason when approval is satisfied", async () => {
 it("allows guilds in the allowlist and sends expected request", async () => {
   const { client, request } = await harness({
     policy: new PPolicyEngine(["123"], ["core", "roles"], false),
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
     makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
   });
   const result = await client.callTool({
@@ -100,7 +98,7 @@ it("allows guilds in the allowlist and sends expected request", async () => {
 it("blocks guilds outside the allowlist", async () => {
   const { client, makeRequest } = await harness({
     policy: new PPolicyEngine(["999"], ["core", "roles"], false),
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
   });
   const result = await client.callTool({
     name: "discord_delete_guild_role",
@@ -116,7 +114,7 @@ it("blocks guilds outside the allowlist", async () => {
 it("maps 403 to permission error with exact message and remediation", async () => {
   const { client } = await harness({
     policy,
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -136,7 +134,7 @@ it("maps 403 to permission error with exact message and remediation", async () =
 it("maps 404 to not_found error with exact message and remediation", async () => {
   const { client } = await harness({
     policy,
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
     makeRequest: async () => json({ message: "Unknown Role", code: 10011 }, { status: 404 }),
   });
   const result = await client.callTool({

@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { PToolRegistry } from "../../../src/core/tool-registry.js";
 import { errorOf, harness, json } from "../../support/harness.js";
 
 beforeEach(() => {
@@ -11,23 +10,16 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-async function bypassApprovalHarness(options: Parameters<typeof harness>[0] = {}) {
-  const all = (await PToolRegistry.load()).list();
-  const reg = new PToolRegistry();
-  for (const t of all) {
-    reg.register(
-      t.name === "discord_set_channel_permission_overwrite" ? { ...t, approval: false } : t,
-    );
-  }
+async function toolHarness(options: Parameters<typeof harness>[0] = {}) {
   return harness({
     ...options,
-    registry: reg,
     policy: options.policy ?? new PPolicyEngine([], ["channels"], false),
   });
 }
 
-it("refuses call through default approval gate without sending any request", async () => {
+it("refuses to run when the client cannot ask for approval", async () => {
   const { client, makeRequest } = await harness({
+    clientCapabilities: {},
     policy: new PPolicyEngine([], ["channels"], false),
   });
   const result = await client.callTool({
@@ -40,14 +32,15 @@ it("refuses call through default approval gate without sending any request", asy
   });
   expect(errorOf(result)).toMatchObject({
     category: "policy",
-    message: "This tool requires approval support",
-    remediation: "Wait for the approval flow",
+    message: "This tool needs approval but the client does not support elicitation",
+    remediation:
+      "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
 it("sets channel permission overwrite with literal method, route and body", async () => {
-  const { client, request } = await bypassApprovalHarness({
+  const { client, request } = await toolHarness({
     respond: () => ({}),
   });
   const result = await client.callTool({
@@ -82,7 +75,7 @@ it("sets channel permission overwrite with literal method, route and body", asyn
 });
 
 it("rejects invalid overwrite type", async () => {
-  const { client, makeRequest } = await bypassApprovalHarness();
+  const { client, makeRequest } = await toolHarness();
   const result = await client.callTool({
     name: "discord_set_channel_permission_overwrite",
     arguments: {
@@ -96,7 +89,7 @@ it("rejects invalid overwrite type", async () => {
 });
 
 it("rejects non-digit bitfield string in allow or deny", async () => {
-  const { client, makeRequest } = await bypassApprovalHarness();
+  const { client, makeRequest } = await toolHarness();
   const res1 = await client.callTool({
     name: "discord_set_channel_permission_overwrite",
     arguments: {
@@ -122,7 +115,7 @@ it("rejects non-digit bitfield string in allow or deny", async () => {
 });
 
 it("maps 403 to permission with ManageRoles requirement", async () => {
-  const { client } = await bypassApprovalHarness({
+  const { client } = await toolHarness({
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -142,7 +135,7 @@ it("maps 403 to permission with ManageRoles requirement", async () => {
 });
 
 it("maps 404 to not_found", async () => {
-  const { client } = await bypassApprovalHarness({
+  const { client } = await toolHarness({
     makeRequest: async () => json({ message: "Unknown Channel", code: 10003 }, { status: 404 }),
   });
   const result = await client.callTool({
@@ -161,7 +154,7 @@ it("maps 404 to not_found", async () => {
 });
 
 it("succeeds when channel is in allowlist and denies when it is not", async () => {
-  const allowed = await bypassApprovalHarness({
+  const allowed = await toolHarness({
     policy: new PPolicyEngine(["500"], ["channels"], false),
     makeRequest: async (url) => {
       const u = String(url);
@@ -188,7 +181,7 @@ it("succeeds when channel is in allowlist and denies when it is not", async () =
     url: "https://discord.com/api/v10/channels/100/permissions/200",
   });
 
-  const denied = await bypassApprovalHarness({
+  const denied = await toolHarness({
     policy: new PPolicyEngine(["500"], ["channels"], false),
     respond: () => ({ id: "100", guild_id: "999" }),
   });

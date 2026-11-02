@@ -17,8 +17,9 @@ const channelId = "100";
 const messageId = "200";
 const emoji = "👍";
 
-it("has approval enabled by default and is blocked by policy until approval flow is supported", async () => {
+it("refuses to run when the client cannot ask for approval", async () => {
   const { pipeline } = await harness({
+    clientCapabilities: {},
     policy: new PPolicyEngine([], ["reactions"], false),
   });
   expect(
@@ -31,15 +32,16 @@ it("has approval enabled by default and is blocked by policy until approval flow
     ok: false,
     error: {
       category: "policy",
-      message: "This tool requires approval support",
-      remediation: "Wait for the approval flow",
+      message: "This tool needs approval but the client does not support elicitation",
+      remediation:
+        "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
     },
   });
 });
 
-it("deletes all reactions for an emoji with ManageMessages when approval is satisfied", async () => {
+it("deletes all reactions for an emoji with ManageMessages after the client accepts approval", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -65,7 +67,7 @@ it("deletes all reactions for an emoji with ManageMessages when approval is sati
 it("supports custom emoji", async () => {
   const customEmoji = "party_blob:123456789";
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -86,7 +88,7 @@ it.each([
   ["unknown extra property", { channel_id: channelId, message_id: messageId, emoji, extra: 1 }],
 ])("validates input strictly: %s", async (_, args) => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -101,7 +103,7 @@ it.each([
 
 it("maps 403 to permission error with ManageMessages", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -121,7 +123,7 @@ it("maps 403 to permission error with ManageMessages", async () => {
 
 it("maps 404 to not_found", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -139,7 +141,7 @@ it("maps 404 to not_found", async () => {
 
 it("allows access under an allowed guild and denies under disallowed guild", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const allowed = await harness({
     registry,
     policy: new PPolicyEngine(["500"], ["reactions"], false),
