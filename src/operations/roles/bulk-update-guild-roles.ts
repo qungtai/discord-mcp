@@ -1,12 +1,8 @@
-import {
-  type RESTPatchAPIGuildRolePositionsJSONBody,
-  type RESTPatchAPIGuildRolePositionsResult,
-  Routes,
-} from "discord-api-types/v10";
+import { type RESTPatchAPIGuildRolePositionsResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { rolesResult } from "./guild-roles-schemas.js";
+import { rolesResult } from "./schemas.js";
 
 const rolePosition = z.strictObject({
   id: snowflake,
@@ -32,7 +28,7 @@ export const bulkUpdateGuildRoles = defineTool({
     roles: await discord<RESTPatchAPIGuildRolePositionsResult>({
       method: "PATCH",
       route: Routes.guildRoles(guild_id),
-      body: roles as RESTPatchAPIGuildRolePositionsJSONBody,
+      body: roles,
       reason,
     }),
   }),

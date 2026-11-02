@@ -19,6 +19,13 @@ const ROLE = {
   position: 2,
   permissions: "16",
   managed: false,
+  hoist: true,
+  mentionable: true,
+  icon: "role_icon",
+  unicode_emoji: null,
+  flags: 1,
+  colors: { primary_color: 255 },
+  tags: {},
 };
 
 it("gets a guild role", async () => {
@@ -45,8 +52,8 @@ it("rejects invalid role_id", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("allows guilds in the allowlist", async () => {
-  const { client } = await harness({
+it("allows guilds in the allowlist and sends expected request", async () => {
+  const { client, request } = await harness({
     policy: new PPolicyEngine(["123"], ["core", "roles"], false),
     respond: () => ROLE,
   });
@@ -55,6 +62,8 @@ it("allows guilds in the allowlist", async () => {
     arguments: { guild_id: "123", role_id: "456" },
   });
   expect(result.structuredContent).toEqual({ role: ROLE });
+  const { url, method } = request();
+  expect([method, url]).toEqual(["GET", "https://discord.com/api/v10/guilds/123/roles/456"]);
 });
 
 it("blocks guilds outside the allowlist", async () => {
@@ -72,7 +81,26 @@ it("blocks guilds outside the allowlist", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("maps 404 to not_found error", async () => {
+it("maps 403 to permission error with exact message and remediation", async () => {
+  const { client } = await harness({
+    policy,
+    makeRequest: async () => json({ message: "Missing Access", code: 50001 }, { status: 403 }),
+  });
+  const result = await client.callTool({
+    name: "discord_get_guild_role",
+    arguments: { guild_id: "123", role_id: "456" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    discord_code: 50001,
+    retryable: false,
+    message: "Discord rejected the request (HTTP 403): Missing Access",
+    remediation: "Check the bot permissions",
+  });
+});
+
+it("maps 404 to not_found error with exact message and remediation", async () => {
   const { client } = await harness({
     policy,
     makeRequest: async () => json({ message: "Unknown Role", code: 10011 }, { status: 404 }),
@@ -84,5 +112,9 @@ it("maps 404 to not_found error", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "not_found",
     status: 404,
+    discord_code: 10011,
+    retryable: false,
+    message: "Discord rejected the request (HTTP 404): Unknown Role",
+    remediation: "Check the IDs in the request",
   });
 });

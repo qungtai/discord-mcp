@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { defineTool, PToolRegistry } from "../../../src/core/tool-registry.js";
+import { PToolRegistry } from "../../../src/core/tool-registry.js";
 import { updateGuildRole } from "../../../src/operations/roles/update-guild-role.js";
 import { errorOf, harness, json } from "../../support/harness.js";
 
@@ -21,6 +21,13 @@ const UPDATED_ROLE = {
   position: 2,
   permissions: "32",
   managed: false,
+  hoist: true,
+  mentionable: false,
+  icon: null,
+  unicode_emoji: "🔥",
+  flags: 0,
+  colors: { primary_color: 65280 },
+  tags: {},
 };
 
 it("refuses update without approval support", async () => {
@@ -63,7 +70,7 @@ function unapprovedRegistry() {
   return reg;
 }
 
-it("updates a guild role with reason and null fields when approval is satisfied", async () => {
+it("updates a guild role with reason, null fields and colors when approval is satisfied", async () => {
   const { client, request } = await harness({
     policy,
     registry: unapprovedRegistry(),
@@ -75,7 +82,10 @@ it("updates a guild role with reason and null fields when approval is satisfied"
       guild_id: "123",
       role_id: "456",
       name: "SuperAdmin",
+      permissions: "32",
       color: 65280,
+      colors: { primary_color: 65280 },
+      unicode_emoji: "🔥",
       icon: null,
       reason: "promotion",
     },
@@ -86,13 +96,16 @@ it("updates a guild role with reason and null fields when approval is satisfied"
   expect(headers).toMatchObject({ "X-Audit-Log-Reason": "promotion" });
   expect(JSON.parse(String(body))).toEqual({
     name: "SuperAdmin",
+    permissions: "32",
     color: 65280,
+    colors: { primary_color: 65280 },
+    unicode_emoji: "🔥",
     icon: null,
   });
 });
 
-it("allows guilds in the allowlist", async () => {
-  const { client } = await harness({
+it("allows guilds in the allowlist and sends expected request", async () => {
+  const { client, request } = await harness({
     policy: new PPolicyEngine(["123"], ["core", "roles"], false),
     registry: unapprovedRegistry(),
     respond: () => UPDATED_ROLE,
@@ -102,6 +115,9 @@ it("allows guilds in the allowlist", async () => {
     arguments: { guild_id: "123", role_id: "456", name: "SuperAdmin" },
   });
   expect(result.structuredContent).toEqual({ role: UPDATED_ROLE });
+  const { url, method, body } = request();
+  expect([method, url]).toEqual(["PATCH", "https://discord.com/api/v10/guilds/123/roles/456"]);
+  expect(JSON.parse(String(body))).toEqual({ name: "SuperAdmin" });
 });
 
 it("blocks guilds outside the allowlist", async () => {
@@ -120,7 +136,7 @@ it("blocks guilds outside the allowlist", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("maps 403 to permission error", async () => {
+it("maps 403 to permission error with exact message and remediation", async () => {
   const { client } = await harness({
     policy,
     registry: unapprovedRegistry(),
@@ -133,5 +149,29 @@ it("maps 403 to permission error", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
+    discord_code: 50013,
+    retryable: false,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
+    remediation: "Check the bot permissions; this tool needs ManageRoles",
+  });
+});
+
+it("maps 404 to not_found error with exact message and remediation", async () => {
+  const { client } = await harness({
+    policy,
+    registry: unapprovedRegistry(),
+    makeRequest: async () => json({ message: "Unknown Role", code: 10011 }, { status: 404 }),
+  });
+  const result = await client.callTool({
+    name: "discord_update_guild_role",
+    arguments: { guild_id: "123", role_id: "456", name: "SuperAdmin" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10011,
+    retryable: false,
+    message: "Discord rejected the request (HTTP 404): Unknown Role",
+    remediation: "Check the IDs in the request",
   });
 });

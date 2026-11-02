@@ -1,18 +1,8 @@
-import {
-  type RESTPatchAPIGuildRoleJSONBody,
-  type RESTPatchAPIGuildRoleResult,
-  Routes,
-} from "discord-api-types/v10";
+import { type RESTPatchAPIGuildRoleResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { roleResult } from "./guild-roles-schemas.js";
-
-const roleColors = z.strictObject({
-  primary_color: z.number().int().min(0).max(16777215),
-  secondary_color: z.number().int().min(0).max(16777215).nullish(),
-  tertiary_color: z.number().int().min(0).max(16777215).nullish(),
-});
+import { roleColors, roleResult } from "./schemas.js";
 
 export const updateGuildRole = defineTool({
   name: "discord_update_guild_role",
@@ -41,7 +31,7 @@ export const updateGuildRole = defineTool({
     role: await discord<RESTPatchAPIGuildRoleResult>({
       method: "PATCH",
       route: Routes.guildRole(guild_id, role_id),
-      body: body as RESTPatchAPIGuildRoleJSONBody,
+      body,
       reason,
     }),
   }),

@@ -1,6 +1,8 @@
 import { z } from "zod/v4";
 import { snowflake, user } from "../schemas.js";
 
+export const templateCode = z.string().min(1);
+
 export const guildTemplate = z.object({
   code: z.string(),
   name: z.string().optional(),

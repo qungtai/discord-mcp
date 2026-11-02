@@ -2,7 +2,7 @@ import { type RESTGetAPIGuildRoleMemberCountsResult, Routes } from "discord-api-
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { roleMemberCountsResult } from "./guild-roles-schemas.js";
+import { roleMemberCountsResult } from "./schemas.js";
 
 export const guildRoleMemberCounts = defineTool({
   name: "discord_guild_role_member_counts",
@@ -10,7 +10,7 @@ export const guildRoleMemberCounts = defineTool({
   operationIds: ["guild_role_member_counts"],
   toolset: "roles",
   scope: { guild: "guild_id" },
-  permissions: ["ManageRoles"],
+  permissions: [],
   effect: "read",
   idempotent: true,
   input: z.object({ guild_id: snowflake }),

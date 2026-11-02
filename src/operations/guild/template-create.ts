@@ -1,12 +1,8 @@
-import {
-  type RESTPostAPIGuildTemplatesJSONBody,
-  type RESTPostAPIGuildTemplatesResult,
-  Routes,
-} from "discord-api-types/v10";
+import { type RESTPostAPIGuildTemplatesResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { templateResult } from "./guild-roles-schemas.js";
+import { templateResult } from "./template-schemas.js";
 
 export const createGuildTemplate = defineTool({
   name: "discord_create_guild_template",
@@ -27,7 +23,7 @@ export const createGuildTemplate = defineTool({
     template: await discord<RESTPostAPIGuildTemplatesResult>({
       method: "POST",
       route: Routes.guildTemplates(guild_id),
-      body: body as RESTPostAPIGuildTemplatesJSONBody,
+      body,
     }),
   }),
 });

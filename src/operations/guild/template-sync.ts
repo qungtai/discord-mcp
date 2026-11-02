@@ -2,7 +2,7 @@ import { type RESTPutAPIGuildTemplateSyncResult, Routes } from "discord-api-type
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { templateResult } from "./guild-roles-schemas.js";
+import { templateCode, templateResult } from "./template-schemas.js";
 
 export const syncGuildTemplate = defineTool({
   name: "discord_sync_guild_template",
@@ -15,7 +15,7 @@ export const syncGuildTemplate = defineTool({
   idempotent: true,
   input: z.object({
     guild_id: snowflake,
-    code: z.string().min(1),
+    code: templateCode,
   }),
   output: templateResult,
   execute: async ({ guild_id, code }, { discord }) => ({

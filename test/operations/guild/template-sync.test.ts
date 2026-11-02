@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { defineTool, PToolRegistry } from "../../../src/core/tool-registry.js";
+import { PToolRegistry } from "../../../src/core/tool-registry.js";
 import { syncGuildTemplate } from "../../../src/operations/guild/template-sync.js";
 import { errorOf, harness, json } from "../../support/harness.js";
 
@@ -83,8 +83,8 @@ it("syncs a guild template when approval is satisfied", async () => {
   ]);
 });
 
-it("allows guilds in the allowlist", async () => {
-  const { client } = await harness({
+it("allows guilds in the allowlist and sends expected request", async () => {
+  const { client, request } = await harness({
     policy: new PPolicyEngine(["123"], ["core", "guild"], false),
     registry: unapprovedRegistry(),
     respond: () => TEMPLATE,
@@ -94,6 +94,11 @@ it("allows guilds in the allowlist", async () => {
     arguments: { guild_id: "123", code: "sync123" },
   });
   expect(result.structuredContent).toEqual({ template: TEMPLATE });
+  const { url, method } = request();
+  expect([method, url]).toEqual([
+    "PUT",
+    "https://discord.com/api/v10/guilds/123/templates/sync123",
+  ]);
 });
 
 it("blocks guilds outside the allowlist", async () => {
@@ -112,7 +117,7 @@ it("blocks guilds outside the allowlist", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("maps 403 to permission error", async () => {
+it("maps 403 to permission error with exact message and remediation", async () => {
   const { client } = await harness({
     policy,
     registry: unapprovedRegistry(),
@@ -125,5 +130,29 @@ it("maps 403 to permission error", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "permission",
     status: 403,
+    discord_code: 50013,
+    retryable: false,
+    message: "Discord rejected the request (HTTP 403): Missing Permissions",
+    remediation: "Check the bot permissions; this tool needs ManageGuild",
+  });
+});
+
+it("maps 404 to not_found error with exact message and remediation", async () => {
+  const { client } = await harness({
+    policy,
+    registry: unapprovedRegistry(),
+    makeRequest: async () => json({ message: "Unknown Template", code: 10057 }, { status: 404 }),
+  });
+  const result = await client.callTool({
+    name: "discord_sync_guild_template",
+    arguments: { guild_id: "123", code: "sync123" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10057,
+    retryable: false,
+    message: "Discord rejected the request (HTTP 404): Unknown Template",
+    remediation: "Check the IDs in the request",
   });
 });

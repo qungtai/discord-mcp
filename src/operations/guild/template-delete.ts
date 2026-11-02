@@ -2,7 +2,7 @@ import { type RESTDeleteAPIGuildTemplateResult, Routes } from "discord-api-types
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { templateResult } from "./guild-roles-schemas.js";
+import { templateCode, templateResult } from "./template-schemas.js";
 
 export const deleteGuildTemplate = defineTool({
   name: "discord_delete_guild_template",
@@ -15,7 +15,7 @@ export const deleteGuildTemplate = defineTool({
   idempotent: true,
   input: z.object({
     guild_id: snowflake,
-    code: z.string().min(1),
+    code: templateCode,
   }),
   output: templateResult,
   execute: async ({ guild_id, code }, { discord }) => ({
