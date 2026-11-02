@@ -64,11 +64,7 @@ function toQuery(query: NonNullable<DiscordRequestInit["query"]>): URLSearchPara
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {
     if (value === undefined) continue;
-    if (Array.isArray(value)) {
-      for (const item of value) params.append(key, item);
-    } else {
-      params.set(key, String(value));
-    }
+    for (const item of [value].flat()) params.append(key, String(item));
   }
   return params;
 }

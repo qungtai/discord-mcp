@@ -29,13 +29,22 @@ const hasOption = z.enum([
 ]);
 const searchableEmbedType = z.enum(["image", "video", "gif", "sound", "article"]);
 
+const threadMember = z.object({
+  id: snowflake,
+  user_id: snowflake,
+  join_timestamp: z.string().optional(),
+  flags: z.number().optional(),
+  member: member.optional(),
+});
+
 const outputSchema = z.object({
   messages: z.array(z.array(message)),
   total_results: z.number().int(),
   threads: z.array(channel).nullish(),
-  members: z.array(member).nullish(),
+  members: z.array(threadMember).nullish(),
   doing_deep_historical_index: z.boolean().optional(),
   documents_indexed: z.number().int().nullish(),
+  next_offset: z.number().int().nullable(),
 });
 type GuildSearchOutput = z.input<typeof outputSchema>;
 
@@ -48,7 +57,7 @@ interface SearchIndexNotReady {
 
 export const searchGuildMessages = defineTool({
   name: "discord_search_guild_messages",
-  description: "Search messages across a guild",
+  description: "Search messages across a guild. Page with offset=next_offset",
   operationIds: ["guild_search"],
   toolset: "messages",
   scope: { guild: "guild_id", channel: "channel_id" },
@@ -84,7 +93,7 @@ export const searchGuildMessages = defineTool({
   }),
   output: outputSchema,
   execute: async ({ guild_id, ...query }, { discord }) => {
-    const response = await discord<GuildSearchOutput | SearchIndexNotReady>({
+    const response = await discord<Omit<GuildSearchOutput, "next_offset"> | SearchIndexNotReady>({
       method: "GET",
       route: Routes.guildMessagesSearch(guild_id),
       query,
@@ -97,6 +106,14 @@ export const searchGuildMessages = defineTool({
         remediation: "The search index is still being built; retry after retry_after seconds",
       });
     }
-    return response;
+    const currentOffset = query.offset ?? 0;
+    const limit = query.limit ?? 25;
+    const count = response.messages?.length ?? 0;
+    const next_offset =
+      currentOffset + count < response.total_results ? currentOffset + limit : null;
+    return {
+      ...response,
+      next_offset,
+    };
   },
 });
