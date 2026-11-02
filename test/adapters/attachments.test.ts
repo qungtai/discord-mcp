@@ -1,30 +1,115 @@
-import { mkdir, mkdtemp, readFile, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, symlink, truncate, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PAttachmentService } from "../../src/adapters/files/attachment-service.js";
 
-afterEach(() => vi.unstubAllGlobals());
-it("restricts uploads and downloads with a hash without overwriting", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "discord-mcp-"));
-  const root = join(dir, "root");
+let dir: string;
+let root: string;
+beforeEach(async () => {
+  dir = await mkdtemp(join(tmpdir(), "discord-mcp-"));
+  root = join(dir, "root");
   await mkdir(root);
-  const path = join(root, "a.txt");
-  await writeFile(path, "hello");
-  const outside = join(dir, "outside");
-  await writeFile(outside, "secret");
-  await symlink(outside, join(root, "link"));
-  const service = new PAttachmentService([root], dir);
-  expect((await service.upload(path)).data.toString()).toBe("hello");
-  await expect(service.upload(join(root, "link"))).rejects.toThrow();
-  await expect(service.upload(`${root}/../outside`)).rejects.toThrow();
-  vi.stubGlobal(
-    "fetch",
-    vi.fn(async () => new Response("hello")),
+  await writeFile(join(root, "a.txt"), "hello");
+  await writeFile(join(dir, "outside"), "secret");
+});
+afterEach(() => vi.unstubAllGlobals());
+
+const rejects = (promise: Promise<unknown>, category: string, message: string) =>
+  expect(promise).rejects.toMatchObject({
+    name: "PToolError",
+    category,
+    retryable: false,
+    message,
+  });
+
+describe("uploads", () => {
+  it("reads a file inside a root", async () => {
+    const file = await new PAttachmentService([root], "").upload(join(root, "a.txt"));
+    expect([file.name, file.data.toString()]).toEqual(["a.txt", "hello"]);
+  });
+  it("rejects paths outside the roots, including sibling prefixes", async () => {
+    await mkdir(`${root}2`);
+    await writeFile(join(`${root}2`, "b.txt"), "x");
+    const service = new PAttachmentService([root], "");
+    await rejects(service.upload(join(dir, "outside")), "policy", "Upload outside allowed roots");
+    await rejects(
+      service.upload(join(`${root}2`, "b.txt")),
+      "policy",
+      "Upload outside allowed roots",
+    );
+  });
+  it("rejects a symlink that escapes the root", async () => {
+    await symlink(join(dir, "outside"), join(root, "link"));
+    await rejects(
+      new PAttachmentService([root], "").upload(join(root, "link")),
+      "policy",
+      "Upload outside allowed roots",
+    );
+  });
+  it("rejects relative and traversal paths", async () => {
+    const service = new PAttachmentService([root], "");
+    await rejects(service.upload("a.txt"), "validation", "Invalid upload path");
+    await rejects(service.upload(`${root}/../outside`), "validation", "Invalid upload path");
+  });
+  it("rejects files over the 25 MiB cap", async () => {
+    await writeFile(join(root, "big"), "");
+    await truncate(join(root, "big"), 25 * 1024 * 1024 + 1);
+    await rejects(
+      new PAttachmentService([root], "").upload(join(root, "big")),
+      "validation",
+      "Upload must be a regular file under 25 MiB",
+    );
+  });
+  it("reports a missing file as not_found", async () => {
+    await rejects(
+      new PAttachmentService([root], "").upload(join(root, "missing")),
+      "not_found",
+      "Upload file not found",
+    );
+  });
+});
+
+describe("downloads", () => {
+  beforeEach(() =>
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("hello")),
+    ),
   );
-  const result = await service.download("https://cdn.discordapp.com/a", "file.txt");
-  expect(result.sha256).toBe("2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
-  expect(await readFile(result.path, "utf8")).toBe("hello");
-  await expect(service.download("https://cdn.discordapp.com/a", "file.txt")).rejects.toThrow();
-  await expect(service.download("https://evil.example/a", "x")).rejects.toThrow();
+  it("rejects non-Discord URLs", async () => {
+    await rejects(
+      new PAttachmentService([], dir).download("https://evil.example/a", "x"),
+      "validation",
+      "Invalid attachment URL",
+    );
+  });
+  it("rejects a missing download directory", async () => {
+    await rejects(
+      new PAttachmentService([], join(dir, "nope")).download("https://cdn.discordapp.com/a", "x"),
+      "validation",
+      "Download directory does not exist",
+    );
+  });
+  it("rejects an unset download directory and path-like names", async () => {
+    await rejects(
+      new PAttachmentService([], "").download("https://cdn.discordapp.com/a", "x"),
+      "validation",
+      "Invalid download location",
+    );
+    await rejects(
+      new PAttachmentService([], dir).download("https://cdn.discordapp.com/a", "../x"),
+      "validation",
+      "Invalid download location",
+    );
+  });
+  it("maps non-OK responses to a retryable Discord error", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("", { status: 503 })),
+    );
+    await expect(
+      new PAttachmentService([], dir).download("https://cdn.discordapp.com/a", "x"),
+    ).rejects.toMatchObject({ category: "discord", retryable: true, message: "Download failed" });
+  });
 });

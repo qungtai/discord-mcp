@@ -16,7 +16,16 @@ export class PAttachmentService {
         retryable: false,
         remediation: "Use an absolute upload path",
       });
-    const target = await realpath(path);
+    const target = await realpath(path).catch((error: unknown) => {
+      throw code(error) === "ENOENT"
+        ? new PToolError("Upload file not found", {
+            category: "not_found",
+            retryable: false,
+            remediation: "Check the upload path",
+            cause: error,
+          })
+        : error;
+    });
     if (this.roots.some((root) => !isAbsolute(root)))
       throw new PToolError("Upload roots must be absolute", {
         category: "validation",
@@ -55,6 +64,7 @@ export class PAttachmentService {
   async download(
     url: string,
     filename: string,
+    signal?: AbortSignal,
   ): Promise<{ path: string; size: number; sha256: string }> {
     const parsed = new URL(url);
     if (
@@ -77,7 +87,7 @@ export class PAttachmentService {
         retryable: false,
         remediation: "Configure an absolute download directory and valid filename",
       });
-    const response = await fetch(parsed, { redirect: "error" });
+    const response = await fetch(parsed, { redirect: "error", signal });
     if (!response.ok)
       throw new PToolError("Download failed", {
         category: "discord",
@@ -90,11 +100,18 @@ export class PAttachmentService {
     try {
       handle = await open(path, "wx");
     } catch (error) {
-      if (error instanceof Error && "code" in error && error.code === "EEXIST")
+      if (code(error) === "EEXIST")
         throw new PToolError("Download already exists", {
           category: "conflict",
           retryable: false,
-          remediation: "Choose a different filename",
+          remediation: "Remove or move the existing file first",
+          cause: error,
+        });
+      if (code(error) === "ENOENT")
+        throw new PToolError("Download directory does not exist", {
+          category: "validation",
+          retryable: false,
+          remediation: "Create DISCORD_MCP_DOWNLOAD_DIR or point it at an existing directory",
           cause: error,
         });
       throw error;
@@ -106,4 +123,7 @@ export class PAttachmentService {
     }
     return { path, size: data.length, sha256: createHash("sha256").update(data).digest("hex") };
   }
+}
+function code(error: unknown): unknown {
+  return error instanceof Error && "code" in error ? error.code : undefined;
 }

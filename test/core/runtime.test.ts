@@ -1,125 +1,221 @@
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { PDiscordRestAdapter } from "../../src/adapters/discord-rest/discord-rest.js";
-import { PAttachmentService } from "../../src/adapters/files/attachment-service.js";
-import { createServer } from "../../src/adapters/mcp/server.js";
-import { PToolPipeline } from "../../src/core/pipeline.js";
 import { PPolicyEngine } from "../../src/core/policy.js";
-import { PToolError } from "../../src/core/tool-error.js";
+import { redact } from "../../src/core/tool-error.js";
 import { defineTool, PToolRegistry } from "../../src/core/tool-registry.js";
+import { harness } from "../support/harness.js";
 
-const tool = defineTool({
-  name: "discord_get_test",
-  toolset: "messages",
+const probe = defineTool({
+  name: "discord_probe_test",
   description: "test",
-  input: z.object({ channel_id: z.string() }),
-  output: z.object({ result: z.string() }),
   operation_ids: ["test"],
+  toolset: "core",
   credential: "bot",
-  scope: { kind: "channel", param: "channel_id" },
+  scope: { kind: "none" },
   effect: "read",
   idempotent: true,
-  execute: async ({ channel_id }) => ({ result: channel_id }),
+  input: z.object({ fail: z.enum(["none", "plain", "string", "output"]).default("none") }),
+  output: z.object({ correlation_id: z.string().min(1) }),
+  execute: async ({ fail }, { progress, log, correlation_id }) => {
+    await progress(1, 2);
+    await log("info", "using Bot abc.def");
+    if (fail === "plain") throw new Error("boom Bot secret.token");
+    if (fail === "string") throw "raw";
+    return { correlation_id: fail === "output" ? "" : correlation_id };
+  },
 });
-const context = { rest: new PDiscordRestAdapter(""), files: new PAttachmentService([], "") };
-function setup(policy = new PPolicyEngine([], ["messages"], false)) {
+function probeRegistry() {
   const registry = new PToolRegistry();
-  registry.register(tool);
-  return { registry, pipeline: new PToolPipeline(registry, policy, context, async () => "123") };
+  registry.register(probe);
+  return registry;
 }
-describe("core", () => {
-  it("parses environment settings", () => {
+
+describe("policy configuration", () => {
+  it("parses allowlists, default toolsets and read-only", () => {
     const p = PPolicyEngine.fromEnv({
       DISCORD_MCP_ALLOWED_GUILDS: "1, 2,",
       DISCORD_MCP_READ_ONLY: "true",
     });
-    expect(p.allowedGuilds).toEqual(["1", "2"]);
-    expect(p.toolsets).toEqual(["core", "messages"]);
-    expect(p.readOnly).toBe(true);
+    expect([p.allowedGuilds, p.toolsets, p.readOnly]).toEqual([
+      ["1", "2"],
+      ["core", "messages"],
+      true,
+    ]);
   });
-  it("rejects invalid safety settings", () => {
-    for (const value of ["1", "TRUE"])
-      expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_READ_ONLY: value })).toThrow(
-        "DISCORD_MCP_READ_ONLY must be true or false",
-      );
-    for (const value of ["", "mesages"])
-      expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_TOOLSETS: value })).toThrow(
-        "Invalid DISCORD_MCP_TOOLSETS",
-      );
-    expect(PPolicyEngine.fromEnv({ DISCORD_MCP_READ_ONLY: "false" }).readOnly).toBe(false);
+  it.each(["1", "TRUE", "yes"])("fails closed on DISCORD_MCP_READ_ONLY=%s", (value) => {
+    expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_READ_ONLY: value })).toThrow(
+      "DISCORD_MCP_READ_ONLY must be true or false",
+    );
   });
-  it("enforces policy and handles errors", async () => {
-    const { pipeline, registry } = setup();
-    expect(await pipeline.call(tool.name, { channel_id: "1" })).toEqual({
-      ok: true,
-      data: { result: "1" },
-    });
-    expect((await pipeline.call("missing", {})).ok).toBe(false);
-    expect((await pipeline.call(tool.name, {})).ok).toBe(false);
-    expect(() => registry.register(tool)).toThrow();
-    expect(registry.list()).toHaveLength(1);
-    expect(() => new PPolicyEngine([], [], false).check(tool)).toThrow("Toolset disabled");
-    expect(() =>
-      new PPolicyEngine([], ["messages"], true).check({ ...tool, effect: "write" }),
-    ).toThrow("Read-only");
-    expect(() => new PPolicyEngine(["2"], ["messages"], false).check(tool, "1")).toThrow("Guild");
-    expect(() => new PPolicyEngine(["2"], ["messages"], false).check(tool)).toThrow("Guild");
-    new PPolicyEngine(["2"], ["messages"], false).check(tool, "2");
-    const blocked = setup(new PPolicyEngine(["2"], ["messages"], false));
-    expect((await blocked.pipeline.call(tool.name, { channel_id: "1" })).ok).toBe(false);
-    const fail = new PToolRegistry();
-    fail.register({
-      ...tool,
-      handler: async () => {
-        throw new PToolError("bad", {
-          category: "discord",
-          retryable: true,
-          remediation: "retry",
-          operationId: "op",
-          resourceIds: { channel_id: "1" },
-        });
+  it.each(["", "mesages"])("rejects DISCORD_MCP_TOOLSETS=%j", (value) => {
+    expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_TOOLSETS: value })).toThrow(
+      "Invalid DISCORD_MCP_TOOLSETS",
+    );
+  });
+});
+
+describe("registry", () => {
+  it("loads every defineTool from src/operations without a hand-written list", async () => {
+    expect((await PToolRegistry.load()).list().map((tool) => tool.name)).toEqual([
+      "discord_send_message",
+      "discord_edit_message",
+      "discord_get_message",
+      "discord_list_messages",
+      "discord_download_attachment",
+    ]);
+  });
+  it("rejects duplicate and badly named tools", () => {
+    expect(() => probeRegistry().register(probe)).toThrow("Duplicate tool: discord_probe_test");
+    expect(() => defineTool({ ...probe, name: "discord_Bad" as "discord_x" })).toThrow(
+      "Invalid tool name: discord_Bad",
+    );
+  });
+  it("advertises annotations derived from effect and idempotency", async () => {
+    const { client } = await harness();
+    const tools = (await client.listTools()).tools;
+    expect(Object.fromEntries(tools.map((tool) => [tool.name, tool.annotations]))).toEqual({
+      discord_send_message: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: true,
+      },
+      discord_edit_message: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: true,
+      },
+      discord_get_message: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+      discord_list_messages: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+      discord_download_attachment: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false,
       },
     });
-    const error = await new PToolPipeline(
-      fail,
-      new PPolicyEngine([], ["messages"], false),
-      context,
-      vi.fn(),
-    ).call(tool.name, { channel_id: "1" });
+  });
+  it("advertises a real output schema per tool", async () => {
+    const { client } = await harness();
+    const tools = (await client.listTools()).tools;
+    const schema = (name: string) => tools.find((tool) => tool.name === name)?.outputSchema;
+    expect(schema("discord_list_messages")?.required).toEqual(["messages"]);
+    expect(schema("discord_download_attachment")?.required).toEqual([
+      "path",
+      "filename",
+      "size",
+      "content_type",
+      "sha256",
+    ]);
+  });
+});
+
+describe("pipeline over MCP", () => {
+  it("returns SDK-level input errors in the structured shape", async () => {
+    const { client } = await harness();
+    const result = await client.callTool({
+      name: "discord_get_message",
+      arguments: { channel_id: "abc" },
+    });
+    expect(result.isError).toBe(true);
+    expect(result.structuredContent).toMatchObject({
+      error: {
+        category: "validation",
+        retryable: false,
+        operation_id: "discord_get_message",
+        message: "Invalid input: channel_id: Invalid; message_id: Required",
+      },
+    });
+  });
+  it("reports unknown tools as not_found", async () => {
+    const { client } = await harness();
+    const result = await client.callTool({ name: "discord_nope_tool", arguments: {} });
+    expect(result.structuredContent).toMatchObject({
+      error: { category: "not_found", message: "Unknown tool: discord_nope_tool" },
+    });
+  });
+  it("sends progress and redacted log notifications with the call's correlation id", async () => {
+    const { client } = await harness({ registry: probeRegistry() });
+    const logs: unknown[] = [];
+    client.fallbackNotificationHandler = async (notification) => {
+      logs.push(notification);
+    };
+    const onprogress = vi.fn();
+    const result = await client.callTool({ name: probe.name, arguments: {} }, undefined, {
+      onprogress,
+    });
+    expect(onprogress).toHaveBeenCalledWith({ progress: 1, total: 2 });
+    expect(logs).toEqual([
+      expect.objectContaining({
+        method: "notifications/message",
+        params: { level: "info", logger: probe.name, data: "using Bot [redacted]" },
+      }),
+    ]);
+    expect(result.structuredContent).toEqual({
+      correlation_id: expect.stringMatching(/^[0-9a-f-]{36}$/),
+    });
+  });
+  it("logs unknown errors redacted and returns a generic internal error", async () => {
+    const stderr = vi.spyOn(process.stderr, "write").mockReturnValue(true);
+    const { client } = await harness({ registry: probeRegistry() });
+    const result = await client.callTool({ name: probe.name, arguments: { fail: "plain" } });
+    const error = (result.structuredContent as { error: Record<string, string> }).error;
     expect(error).toMatchObject({
-      ok: false,
-      error: { category: "discord", retryable: true, operation_id: "op" },
+      category: "internal",
+      retryable: false,
+      message: "Operation failed",
     });
-    const unknown = new PToolRegistry();
-    unknown.register({
-      ...tool,
-      handler: async () => {
-        throw new Error("secret");
-      },
-    });
-    expect(
-      await new PToolPipeline(
-        unknown,
-        new PPolicyEngine([], ["messages"], false),
-        context,
-        vi.fn(),
-      ).call(tool.name, { channel_id: "1" }),
-    ).not.toHaveProperty("error.message", "secret");
+    const written = stderr.mock.calls.map(([chunk]) => String(chunk)).join("");
+    expect(written).toContain(
+      `[error] ${error.correlation_id} ${probe.name}: Error: boom Bot [redacted]`,
+    );
+    expect(written).not.toContain("secret.token");
+    stderr.mockRestore();
   });
-  it("lists and calls tools over MCP", async () => {
-    const { registry, pipeline } = setup();
-    const server = createServer(registry, pipeline);
-    const client = new Client({ name: "test", version: "1" });
-    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-    await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
-    expect((await client.listTools()).tools[0].name).toBe(tool.name);
+});
+
+describe("pipeline without an MCP session", () => {
+  it("skips progress and maps bad output and non-Error throws to internal", async () => {
+    vi.spyOn(process.stderr, "write").mockReturnValue(true);
+    const { pipeline } = await harness({ registry: probeRegistry() });
+    expect((await pipeline.call(probe.name, {})).ok).toBe(true);
+    expect(await pipeline.call(probe.name, { fail: "output" })).toMatchObject({
+      ok: false,
+      error: { category: "internal", message: "Invalid tool output" },
+    });
+    expect(await pipeline.call(probe.name, { fail: "string" })).toMatchObject({
+      ok: false,
+      error: { category: "internal", message: "Operation failed" },
+    });
+    vi.restoreAllMocks();
+  });
+  it("denies disabled toolsets", async () => {
+    const { pipeline } = await harness({
+      registry: probeRegistry(),
+      policy: new PPolicyEngine([], ["messages"], false),
+    });
+    expect(await pipeline.call(probe.name, {})).toMatchObject({
+      ok: false,
+      error: { category: "policy", message: "Toolset disabled" },
+    });
+  });
+});
+
+describe("redact", () => {
+  it("removes tokens, webhook secrets and configured secrets", () => {
     expect(
-      (await client.callTool({ name: tool.name, arguments: { channel_id: "5" } }))
-        .structuredContent,
-    ).toEqual({ result: "5" });
-    await client.close();
-    await server.close();
+      redact("Bot a.b https://discord.com/api/webhooks/1/abc-DEF x-secret-x", ["x-secret-x"]),
+    ).toBe("Bot [redacted] https://discord.com/api/webhooks/1/[redacted] [redacted]");
   });
 });

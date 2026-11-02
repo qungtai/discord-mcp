@@ -6,19 +6,17 @@ import { createServer } from "./adapters/mcp/server.js";
 import { PToolPipeline } from "./core/pipeline.js";
 import { PPolicyEngine } from "./core/policy.js";
 import { PToolRegistry } from "./core/tool-registry.js";
-import { registerMessageTools } from "./operations/messages/tools.js";
 
 const token = process.env.DISCORD_TOKEN;
 if (!token) throw new Error("DISCORD_TOKEN is required");
 const rest = new PDiscordRestAdapter(token);
 const policy = PPolicyEngine.fromEnv(process.env);
-const registry = new PToolRegistry();
+const registry = await PToolRegistry.load();
 const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
 const files = new PAttachmentService(roots, process.env.DISCORD_MCP_DOWNLOAD_DIR ?? "");
-if (policy.toolsets.includes("messages")) registerMessageTools(registry);
 const pipeline = new PToolPipeline(registry, policy, { rest, files }, async (input) => {
   if (typeof input.channel_id !== "string") return undefined;
   const channel = await rest.getChannel(input.channel_id);

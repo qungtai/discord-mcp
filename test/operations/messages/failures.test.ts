@@ -5,11 +5,9 @@ import { PAttachmentService } from "../../../src/adapters/files/attachment-servi
 import { PToolPipeline } from "../../../src/core/pipeline.js";
 import { PPolicyEngine } from "../../../src/core/policy.js";
 import { PToolRegistry } from "../../../src/core/tool-registry.js";
-import { registerMessageTools } from "../../../src/operations/messages/tools.js";
 
+const registry = await PToolRegistry.load();
 function setup(rest: PDiscordRestAdapter, files = new PAttachmentService([], "")) {
-  const registry = new PToolRegistry();
-  registerMessageTools(registry);
   return new PToolPipeline(
     registry,
     new PPolicyEngine([], ["messages"], false),

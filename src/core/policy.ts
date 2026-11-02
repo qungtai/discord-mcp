@@ -50,8 +50,4 @@ export class PPolicyEngine {
         operationId: tool.name,
       });
   }
-  check(tool: ToolDescriptor, guildId?: string): void {
-    this.checkStatic(tool);
-    this.checkResource(tool, guildId);
-  }
 }

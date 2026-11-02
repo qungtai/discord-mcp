@@ -1,9 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { PToolRegistry } from "./core/tool-registry.js";
-import { registerMessageTools } from "./operations/messages/tools.js";
 
-const registry = new PToolRegistry();
-registerMessageTools(registry);
+const registry = await PToolRegistry.load();
 const manifest = registry.list().map(({ name, toolset, operation_ids, effect, credential }) => ({
   name,
   toolset,
