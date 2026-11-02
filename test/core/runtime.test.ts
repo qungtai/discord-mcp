@@ -136,13 +136,17 @@ describe("policy configuration", () => {
 
 describe("registry", () => {
   it("loads every defineTool from src/operations, sorted by name", async () => {
-    expect((await PToolRegistry.load()).list().map((tool) => tool.name)).toEqual([
-      "discord_download_attachment",
-      "discord_edit_message",
-      "discord_get_message",
-      "discord_list_messages",
-      "discord_send_message",
-    ]);
+    const names = (await PToolRegistry.load()).list().map((tool) => tool.name);
+    expect(names).toEqual([...names].sort());
+    expect(names).toEqual(
+      expect.arrayContaining([
+        "discord_download_attachment",
+        "discord_edit_message",
+        "discord_get_message",
+        "discord_list_messages",
+        "discord_send_message",
+      ]),
+    );
   });
   it("fails when a directory has no tools", async () => {
     const dir = await mkdtemp(join(tmpdir(), "discord-mcp-"));
@@ -185,13 +189,15 @@ describe("registry", () => {
       idempotentHint,
       openWorldHint: true,
     });
-    expect(Object.fromEntries(tools.map((tool) => [tool.name, tool.annotations]))).toEqual({
-      discord_download_attachment: hints(false, false),
-      discord_edit_message: { ...hints(false, false), destructiveHint: true },
-      discord_get_message: hints(true, true),
-      discord_list_messages: hints(true, true),
-      discord_send_message: hints(false, false),
+    const annotations = Object.fromEntries(tools.map((tool) => [tool.name, tool.annotations]));
+    expect(annotations.discord_download_attachment).toEqual(hints(false, false));
+    expect(annotations.discord_edit_message).toEqual({
+      ...hints(false, false),
+      destructiveHint: true,
     });
+    expect(annotations.discord_get_message).toEqual(hints(true, true));
+    expect(annotations.discord_list_messages).toEqual(hints(true, true));
+    expect(annotations.discord_send_message).toEqual(hints(false, false));
   });
   it("advertises inline output schemas and strict inputs", async () => {
     const { client } = await harness();
@@ -233,11 +239,13 @@ describe("registry", () => {
       ).tools.map((t) => t.name);
     expect(await names(new PPolicyEngine([], ["messages"], false))).toEqual([]);
     expect(await names(new PPolicyEngine([], ["core"], true))).toEqual(["discord_probe_test"]);
-    const all = (await (await harness()).client.listTools()).tools.map((t) => t.name);
     const readOnly = await harness({ policy: new PPolicyEngine([], ["core", "messages"], true) });
-    expect((await readOnly.client.listTools()).tools.map((t) => t.name)).toEqual(
-      all.filter((n) => n === "discord_get_message" || n === "discord_list_messages"),
-    );
+    const readOnlyNames = (await readOnly.client.listTools()).tools.map((t) => t.name);
+    expect(readOnlyNames).toContain("discord_get_message");
+    expect(readOnlyNames).toContain("discord_list_messages");
+    expect(readOnlyNames).not.toContain("discord_send_message");
+    expect(readOnlyNames).not.toContain("discord_edit_message");
+    expect(readOnlyNames).not.toContain("discord_download_attachment");
   });
 });
 

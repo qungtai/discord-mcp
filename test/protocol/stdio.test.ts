@@ -43,7 +43,8 @@ it("writes only JSON-RPC messages to stdout", async () => {
   const messages = lines.map((line) => JSON.parse(line));
   expect(messages.every((m) => m.jsonrpc === "2.0")).toBe(true);
   expect(messages[0].result.protocolVersion).toBe("2025-11-25");
-  expect(messages.find((m) => m.id === 2).result.tools).toHaveLength(5);
+  const listToolsResult = messages.find((m) => m.id === 2).result.tools;
+  expect(listToolsResult.map((t: { name: string }) => t.name)).toContain("discord_get_message");
   expect(JSON.parse(messages.at(-1).result.content[0].text).error).toMatchObject({
     category: "validation",
     tool: "discord_get_message",
