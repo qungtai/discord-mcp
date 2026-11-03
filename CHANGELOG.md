@@ -8,6 +8,9 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Webhooks toolset (10 tools): channel/guild webhook listing, creation, retrieval,
+  modification, deletion, webhook execution with multipart attachment support,
+  and webhook message retrieval, editing, and deletion.
 - CI workflow (`.github/workflows/ci.yml`) running lint, typecheck and tests.
 - Community documentation: README, client configurations, contributing guide,
   security policy, changelog and license.

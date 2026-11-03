@@ -45,6 +45,8 @@ const ARGUMENTS: Record<string, Record<string, unknown>> = {
     emoji: "👍",
     user_id: "3",
   },
+  discord_delete_webhook: { webhook_id: "1" },
+  discord_delete_webhook_message: { webhook_id: "1", message_id: "2" },
   discord_prune_guild: { guild_id: "1" },
   discord_review_guild_join_request: { guild_id: "1", request_id: "2", action: "APPROVED" },
   discord_set_channel_permission_overwrite: { channel_id: "1", overwrite_id: "2", type: 0 },
@@ -67,6 +69,7 @@ const ARGUMENTS: Record<string, Record<string, unknown>> = {
   discord_update_guild_welcome_screen: { guild_id: "1" },
   discord_update_guild_widget_settings: { guild_id: "1" },
   discord_update_voice_channel_status: { channel_id: "1", status: "live" },
+  discord_update_webhook: { webhook_id: "1" },
 };
 
 const approvalTools = (await PToolRegistry.load()).list().filter((tool) => tool.approval);

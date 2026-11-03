@@ -11,6 +11,7 @@ export interface DiscordRequestInit {
   body?: unknown;
   files?: RawFile[];
   reason?: string;
+  auth?: false;
 }
 export type DiscordRequest = <T = unknown>(request: DiscordRequestInit) => Promise<T>;
 // Implemented by transport adapters; failures are thrown as PToolError.

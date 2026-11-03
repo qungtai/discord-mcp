@@ -45,6 +45,7 @@ export class PDiscordRestAdapter implements DiscordTransport {
         body: request.body,
         files: request.files,
         reason: request.reason,
+        auth: request.auth,
         signal: AbortSignal.any([signal, deadline]),
       })) as T;
     } catch (error) {

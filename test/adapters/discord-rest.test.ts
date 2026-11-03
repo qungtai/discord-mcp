@@ -59,3 +59,14 @@ it("allows a segment that only looks like a dot segment", async () => {
   );
   expect(makeRequest.mock.calls[0]?.[0]).toBe("https://discord.com/api/v10/guilds/1/..abc");
 });
+
+it("omits the Authorization header when auth is false", async () => {
+  const makeRequest = vi.fn<RESTOptions["makeRequest"]>(async () => json({}));
+  const adapter = new PDiscordRestAdapter("test-token", { rest: { makeRequest } });
+  await adapter.request(
+    { method: "POST", route: "/webhooks/1/tok", auth: false },
+    new AbortController().signal,
+  );
+  const options = makeRequest.mock.calls[0]?.[1];
+  expect(options?.headers).not.toHaveProperty("Authorization");
+});
