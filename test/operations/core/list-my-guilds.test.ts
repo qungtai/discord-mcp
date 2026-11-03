@@ -30,45 +30,98 @@ const GUILD_2 = {
   features: [],
 };
 
-it("lists guilds without filtering when no allowlist is active", async () => {
+it("lists guilds without filtering when no allowlist is active, returning cursors when full page", async () => {
   const { client, request } = await harness({
     policy,
     respond: () => [GUILD_1, GUILD_2],
   });
   const result = await client.callTool({
     name: "discord_list_my_guilds",
-    arguments: { limit: 10, with_counts: true },
+    arguments: { limit: 2, with_counts: true },
   });
   expect(result.structuredContent).toEqual({
     guilds: [GUILD_1, GUILD_2],
+    next_before: "100000000000000001",
     next_after: "100000000000000002",
   });
   const { url, method, body } = request();
   expect([method, url, body]).toEqual([
     "GET",
-    "https://discord.com/api/v10/users/@me/guilds?limit=10&with_counts=true",
+    "https://discord.com/api/v10/users/@me/guilds?limit=2&with_counts=true",
     null,
   ]);
 });
 
-it("filters guilds outside the allowlist and returns next_after from the last Discord guild", async () => {
+it("returns null cursors without an allowlist when page is shorter than requested limit", async () => {
   const { client, request } = await harness({
-    policy: new PPolicyEngine(["100000000000000001"], ["core"], false),
+    policy,
     respond: () => [GUILD_1, GUILD_2],
   });
   const result = await client.callTool({
     name: "discord_list_my_guilds",
-    arguments: { limit: 50 },
+    arguments: { limit: 10 },
   });
   expect(result.structuredContent).toEqual({
-    guilds: [GUILD_1],
-    next_after: "100000000000000002",
+    guilds: [GUILD_1, GUILD_2],
+    next_before: null,
+    next_after: null,
   });
   const { url, method } = request();
-  expect([method, url]).toEqual(["GET", "https://discord.com/api/v10/users/@me/guilds?limit=50"]);
+  expect([method, url]).toEqual(["GET", "https://discord.com/api/v10/users/@me/guilds?limit=10"]);
 });
 
-it("returns null next_after when Discord returns empty list", async () => {
+it("filters guilds outside the allowlist across multiple internal pages and returns null cursors", async () => {
+  const HIDDEN_1 = { id: "999000000000000001", name: "Hidden Guild 1" };
+  const HIDDEN_2 = { id: "999000000000000002", name: "Hidden Guild 2" };
+
+  // Page 1 has 200 guilds: 1 allowed, 199 hidden
+  const page1 = [
+    GUILD_1,
+    ...Array.from({ length: 199 }, (_, i) => ({
+      id: `888000000000000${String(i).padStart(3, "0")}`,
+      name: `Hidden P1 ${i}`,
+    })),
+  ];
+  // Page 2 has 2 guilds: HIDDEN_1 and GUILD_2 (< 200, so paging terminates)
+  const page2 = [HIDDEN_1, { ...HIDDEN_2 }, GUILD_2];
+
+  const requests: string[] = [];
+  const { client } = await harness({
+    policy: new PPolicyEngine([GUILD_1.id, GUILD_2.id], ["core"], false),
+    makeRequest: async (url) => {
+      requests.push(String(url));
+      if (requests.length === 1) {
+        return json(page1);
+      }
+      return json(page2);
+    },
+  });
+
+  const result = await client.callTool({
+    name: "discord_list_my_guilds",
+    arguments: { limit: 50, with_counts: true },
+  });
+
+  expect(result.structuredContent).toEqual({
+    guilds: [GUILD_1, GUILD_2],
+    next_before: null,
+    next_after: null,
+  });
+
+  // Assert literal output contains NO hidden ID anywhere (JSON string check)
+  const jsonOutput = JSON.stringify(result.structuredContent);
+  expect(jsonOutput).not.toContain("999000000000000001");
+  expect(jsonOutput).not.toContain("999000000000000002");
+  expect(jsonOutput).not.toContain("888000000000000");
+
+  // Assert literal requests made
+  expect(requests).toEqual([
+    "https://discord.com/api/v10/users/@me/guilds?limit=200&with_counts=true",
+    `https://discord.com/api/v10/users/@me/guilds?limit=200&after=${page1.at(-1)?.id}&with_counts=true`,
+  ]);
+});
+
+it("returns null cursors when Discord returns empty list", async () => {
   const { client } = await harness({
     policy,
     respond: () => [],
@@ -79,6 +132,7 @@ it("returns null next_after when Discord returns empty list", async () => {
   });
   expect(result.structuredContent).toEqual({
     guilds: [],
+    next_before: null,
     next_after: null,
   });
 });
