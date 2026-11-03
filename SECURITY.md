@@ -1,22 +1,34 @@
 # Security policy
 
-## Reporting a vulnerability
-
-Please report security vulnerabilities privately. Do not open a public issue
-or pull request describing the vulnerability. Contact the maintainer at
-`lequangtai1602@gmail.com` with details, reproduction steps and impact. You
-will receive a response acknowledging receipt; fixes are released through the
-normal release process.
-
-## Secrets
-
-- Never post, commit or share bot tokens, webhook URLs, OAuth refresh tokens
-  or other credentials.
-- `DISCORD_TOKEN` is resolved from the environment inside the server. It is
-  never a tool argument and is never logged.
-- Redact secrets in all logs and errors.
-
 ## Supported versions
 
-Pre-release: only the latest commit on `main` receives security fixes until
-the first published release.
+| Version      | Supported          |
+| ------------ | ------------------ |
+| 0.x (latest) | :white_check_mark: |
+| < 0.1.0      | :x:                |
+
+Only the latest `0.x` release and current `main` branch receive security updates.
+
+## Reporting a vulnerability
+
+Please report security vulnerabilities through GitHub private vulnerability reporting:
+
+1. Navigate to the repository's **Security** tab on GitHub.
+2. Under "Reporting", click **Report a vulnerability** to open an advisory draft.
+
+Do not report security vulnerabilities through public issues, discussions, or pull requests.
+
+## Scope
+
+Security issues of particular concern include:
+
+- Token handling and credential leaks (exposure of bot tokens, OAuth tokens, or webhook secrets in arguments, responses, or logs)
+- Guild or channel allowlist bypasses
+- Local filesystem sandbox bypasses (unauthorized path access outside configured roots or system directories)
+- Destructive action approval bypasses (executing mutating or destructive tools without required confirmation)
+
+## Out of scope
+
+- Bugs in third-party dependencies without direct exploitability in this server
+- Attacks requiring direct local access to the machine running the MCP server process
+- Discord API rate limiting or temporary upstream outages

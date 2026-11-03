@@ -538,3 +538,5 @@ For contribution guidelines and security disclosure policies, see [CONTRIBUTING.
 ## License
 
 [MIT](LICENSE)
+
+Not affiliated with or endorsed by Discord Inc.

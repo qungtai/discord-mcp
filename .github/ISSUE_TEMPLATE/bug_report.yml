@@ -1,0 +1,73 @@
+name: Bug report
+description: Create a report to help improve @qungtai/discord-mcp
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill out this form as completely as possible.
+        Never include bot tokens, webhook secrets, OAuth tokens, or other credentials.
+  - type: input
+    id: client
+    attributes:
+      label: MCP client and environment
+      description: What MCP client and OS are you using? (e.g. Claude Desktop 0.8.0 on macOS, Claude Code, Cursor)
+      placeholder: Claude Desktop on macOS
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: What version of @qungtai/discord-mcp are you using?
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Client configuration (redacted)
+      description: Provide the relevant client configuration without secrets.
+      placeholder: |
+        {
+          "mcpServers": {
+            "discord": {
+              "command": "npx",
+              "args": ["-y", "@qungtai/discord-mcp@0.1.0"],
+              "env": {
+                "DISCORD_TOKEN": "REDACTED"
+              }
+            }
+          }
+        }
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Describe the sequence of actions that reproduces the issue.
+      placeholder: |
+        1. Call tool 'discord_send_message' with channel_id '...'
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Server stderr logs (redacted)
+      description: Paste any relevant stderr log output. Ensure all tokens and credentials are removed.
