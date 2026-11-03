@@ -23,24 +23,10 @@ const descriptions = {
   invites: "Create, get, delete invites, guild/channel invites, target users",
 };
 
-export function renderToolsBlock(
-  registry,
-  toolsets = [
-    "core",
-    "messages",
-    "reactions",
-    "threads",
-    "channels",
-    "webhooks",
-    "guild",
-    "members",
-    "roles",
-    "moderation",
-    "events",
-    "invites",
-  ],
-  defaultToolsets = ["core", "messages"],
-) {
+export function renderToolsBlock(registry, toolsets, defaultToolsets) {
+  if (!toolsets || !defaultToolsets) {
+    throw new Error("toolsets and defaultToolsets are required");
+  }
   const list = registry.list();
   const byToolset = new Map();
   for (const t of list) {
@@ -117,17 +103,36 @@ export function computeSummaryNumbers(registry, toolsets) {
   const tools = registry.list();
   const operations = new Set();
   for (const t of tools) {
-    const ops = t.operation_ids || t.operationIds || [];
+    const ops = t.operationIds || [];
     for (const op of ops) operations.add(op);
   }
   const implementedToolsets = toolsets.filter((ts) => {
     return tools.some((t) => t.toolset === ts);
   });
+
+  const baseline = JSON.parse(readFileSync(join(root, "coverage/baseline.json"), "utf8"));
+  const register = JSON.parse(readFileSync(join(root, "coverage/register.json"), "utf8"));
+  const totalOperations = baseline.files?.[0]?.operation_count ?? register.total_operations;
+  let liveCount = 0;
+  let mockCount = 0;
+  for (const op of register.operations || []) {
+    if (op.verification === "live action verified") liveCount++;
+    else if (op.verification === "mocked contract tested") mockCount++;
+  }
+
   return {
     toolCount: tools.length,
     operationCount: operations.size,
     implementedToolsets,
+    totalOperations,
+    liveCount,
+    mockCount,
   };
+}
+
+export function renderSummary(summary) {
+  return `- ${summary.toolCount} tools across ${summary.implementedToolsets.join(", ")}.
+- ${summary.operationCount} of the ${summary.totalOperations} stable Discord API operations are implemented (see [docs/coverage.md](docs/coverage.md)); ${summary.liveCount} are verified against a live server and ${summary.mockCount} against mocked contracts.`;
 }
 
 export async function updateReadme() {
@@ -145,20 +150,26 @@ export async function updateReadme() {
   const summaryEnd = "<!-- summary:end -->";
   const sStartIdx = readme.indexOf(summaryStart);
   const sEndIdx = readme.indexOf(summaryEnd);
-  if (sStartIdx !== -1 && sEndIdx !== -1 && sEndIdx > sStartIdx) {
-    const summaryText = `- ${summary.toolCount} tools across ${summary.implementedToolsets.join(", ")}.\n- Measured coverage of the Discord API with ${summary.operationCount} of 250 operations implemented (see [docs/coverage.md](docs/coverage.md)). The 141 operations map to 137 tools because 4 operations share multi-purpose tool implementations. In docs/coverage.md, 39 operations are live verified and 102 are mock tested.`;
-    readme = `${readme.slice(0, sStartIdx + summaryStart.length)}\n${summaryText}\n${readme.slice(sEndIdx)}`;
+  if (sStartIdx === -1 || sEndIdx === -1 || sEndIdx <= sStartIdx) {
+    throw new Error(
+      `Markers ${summaryStart} and ${summaryEnd} not found or malformed in README.md`,
+    );
   }
+  const summaryText = renderSummary(summary);
+  readme = `${readme.slice(0, sStartIdx + summaryStart.length)}\n${summaryText}\n${readme.slice(sEndIdx)}`;
 
   // Update toolsets list block in configuration
   const configToolsetsStart = "<!-- config-toolsets:start -->";
   const configToolsetsEnd = "<!-- config-toolsets:end -->";
   const cStartIdx = readme.indexOf(configToolsetsStart);
   const cEndIdx = readme.indexOf(configToolsetsEnd);
-  if (cStartIdx !== -1 && cEndIdx !== -1 && cEndIdx > cStartIdx) {
-    const listText = `Available: ${TOOLSETS.join(", ")}.`;
-    readme = `${readme.slice(0, cStartIdx + configToolsetsStart.length)} ${listText} ${readme.slice(cEndIdx)}`;
+  if (cStartIdx === -1 || cEndIdx === -1 || cEndIdx <= cStartIdx) {
+    throw new Error(
+      `Markers ${configToolsetsStart} and ${configToolsetsEnd} not found or malformed in README.md`,
+    );
   }
+  const listText = `Available: ${summary.implementedToolsets.join(", ")}.`;
+  readme = `${readme.slice(0, cStartIdx + configToolsetsStart.length)} ${listText} ${readme.slice(cEndIdx)}`;
 
   // Update toolsets block
   const startMarker = "<!-- tools:start -->";

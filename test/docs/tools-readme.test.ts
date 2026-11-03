@@ -1,7 +1,11 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { computeSummaryNumbers, renderToolsBlock } from "../../scripts/docs/generate-tools.mjs";
+import {
+  computeSummaryNumbers,
+  renderSummary,
+  renderToolsBlock,
+} from "../../scripts/docs/generate-tools.mjs";
 import { DEFAULT_TOOLSETS, PToolRegistry, TOOLSETS } from "../../src/core/tool-registry.js";
 
 describe("README tools reference", () => {
@@ -20,7 +24,7 @@ describe("README tools reference", () => {
     expect(sEndIdx).toBeGreaterThan(sStartIdx);
 
     const summary = computeSummaryNumbers(reg, TOOLSETS);
-    const expectedSummary = `- ${summary.toolCount} tools across ${summary.implementedToolsets.join(", ")}.\n- Measured coverage of the Discord API with ${summary.operationCount} of 250 operations implemented (see [docs/coverage.md](docs/coverage.md)). The 141 operations map to 137 tools because 4 operations share multi-purpose tool implementations. In docs/coverage.md, 39 operations are live verified and 102 are mock tested.`;
+    const expectedSummary = renderSummary(summary);
     expect(readme.slice(sStartIdx + summaryStart.length, sEndIdx).trim()).toBe(
       expectedSummary.trim(),
     );
@@ -33,7 +37,7 @@ describe("README tools reference", () => {
     expect(cStartIdx).toBeGreaterThanOrEqual(0);
     expect(cEndIdx).toBeGreaterThan(cStartIdx);
     expect(readme.slice(cStartIdx + configToolsetsStart.length, cEndIdx).trim()).toBe(
-      `Available: ${TOOLSETS.join(", ")}.`,
+      `Available: ${summary.implementedToolsets.join(", ")}.`,
     );
 
     // Check tools block

@@ -226,7 +226,7 @@ npx @modelcontextprotocol/inspector -- npx -y @qungtai/discord-mcp
 From source:
 
 ```sh
-npx @modelcontextprotocol/inspector node /absolute/path/dist/index.js
+npx @modelcontextprotocol/inspector -- node /absolute/path/dist/index.js
 ```
 
 Set `DISCORD_TOKEN` and `DISCORD_MCP_ALLOWED_GUILDS` in the inspector environment panel before connecting.
