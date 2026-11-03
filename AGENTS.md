@@ -33,7 +33,7 @@ coverage/       pinned baseline and operation register (machine-readable)
 
 ## 4. Design patterns
 1. Operation registry: each Discord operation is a descriptor (id, method, path, zod input and output, credential profile, permissions, annotations, toolset). The registry is the single source for tool registration, the coverage report and generated test skeletons.
-2. Ports and adapters: core logic depends on interfaces, not on MCP or Discord libraries. Adapters implement MCP (stdio, HTTP), Discord REST, Gateway and file access.
+2. Ports and adapters: core logic depends on interfaces, not on MCP or Discord libraries. Adapters implement MCP (stdio; HTTP planned), Discord REST, file access; Gateway planned.
 3. One pipeline for every tool call: validate, resolve credential profile, policy check (allowlists, read-only, toolsets), preview and approval for destructive operations (preview planned), rate-limited execution, response mapping, audit, structured result. No tool bypasses it.
 4. Command objects for mutating operations with `preview()` (planned) and `execute()`; dry-run (planned), approval binding and audit build on them.
 5. Strategy for credential profiles (bot, webhook, OAuth user, app owner) and transports (stdio; HTTP planned).

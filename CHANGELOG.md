@@ -6,6 +6,8 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
 - Release infrastructure hardened for public release v0.1.0.
 
 ### Added
