@@ -728,13 +728,17 @@ describe("guild allowlist", () => {
         makeRequest: async (url) => {
           const path = new URL(String(url)).pathname;
           if (path === "/api/v10/channels/8") return json(dmChannel);
+          if (path === "/api/v10/channels/83") return json({ id: "83", type: 3 });
           if (path === "/api/v10/channels/9") return json(guildChannel);
           if (path === "/api/v10/channels/11") return json(allowedGuildChannel);
           if (path === "/api/v10/users/@me/channels") return json(dmChannel);
           if (path === "/api/v10/channels/8/messages") return json({ id: "10", channel_id: "8" });
+          if (path === "/api/v10/channels/83/messages")
+            return json({ id: "103", channel_id: "83" });
           if (path === "/api/v10/webhooks/55") return json({ id: "55", type: 3, guild_id: null });
           if (path === "/api/v10/webhooks/123456789")
             return json({ id: "123456789", guild_id: null });
+          if (path === "/api/v10/invites/dm-invite") return json({ code: "dm-invite", type: 1 });
           if (path === "/api/v10/invites/friend") return json({ code: "friend", type: 2 });
           if (path === "/api/v10/invites/friend-invite")
             return json({ code: "friend-invite", type: 2 });
@@ -841,6 +845,39 @@ describe("guild allowlist", () => {
     expect(inviteNoGuildOn.calls).toEqual([
       "GET https://discord.com/api/v10/invites/friend",
       "GET https://discord.com/api/v10/channels/8",
+    ]);
+
+    // Group DM (type 3) and type 1 invite: allowed with DMs on, refused with DMs off
+    const groupDmOff = await run(false, "discord_send_message", {
+      channel_id: "83",
+      content: "hi",
+    });
+    expect(groupDmOff.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(groupDmOff.calls).toEqual(["GET https://discord.com/api/v10/channels/83"]);
+
+    const groupDmOn = await run(true, "discord_send_message", {
+      channel_id: "83",
+      content: "hi",
+    });
+    expect(groupDmOn.result.ok).toBe(true);
+    expect(groupDmOn.calls).toEqual([
+      "GET https://discord.com/api/v10/channels/83",
+      "POST https://discord.com/api/v10/channels/83/messages",
+    ]);
+
+    const inviteType1Off = await run(false, "discord_get_invite", { code: "dm-invite" });
+    expect(inviteType1Off.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(inviteType1Off.calls).toEqual(["GET https://discord.com/api/v10/invites/dm-invite"]);
+
+    const inviteType1On = await run(true, "discord_get_invite", { code: "dm-invite" });
+    expect(inviteType1On.result.ok).toBe(true);
+    expect(inviteType1On.calls).toEqual([
+      "GET https://discord.com/api/v10/invites/dm-invite",
+      "GET https://discord.com/api/v10/invites/dm-invite",
     ]);
   });
   it("fails closed on a scope key that is not a string or string[]", async () => {

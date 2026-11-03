@@ -1,3 +1,7 @@
+import { execFileSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error script module tested directly
 import { checkRegisterDrift, syncRegister } from "../../scripts/coverage/sync.mjs";
@@ -278,5 +282,86 @@ describe("coverage register sync and check", () => {
     const drift = checkRegisterDrift(committedRegister, newTools, null);
     expect(drift.ok).toBe(false);
     expect(drift.error).toContain("mcp_tool mismatch");
+  });
+
+  it("runs check.mjs via node in a temp directory and fails with exit 1 and literal message when tools.json is missing or register is stale", () => {
+    const tempDir = mkdtempSync(join(tmpdir(), "check-script-test-"));
+    const scriptPath = join(process.cwd(), "scripts/coverage/check.mjs");
+    try {
+      const coverageDir = join(tempDir, "coverage");
+      mkdirSync(coverageDir, { recursive: true });
+
+      const baseline = {
+        repo: "test-repo",
+        commit: "test-commit",
+        files: [],
+      };
+      writeFileSync(join(coverageDir, "baseline.json"), JSON.stringify(baseline));
+
+      const register = {
+        repo: "test-repo",
+        commit: "test-commit",
+        total_operations: 1,
+        operations: [
+          {
+            capability_id: "get_msg",
+            operation_id: "get_message",
+            method: "GET",
+            path: "/messages",
+            implementation: "unmapped",
+            availability: "unknown",
+            verification: "not_tested",
+            mcp_tool: null,
+          },
+        ],
+      };
+      writeFileSync(join(coverageDir, "register.json"), JSON.stringify(register));
+
+      // 1. Missing tools.json
+      let missingToolsErr: { status?: number; stderr?: string } | undefined;
+      try {
+        execFileSync(process.execPath, [scriptPath], {
+          cwd: tempDir,
+          encoding: "utf8",
+          stdio: "pipe",
+        });
+      } catch (err) {
+        missingToolsErr = err as { status?: number; stderr?: string };
+      }
+      expect(missingToolsErr).toBeDefined();
+      expect(missingToolsErr?.status).toBe(1);
+      expect(missingToolsErr?.stderr).toContain(
+        "CHECK FAILED: run pnpm build && pnpm tools:manifest first",
+      );
+
+      // 2. Stale register: tools.json has discord_get_message mapped to get_message, but register.json has null
+      const tools = [
+        {
+          name: "discord_get_message",
+          toolset: "messages",
+          operation_ids: ["get_message"],
+          effect: "read",
+        },
+      ];
+      writeFileSync(join(coverageDir, "tools.json"), JSON.stringify(tools));
+
+      let staleRegisterErr: { status?: number; stderr?: string } | undefined;
+      try {
+        execFileSync(process.execPath, [scriptPath], {
+          cwd: tempDir,
+          encoding: "utf8",
+          stdio: "pipe",
+        });
+      } catch (err) {
+        staleRegisterErr = err as { status?: number; stderr?: string };
+      }
+      expect(staleRegisterErr).toBeDefined();
+      expect(staleRegisterErr?.status).toBe(1);
+      expect(staleRegisterErr?.stderr).toContain(
+        'CHECK FAILED: operation get_message mcp_tool mismatch: register has null, expected "discord_get_message"',
+      );
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 });

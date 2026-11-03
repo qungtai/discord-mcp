@@ -151,3 +151,22 @@ it("fails validation on invalid name length", async () => {
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
+
+it("rejects avatar that is not a base64 data URI without making a request", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_create_webhook",
+    arguments: {
+      channel_id: "301",
+      name: "New Webhook",
+      avatar: "https://x/y.png",
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+    message: expect.stringContaining("Expected a base64 data URI"),
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});

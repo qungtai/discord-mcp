@@ -159,3 +159,19 @@ it("fails validation on invalid webhook_id", async () => {
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
+
+it("rejects avatar that is not a base64 data URI without making a request", async () => {
+  const { client, makeRequest } = await toolHarness("discord_update_webhook");
+  const result = await client.callTool({
+    name: "discord_update_webhook",
+    arguments: {
+      webhook_id: "101",
+      avatar: "https://x/y.png",
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+    message: expect.stringContaining("Expected a base64 data URI"),
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
