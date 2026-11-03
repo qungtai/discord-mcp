@@ -600,6 +600,7 @@ describe("guild allowlist", () => {
       guildIds: ["200"],
       channelIds: ["1"],
       isDm: false,
+      noGuild: false,
     });
     expect(lookups).toBe(1);
     const { result } = await scopedCall({ guild_id: "200", channel_id: "1", target_ids: ["1"] });
@@ -684,6 +685,7 @@ describe("guild allowlist", () => {
       guildIds: ["200"],
       channelIds: ["1"],
       isDm: false,
+      noGuild: false,
     });
     expect(lookups).toBe(2);
   });
@@ -730,8 +732,10 @@ describe("guild allowlist", () => {
           if (path === "/api/v10/channels/11") return json(allowedGuildChannel);
           if (path === "/api/v10/users/@me/channels") return json(dmChannel);
           if (path === "/api/v10/channels/8/messages") return json({ id: "10", channel_id: "8" });
+          if (path === "/api/v10/webhooks/55") return json({ id: "55", type: 3, guild_id: null });
           if (path === "/api/v10/webhooks/123456789")
             return json({ id: "123456789", guild_id: null });
+          if (path === "/api/v10/invites/friend") return json({ code: "friend", type: 2 });
           if (path === "/api/v10/invites/friend-invite")
             return json({ code: "friend-invite", type: 2 });
           return json({});
@@ -800,6 +804,44 @@ describe("guild allowlist", () => {
       channel_ids: ["8", "11"],
     });
     expect(mixedAllowed.result).toEqual({ ok: true, data: { ok: true } });
+
+    // Guild-less resource next to an allowed one is refused before any other check
+    const updateWebhookNoGuild = await run(false, "discord_update_webhook", {
+      webhook_id: "55",
+      channel_id: "11",
+      name: "x",
+    });
+    expect(updateWebhookNoGuild.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(updateWebhookNoGuild.calls).toEqual([
+      "GET https://discord.com/api/v10/webhooks/55",
+      "GET https://discord.com/api/v10/channels/11",
+    ]);
+
+    const inviteNoGuildOff = await run(false, "discord_get_invite", {
+      code: "friend",
+      target_channel_id: "11",
+    });
+    expect(inviteNoGuildOff.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(inviteNoGuildOff.calls).toEqual([
+      "GET https://discord.com/api/v10/invites/friend",
+      "GET https://discord.com/api/v10/channels/11",
+    ]);
+
+    const inviteNoGuildOn = await run(true, "discord_get_invite", {
+      code: "friend",
+      target_channel_id: "8",
+    });
+    expect(inviteNoGuildOn.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(inviteNoGuildOn.calls).toEqual([
+      "GET https://discord.com/api/v10/invites/friend",
+      "GET https://discord.com/api/v10/channels/8",
+    ]);
   });
   it("fails closed on a scope key that is not a string or string[]", async () => {
     const bad = defineTool({

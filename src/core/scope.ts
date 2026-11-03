@@ -64,6 +64,7 @@ export function createScopeResolver(): ScopeResolver {
       guildIds: [...new Set([...(ids.guild ?? []), ...guilds.filter((g) => g !== null)])],
       channelIds: [...new Set(locations.flatMap((l) => (l.channel ? [l.channel] : [])))],
       isDm: locations.some((l) => l.isDm),
+      noGuild: locations.some((l) => l.guild === null && !l.isDm),
     };
   };
 }

@@ -62,6 +62,13 @@ export class PPolicyEngine {
   }
   checkResource(scope: ResolvedScope): void {
     if (!this.allowedGuilds.length) return;
+    if (scope.noGuild) {
+      throw new PToolError("Guild is not allowed", {
+        category: "policy",
+        retryable: false,
+        remediation: "Choose an allowed guild",
+      });
+    }
     const hasGuild = scope.guildIds.length > 0;
     const allGuildsAllowed = hasGuild && scope.guildIds.every((id) => this.allowsGuild(id));
     if (scope.isDm) {

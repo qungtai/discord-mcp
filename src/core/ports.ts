@@ -68,5 +68,6 @@ export interface ResolvedScope {
   guildIds: string[];
   channelIds: string[];
   isDm: boolean;
+  noGuild: boolean;
 }
 export type ScopeResolver = (ids: ScopeIds, discord: DiscordRequest) => Promise<ResolvedScope>;
