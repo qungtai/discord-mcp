@@ -26,7 +26,7 @@ Pre-release, not yet published to npm. Until publication, use the from-source co
 1. Open the [Discord Developer Portal](https://discord.com/developers/applications) and select New Application.
 2. Go to the Bot tab, select Reset Token, and copy the bot token to a secure location.
 3. Under Privileged Gateway Intents, enable Message Content intent (required to read message text) and Server Members intent (required for member listing and search). Do not enable Presence intent; this server uses the REST API and does not connect to the Gateway.
-4. Go to OAuth2 > URL Generator. Select the `bot` scope, then select the permissions your tools need (see the [Toolsets](#toolsets) section below for per-toolset requirements and permission integers). In the generated invite URL, specify permissions with `permissions=<integer>` (for example, `https://discord.com/oauth2/authorize?client_id=<application_id>&scope=bot&permissions=2251799813762048` for the default toolsets). The Developer Portal displays permissions with spaces (such as "Send Messages" or "Manage Channels"). If managing roles or members, ensure the bot's highest role in Discord Server Settings > Roles sits above any role it manages. Open the invite URL in your browser to invite the bot to your server.
+4. Go to OAuth2 > URL Generator. Select the `bot` scope, then select the permissions your tools need (see the [Toolsets](#toolsets) section below for per-toolset requirements and permission integers). In the generated invite URL, specify permissions with `permissions=<integer>` (for example, `https://discord.com/oauth2/authorize?client_id=<application_id>&scope=bot&permissions=2815162084228096` for the default toolsets). The Developer Portal displays permissions with spaces (such as "Send Messages" or "Manage Channels"). If managing roles or members, ensure the bot's highest role in Discord Server Settings > Roles sits above any role it manages. Open the invite URL in your browser to invite the bot to your server.
 5. In your Discord client, open User Settings > Advanced and enable Developer Mode. Right-click your server icon in the sidebar and choose Copy Server ID.
 
 ### 2. Standard configuration
@@ -40,14 +40,22 @@ Add the server to your MCP client configuration:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678",
-        "DISCORD_MCP_TOOLSETS": "core,messages"
+      "env": {
+        "DISCORD_TOKEN": "your-bot-token"
+      }
       }
     }
   }
 }
 ```
+
+Recommended: add `DISCORD_MCP_ALLOWED_GUILDS` to `env`, set to your server ID from step 5, so the bot can act only in that server.
+
+```json
+"DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+```
+
+Enable more toolsets with [`DISCORD_MCP_TOOLSETS`](#configuration). Restrict uploads to specific folders with [`DISCORD_MCP_FILE_ROOTS`](#configuration). Set [`DISCORD_MCP_DOWNLOAD_DIR`](#configuration) for downloads.
 
 ### 3. Client setup
 
@@ -59,7 +67,7 @@ Until the first release, build from source ([Install from source](#install-from-
 Add via the CLI (defaults to local project scope; add `-s user` for all projects):
 
 ```sh
-claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -- npx -y @qungtai/discord-mcp
 ```
 
 Or configure manually in `~/.claude.json`:
@@ -71,8 +79,7 @@ Or configure manually in `~/.claude.json`:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -98,8 +105,7 @@ Add the server block:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -114,7 +120,7 @@ Add the server block:
 Add via the CLI:
 
 ```sh
-codex mcp add discord --env DISCORD_TOKEN="your-bot-token" --env DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+codex mcp add discord --env DISCORD_TOKEN="your-bot-token" -- npx -y @qungtai/discord-mcp
 ```
 
 Or add to `~/.codex/config.toml`:
@@ -126,7 +132,6 @@ args = ["-y", "@qungtai/discord-mcp"]
 
 [mcp_servers.discord.env]
 DISCORD_TOKEN = "your-bot-token"
-DISCORD_MCP_ALLOWED_GUILDS = "123456789012345678"
 ```
 
 </details>
@@ -143,8 +148,7 @@ Add to `.cursor/mcp.json` or configure in Cursor Settings > MCP:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -166,8 +170,7 @@ Configure in `.vscode/mcp.json` with an input variable for the bot token:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "${input:discordToken}",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "${input:discordToken}"
       }
     }
   },
@@ -193,7 +196,7 @@ Run the inspector:
 npx @modelcontextprotocol/inspector -- npx -y @qungtai/discord-mcp
 ```
 
-Set `DISCORD_TOKEN` and `DISCORD_MCP_ALLOWED_GUILDS` in the inspector environment panel before connecting.
+Set `DISCORD_TOKEN` in the inspector environment panel before connecting.
 
 </details>
 
@@ -521,8 +524,7 @@ Get the absolute path to `dist/index.js` by running `pwd` inside the cloned repo
       "command": "node",
       "args": ["/absolute/path/to/discord-mcp/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }

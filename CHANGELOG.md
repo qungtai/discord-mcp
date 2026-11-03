@@ -70,19 +70,21 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- Complete required bot permissions declared across operations so 403 error
-  remediation and README invitation bitfields include all permissions needed by
+- Complete bot permissions declared across operations so 403 error
+  remediation and README invitation bitfields include permissions needed by
   optional tool inputs (`AttachFiles`, `EmbedLinks`, `SendPolls`, `SendTTSMessages`,
   `ReadMessageHistory`, `SendMessagesInThreads`, `UseExternalStickers`,
   `MentionEveryone` on `discord_send_message`; `SendMessagesInThreads` on
   `discord_trigger_typing_indicator`; `AttachFiles`, `EmbedLinks` on
-  `discord_edit_message`; `ViewChannel`, `ReadMessageHistory` on reaction deletion tools;
-  `UseExternalEmojis` on `discord_add_my_message_reaction`; `ManageRoles` on
-  `discord_update_channel`; `ManageGuild` on `discord_create_channel_invite`;
-  `ModerateMembers` on AutoMod rule operations; `SendMessages`, `ViewChannel`,
-  `EmbedLinks` on `discord_create_thread`; `ViewChannel`, `ReadMessageHistory` on
-  `discord_create_thread_from_message`; `Connect` on `discord_update_guild_member`;
-  `ManageRoles` on `discord_update_guild_onboarding`).
+  `discord_edit_message`; `ViewChannel`, `ReadMessageHistory` on reaction
+  deletion tools as a precaution; `UseExternalEmojis` on
+  `discord_add_my_message_reaction`; `ManageRoles` on `discord_update_channel`;
+  `ManageGuild` on `discord_create_channel_invite`; `ModerateMembers` on AutoMod
+  rule operations; `SendMessages`, `ViewChannel`, `EmbedLinks` on
+  `discord_create_thread`; `ViewChannel`, `ReadMessageHistory` on
+  `discord_create_thread_from_message`; `Connect` on
+  `discord_update_guild_member`; `ManageRoles` on
+  `discord_update_guild_onboarding`).
 - An unexpected HTTP 429 response without a `Retry-After` header is rejected
   immediately as a rate-limited error instead of looping requests until timeout.
 - Clearable channel fields accept `null` again on `discord_update_guild`,
