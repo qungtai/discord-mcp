@@ -51,8 +51,8 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 
 | Verification | Count |
 | --- | ---: |
-| live action verified | 39 |
-| mocked contract tested | 102 |
+| live action verified | 123 |
+| mocked contract tested | 18 |
 | not_tested | 109 |
 
 ## Per-group status dimensions
@@ -60,11 +60,11 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | Group | Ops | Implementation | Availability | Verification |
 | --- | ---: | --- | --- | --- |
 | applications | 33 | unmapped=33 | unknown=33 | not_tested=33 |
-| channels | 50 | implemented=47, unmapped=3 | unknown=50 | live action verified=20, mocked contract tested=27, not_tested=3 |
+| channels | 50 | implemented=47, unmapped=3 | unknown=50 | live action verified=43, not_tested=3, mocked contract tested=4 |
 | gateway | 2 | unmapped=2 | unknown=2 | not_tested=2 |
-| guilds | 93 | implemented=71, unmapped=22 | unknown=93 | live action verified=19, mocked contract tested=52, not_tested=22 |
+| guilds | 93 | implemented=71, unmapped=22 | unknown=93 | live action verified=58, mocked contract tested=13, not_tested=22 |
 | interactions | 1 | unmapped=1 | unknown=1 | not_tested=1 |
-| invites | 9 | implemented=9 | unknown=9 | mocked contract tested=9 |
+| invites | 9 | implemented=9 | unknown=9 | live action verified=9 |
 | lobbies | 15 | unmapped=15 | unknown=15 | not_tested=15 |
 | oauth2 | 4 | unmapped=4 | unknown=4 | not_tested=4 |
 | partner-sdk | 5 | unmapped=5 | unknown=5 | not_tested=5 |
@@ -73,9 +73,9 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | stage-instances | 4 | unmapped=4 | unknown=4 | not_tested=4 |
 | sticker-packs | 2 | unmapped=2 | unknown=2 | not_tested=2 |
 | stickers | 1 | unmapped=1 | unknown=1 | not_tested=1 |
-| users | 12 | deferred=5, implemented=7 | unknown=12 | not_tested=5, mocked contract tested=7 |
+| users | 12 | deferred=5, implemented=7 | unknown=12 | not_tested=5, mocked contract tested=1, live action verified=6 |
 | voice | 1 | unmapped=1 | unknown=1 | not_tested=1 |
-| webhooks | 15 | implemented=7, deferred=8 | unknown=15 | mocked contract tested=7, not_tested=8 |
+| webhooks | 15 | implemented=7, deferred=8 | unknown=15 | live action verified=7, not_tested=8 |
 
 ## Operations by toolset (from coverage/tools.json)
 
