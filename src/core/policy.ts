@@ -2,11 +2,14 @@ import type { ResolvedScope } from "./ports.js";
 import { PToolError } from "./tool-error.js";
 import { DEFAULT_TOOLSETS, TOOLSETS, type ToolDescriptor, type Toolset } from "./tool-registry.js";
 
+export type ApprovalMode = "elicitation" | "none";
+
 export class PPolicyEngine {
   constructor(
     readonly allowedGuilds: string[],
     readonly toolsets: readonly Toolset[],
     readonly readOnly: boolean,
+    readonly approval: ApprovalMode = "elicitation",
   ) {}
   static fromEnv(env: NodeJS.ProcessEnv): PPolicyEngine {
     const split = (s: string) =>
@@ -17,6 +20,9 @@ export class PPolicyEngine {
     const readOnly = env.DISCORD_MCP_READ_ONLY;
     if (readOnly !== undefined && readOnly !== "true" && readOnly !== "false")
       throw new Error("DISCORD_MCP_READ_ONLY must be true or false");
+    const approval = env.DISCORD_MCP_APPROVAL ?? "elicitation";
+    if (approval !== "elicitation" && approval !== "none")
+      throw new Error("DISCORD_MCP_APPROVAL must be elicitation or none");
     const toolsets = split(env.DISCORD_MCP_TOOLSETS ?? DEFAULT_TOOLSETS.join(","));
     if (!toolsets.length || !toolsets.every(isToolset))
       throw new Error("Invalid DISCORD_MCP_TOOLSETS");
@@ -24,6 +30,7 @@ export class PPolicyEngine {
       split(env.DISCORD_MCP_ALLOWED_GUILDS ?? ""),
       toolsets,
       readOnly === "true",
+      approval,
     );
   }
   allows(tool: ToolDescriptor): boolean {
@@ -56,7 +63,6 @@ export class PPolicyEngine {
     if (!this.toolsets.includes(tool.toolset)) return ["Toolset disabled", "Enable the toolset"];
     if (this.readOnly && tool.effect !== "read")
       return ["Read-only mode", "Disable read-only mode"];
-    if (tool.approval) return ["This tool requires approval support", "Wait for the approval flow"];
     return undefined;
   }
 }

@@ -36,6 +36,7 @@ export interface CallSession {
   signal?: AbortSignal;
   progress?: (progress: number, total?: number) => Promise<void>;
   log?: (level: LogLevel, data: string) => Promise<void>;
+  approve?: (message: string) => Promise<boolean>;
 }
 export interface PipelineServices {
   credentials: Partial<Record<CredentialProfile, DiscordTransport>>;
@@ -137,6 +138,41 @@ export class PToolPipeline {
       // A tool without a scope touches no guild resource, so the allowlist does not apply.
       if (this.policy.allowedGuilds.length && tool.scope !== "none")
         this.policy.checkResource(await this.services.resolveScope(ids.byKind, discord));
+      if (tool.approval && this.policy.approval === "elicitation") {
+        if (!session.approve)
+          throw new PToolError(
+            "This tool needs approval but the client does not support elicitation",
+            {
+              category: "policy",
+              retryable: false,
+              remediation:
+                "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
+            },
+          );
+        const targets = Object.entries(resources)
+          .map(([k, v]) => `${k}=${v}`)
+          .join(", ");
+        const raw = `Approve ${name}?\nTargets: ${targets}\nArguments: ${JSON.stringify(parsed.data)}`;
+        const token = process.env.DISCORD_TOKEN;
+        const message = token ? raw.split(token).join("[redacted]") : raw;
+        let approved: boolean;
+        try {
+          approved = await session.approve(message);
+        } catch (error) {
+          throw new PToolError("Approval was not completed", {
+            category: "cancelled",
+            retryable: true,
+            remediation: "Retry and answer the approval prompt",
+            cause: error,
+          });
+        }
+        if (!approved)
+          throw new PToolError("Approval declined", {
+            category: "cancelled",
+            retryable: false,
+            remediation: "Ask the user before trying again",
+          });
+      }
       const { files } = this.services;
       const output = await tool
         .execute(parsed.data, {

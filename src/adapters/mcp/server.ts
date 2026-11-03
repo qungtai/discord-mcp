@@ -19,8 +19,30 @@ export function createServer(pipeline: PToolPipeline): Server {
   server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     const progressToken = request.params._meta?.progressToken;
+    const hasElicitation = Boolean(server.getClientCapabilities()?.elicitation?.form);
+    const approve = hasElicitation
+      ? async (message: string) => {
+          const result = await server.elicitInput(
+            {
+              message,
+              requestedSchema: {
+                type: "object",
+                properties: { approve: { type: "boolean", title: "Approve this change" } },
+                required: ["approve"],
+              },
+            },
+            {
+              signal: extra.signal,
+              relatedRequestId: extra.requestId,
+              timeout: 10 * 60_000,
+            },
+          );
+          return result.action === "accept" && result.content?.approve === true;
+        }
+      : undefined;
     const result = await pipeline.call(request.params.name, request.params.arguments, {
       signal: extra.signal,
+      approve,
       progress: async (progress, total) => {
         if (progressToken !== undefined)
           await extra.sendNotification({

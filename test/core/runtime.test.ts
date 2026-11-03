@@ -116,11 +116,19 @@ describe("policy configuration", () => {
       DISCORD_MCP_ALLOWED_GUILDS: "1, 2,",
       DISCORD_MCP_READ_ONLY: "true",
     });
-    expect([p.allowedGuilds, p.toolsets, p.readOnly]).toEqual([
+    expect([p.allowedGuilds, p.toolsets, p.readOnly, p.approval]).toEqual([
       ["1", "2"],
       ["core", "messages"],
       true,
+      "elicitation",
     ]);
+  });
+  it("parses DISCORD_MCP_APPROVAL=none and defaults to elicitation", () => {
+    expect(PPolicyEngine.fromEnv({}).approval).toBe("elicitation");
+    expect(PPolicyEngine.fromEnv({ DISCORD_MCP_APPROVAL: "none" }).approval).toBe("none");
+    expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_APPROVAL: "invalid" })).toThrow(
+      "DISCORD_MCP_APPROVAL must be elicitation or none",
+    );
   });
   it.each(["1", "TRUE", "yes"])("fails closed on DISCORD_MCP_READ_ONLY=%s", (value) => {
     expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_READ_ONLY: value })).toThrow(
@@ -357,9 +365,9 @@ describe("pipeline without an MCP session", () => {
     });
     vi.restoreAllMocks();
   });
-  it("denies disabled toolsets and tools that need approval", async () => {
+  it("denies disabled toolsets and requires approval for approval tools", async () => {
     const { pipeline } = await harness({
-      registry: registryOf(probe, create(false, "destructive")),
+      registry: registryOf(probe, create(false, "destructive", true)),
       policy: new PPolicyEngine([], ["messages"], false),
     });
     expect(await pipeline.call(probe.name, {})).toMatchObject({
@@ -367,13 +375,16 @@ describe("pipeline without an MCP session", () => {
       error: { category: "policy", message: "Toolset disabled" },
     });
     const { pipeline: core } = await harness({
-      registry: registryOf(create(false, "destructive")),
+      registry: registryOf(create(false, "destructive", true)),
     });
     expect(await core.call("discord_create_probe", { channel_id: "1" })).toMatchObject({
       ok: false,
-      error: { category: "policy", message: "This tool requires approval support" },
+      error: {
+        category: "policy",
+        message: "This tool needs approval but the client does not support elicitation",
+      },
     });
-    expect(core.tools()).toEqual([]);
+    expect(core.tools().map((t) => t.name)).toEqual(["discord_create_probe"]);
     const { pipeline: optOut } = await harness({
       registry: registryOf(create(false, "destructive", false)),
       respond: () => ({ id: "5", name: "x" }),
@@ -679,5 +690,262 @@ describe("redact", () => {
     expect(
       redact("Bot a.b https://discord.com/api/webhooks/1/abc-DEF x-secret-x", ["x-secret-x"]),
     ).toBe("Bot [redacted] https://discord.com/api/webhooks/1/[redacted] [redacted]");
+  });
+});
+
+describe("approval flow over MCP", () => {
+  const approvalTool = defineTool({
+    name: "discord_delete_probe",
+    description: "test delete",
+    operationIds: ["test_delete"],
+    toolset: "core",
+    scope: { channel: "channel_id" },
+    permissions: ["ManageChannels"],
+    effect: "destructive",
+    approval: true,
+    idempotent: true,
+    input: z.object({
+      channel_id: z.string(),
+      reason: z.string().optional(),
+    }),
+    output: z.object({ deleted: z.boolean(), channel_id: z.string() }),
+    execute: async (p, { discord }) => {
+      await discord({ method: "DELETE", route: `/channels/${p.channel_id}` });
+      return { deleted: true, channel_id: p.channel_id };
+    },
+  });
+
+  it("runs tool and sends literal route, method and message when client accepts elicitation", async () => {
+    let capturedMessage: string | undefined;
+    let capturedSchema: unknown;
+    const { client, request } = await harness({
+      registry: registryOf(approvalTool),
+      onElicit: async (req) => {
+        capturedMessage = req.params.message;
+        if ("requestedSchema" in req.params) capturedSchema = req.params.requestedSchema;
+        return { action: "accept", content: { approve: true } };
+      },
+      respond: () => ({}),
+    });
+    const result = await client.callTool({
+      name: "discord_delete_probe",
+      arguments: { channel_id: "123", reason: "Cleanup run" },
+    });
+    expect(result.structuredContent).toEqual({ deleted: true, channel_id: "123" });
+    expect(request().method).toBe("DELETE");
+    expect(request().url).toBe("https://discord.com/api/v10/channels/123");
+    expect(capturedMessage).toBe(
+      'Approve discord_delete_probe?\nTargets: channel_id=123\nArguments: {"channel_id":"123","reason":"Cleanup run"}',
+    );
+    expect(capturedSchema).toEqual({
+      type: "object",
+      properties: { approve: { type: "boolean", title: "Approve this change" } },
+      required: ["approve"],
+    });
+  });
+
+  it("redacts only configured secrets and preserves plain text like 'Bot cleanup'", async () => {
+    vi.stubEnv("DISCORD_TOKEN", "super-secret-token");
+    let capturedMessage: string | undefined;
+    const { client } = await harness({
+      registry: registryOf(approvalTool),
+      onElicit: async (req) => {
+        capturedMessage = req.params.message;
+        return { action: "accept", content: { approve: true } };
+      },
+      respond: () => ({}),
+    });
+    await client.callTool({
+      name: "discord_delete_probe",
+      arguments: { channel_id: "123", reason: "Bot cleanup token super-secret-token" },
+    });
+    expect(capturedMessage).toContain("Bot cleanup token [redacted]");
+    expect(capturedMessage).not.toContain("super-secret-token");
+    vi.unstubAllEnvs();
+  });
+
+  it.each([
+    ["declines", async () => ({ action: "decline" as const })],
+    ["cancels", async () => ({ action: "cancel" as const })],
+    [
+      "accepts with approve false",
+      async () => ({ action: "accept" as const, content: { approve: false } }),
+    ],
+    ["accepts with no content", async () => ({ action: "accept" as const })],
+  ])(
+    "fails with cancelled, retryable false and zero REST calls when client %s",
+    async (_, onElicit) => {
+      const { client, makeRequest } = await harness({
+        registry: registryOf(approvalTool),
+        onElicit,
+      });
+      const result = await client.callTool({
+        name: "discord_delete_probe",
+        arguments: { channel_id: "123" },
+      });
+      expect(errorOf(result)).toMatchObject({
+        category: "cancelled",
+        retryable: false,
+        message: "Approval declined",
+        remediation: "Ask the user before trying again",
+      });
+      expect(makeRequest).not.toHaveBeenCalled();
+    },
+  );
+
+  it("fails with cancelled, retryable true and zero REST calls when elicitation rejects", async () => {
+    const { client, makeRequest } = await harness({
+      registry: registryOf(approvalTool),
+      onElicit: async () => {
+        throw new Error("elicitation timed out");
+      },
+    });
+    const result = await client.callTool({
+      name: "discord_delete_probe",
+      arguments: { channel_id: "123" },
+    });
+    expect(errorOf(result)).toMatchObject({
+      category: "cancelled",
+      retryable: true,
+      message: "Approval was not completed",
+      remediation: "Retry and answer the approval prompt",
+    });
+    expect(makeRequest).not.toHaveBeenCalled();
+  });
+
+  it("fails with cancelled, retryable true and zero REST calls when elicitation aborts or cancels", async () => {
+    const { pipeline, makeRequest } = await harness({
+      registry: registryOf(approvalTool),
+    });
+    const abortError = new DOMException("This operation was aborted", "AbortError");
+    const result = await pipeline.call(
+      "discord_delete_probe",
+      { channel_id: "123" },
+      {
+        approve: async () => {
+          throw abortError;
+        },
+      },
+    );
+    expect(result).toMatchObject({
+      ok: false,
+      error: {
+        category: "cancelled",
+        retryable: true,
+        message: "Approval was not completed",
+        remediation: "Retry and answer the approval prompt",
+      },
+    });
+    expect(makeRequest).not.toHaveBeenCalled();
+  });
+
+  it("fails with category policy and zero REST calls when client lacks elicitation capability or only supports URL", async () => {
+    const noCap = await harness({ registry: registryOf(approvalTool) });
+    const resNoCap = await noCap.client.callTool({
+      name: "discord_delete_probe",
+      arguments: { channel_id: "123" },
+    });
+    expect(errorOf(resNoCap)).toMatchObject({
+      category: "policy",
+      retryable: false,
+      message: "This tool needs approval but the client does not support elicitation",
+      remediation:
+        "Use an MCP client that supports elicitation, or set DISCORD_MCP_APPROVAL=none to rely on the client's own tool approval",
+    });
+    expect(noCap.makeRequest).not.toHaveBeenCalled();
+
+    const urlOnly = await harness({
+      registry: registryOf(approvalTool),
+      clientCapabilities: { elicitation: { url: {} } },
+    });
+    const resUrlOnly = await urlOnly.client.callTool({
+      name: "discord_delete_probe",
+      arguments: { channel_id: "123" },
+    });
+    expect(errorOf(resUrlOnly)).toMatchObject({
+      category: "policy",
+      retryable: false,
+      message: "This tool needs approval but the client does not support elicitation",
+    });
+    expect(urlOnly.makeRequest).not.toHaveBeenCalled();
+  });
+
+  it("runs without elicitation request when DISCORD_MCP_APPROVAL=none", async () => {
+    const elicitHandler = vi.fn();
+    const { client, request } = await harness({
+      registry: registryOf(approvalTool),
+      policy: new PPolicyEngine([], ["core"], false, "none"),
+      onElicit: elicitHandler,
+      respond: () => ({}),
+    });
+    const result = await client.callTool({
+      name: "discord_delete_probe",
+      arguments: { channel_id: "123" },
+    });
+    expect(result.structuredContent).toEqual({ deleted: true, channel_id: "123" });
+    expect(elicitHandler).not.toHaveBeenCalled();
+    expect(request().method).toBe("DELETE");
+    expect(request().url).toBe("https://discord.com/api/v10/channels/123");
+  });
+
+  it("enforces allowlist denial before any elicitation request", async () => {
+    const elicitHandler = vi.fn();
+    const { client, makeRequest } = await harness({
+      registry: registryOf(approvalTool),
+      policy: new PPolicyEngine(["200"], ["core"], false),
+      onElicit: elicitHandler,
+      makeRequest: async (url) =>
+        json(String(url).endsWith("/channels/123") ? { id: "123", guild_id: "999" } : {}),
+    });
+    const result = await client.callTool({
+      name: "discord_delete_probe",
+      arguments: { channel_id: "123" },
+    });
+    expect(errorOf(result)).toMatchObject({
+      category: "policy",
+      message: "Guild is not allowed",
+    });
+    expect(elicitHandler).not.toHaveBeenCalled();
+    expect(makeRequest).toHaveBeenCalledTimes(1);
+    expect(makeRequest.mock.calls[0]?.[1]?.method).toBe("GET");
+  });
+
+  it("executes allowlist GET lookup, then elicitation, then DELETE in exact order on allowlisted guild", async () => {
+    const order: string[] = [];
+    const { client, makeRequest } = await harness({
+      registry: registryOf(approvalTool),
+      policy: new PPolicyEngine(["200"], ["core"], false),
+      onElicit: async () => {
+        order.push("elicit");
+        return { action: "accept", content: { approve: true } };
+      },
+      makeRequest: async (_, init) => {
+        order.push(init?.method ?? "UNKNOWN");
+        return json({ id: "123", guild_id: "200" });
+      },
+    });
+    const result = await client.callTool({
+      name: "discord_delete_probe",
+      arguments: { channel_id: "123" },
+    });
+    expect(result.structuredContent).toEqual({ deleted: true, channel_id: "123" });
+    expect(order).toEqual(["GET", "elicit", "DELETE"]);
+    expect(makeRequest.mock.calls.map(([, init]) => init?.method)).toEqual(["GET", "DELETE"]);
+  });
+
+  it("lists approval tools when allowed and hides them in read-only mode", async () => {
+    const allowed = await harness({
+      registry: registryOf(approvalTool),
+      policy: new PPolicyEngine([], ["core"], false),
+    });
+    expect((await allowed.client.listTools()).tools.map((t) => t.name)).toEqual([
+      "discord_delete_probe",
+    ]);
+
+    const readOnly = await harness({
+      registry: registryOf(approvalTool),
+      policy: new PPolicyEngine([], ["core"], true),
+    });
+    expect((await readOnly.client.listTools()).tools.map((t) => t.name)).toEqual([]);
   });
 });

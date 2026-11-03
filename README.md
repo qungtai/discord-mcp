@@ -63,6 +63,10 @@ is never a tool argument and is never logged.
 - `DISCORD_MCP_TOOLSETS` - comma-separated toolsets; default `core,messages`
   (planned: invalid or empty values fail closed to this default set)
 - `DISCORD_MCP_READ_ONLY` - `true` blocks mutating tools (planned)
+- `DISCORD_MCP_APPROVAL` - `elicitation` (default) prompts the user via MCP
+  elicitation before running destructive operations; `none` bypasses server
+  elicitation to rely on the client's native tool approval prompts (needed for
+  clients without MCP elicitation support)
 - `DISCORD_MCP_FILE_ROOTS` - comma-separated absolute directories readable for
   uploads
 - `DISCORD_MCP_DOWNLOAD_DIR` - absolute directory for downloads

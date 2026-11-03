@@ -1,6 +1,12 @@
 import type { RESTOptions, ResponseLike } from "@discordjs/rest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import {
+  type ClientCapabilities,
+  type ElicitRequest,
+  ElicitRequestSchema,
+  type ElicitResult,
+} from "@modelcontextprotocol/sdk/types.js";
 import { vi } from "vitest";
 import { PDiscordRestAdapter } from "../../src/adapters/discord-rest/discord-rest.js";
 import { PAttachmentService } from "../../src/adapters/files/attachment-service.js";
@@ -48,6 +54,8 @@ export async function harness(
     makeRequest?: RESTOptions["makeRequest"];
     registry?: PToolRegistry;
     rateLimitWaitMs?: number;
+    clientCapabilities?: ClientCapabilities;
+    onElicit?: (request: ElicitRequest) => Promise<ElicitResult> | ElicitResult;
   } = {},
 ) {
   const makeRequest = vi.fn<RESTOptions["makeRequest"]>(
@@ -68,7 +76,13 @@ export async function harness(
     },
   );
   const server = createServer(pipeline);
-  const client = new Client({ name: "test", version: "1" });
+  const capabilities =
+    options.clientCapabilities ?? (options.onElicit ? { elicitation: {} } : undefined);
+  const client = new Client(
+    { name: "test", version: "1" },
+    capabilities ? { capabilities } : undefined,
+  );
+  if (options.onElicit) client.setRequestHandler(ElicitRequestSchema, options.onElicit);
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
   await client.listTools();
