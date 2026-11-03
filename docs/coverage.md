@@ -37,8 +37,9 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 
 | Implementation | Count |
 | --- | ---: |
+| deferred | 13 |
 | implemented | 141 |
-| unmapped | 109 |
+| unmapped | 96 |
 
 ## Availability status
 
@@ -72,9 +73,9 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | stage-instances | 4 | unmapped=4 | unknown=4 | not_tested=4 |
 | sticker-packs | 2 | unmapped=2 | unknown=2 | not_tested=2 |
 | stickers | 1 | unmapped=1 | unknown=1 | not_tested=1 |
-| users | 12 | unmapped=5, implemented=7 | unknown=12 | not_tested=5, mocked contract tested=7 |
+| users | 12 | deferred=5, implemented=7 | unknown=12 | not_tested=5, mocked contract tested=7 |
 | voice | 1 | unmapped=1 | unknown=1 | not_tested=1 |
-| webhooks | 15 | implemented=7, unmapped=8 | unknown=15 | mocked contract tested=7, not_tested=8 |
+| webhooks | 15 | implemented=7, deferred=8 | unknown=15 | mocked contract tested=7, not_tested=8 |
 
 ## Operations by toolset (from coverage/tools.json)
 

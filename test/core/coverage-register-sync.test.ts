@@ -193,4 +193,90 @@ describe("coverage register sync and check", () => {
       error: "live-evidence.json references unknown tool discord_non_existent_tool",
     });
   });
+
+  it("prefers tool named discord_<operation_id> when multiple tools map to the same operation", () => {
+    const multiTools = [
+      {
+        name: "discord_download_attachment",
+        toolset: "messages",
+        operation_ids: ["get_message"],
+      },
+      {
+        name: "discord_get_message",
+        toolset: "messages",
+        operation_ids: ["get_message"],
+      },
+    ];
+    const opRegister = {
+      repo: "test",
+      commit: "test",
+      total_operations: 1,
+      operations: [
+        {
+          capability_id: "get_msg",
+          operation_id: "get_message",
+          mcp_tool: null,
+          implementation: "unmapped",
+          verification: "not_tested",
+          evidence: [],
+        },
+      ],
+    };
+    const synced = syncRegister(opRegister, multiTools, null);
+    expect(synced.operations[0].mcp_tool).toBe("discord_get_message");
+  });
+
+  it("resets verification to not_tested and evidence to [] when an implemented operation loses its tool", () => {
+    const implementedRegister = {
+      repo: "test",
+      commit: "test",
+      total_operations: 1,
+      operations: [
+        {
+          capability_id: "get_msg",
+          operation_id: "get_message",
+          mcp_tool: "discord_get_message",
+          implementation: "implemented",
+          verification: "live action verified",
+          evidence: [{ date: "2026-11-03", tool: "discord_get_message", evidence: "verified" }],
+        },
+      ],
+    };
+    const synced = syncRegister(implementedRegister, [], null);
+    expect(synced.operations[0]).toMatchObject({
+      mcp_tool: null,
+      implementation: "unmapped",
+      verification: "not_tested",
+      evidence: [],
+    });
+  });
+
+  it("catches drift when committed register is not updated after adding a tool", () => {
+    const committedRegister = {
+      repo: "test",
+      commit: "test",
+      total_operations: 1,
+      operations: [
+        {
+          capability_id: "get_msg",
+          operation_id: "get_message",
+          mcp_tool: null,
+          implementation: "unmapped",
+          verification: "not_tested",
+          evidence: [],
+        },
+      ],
+    };
+    const newTools = [
+      {
+        name: "discord_get_message",
+        toolset: "messages",
+        operation_ids: ["get_message"],
+      },
+    ];
+    // Sequence check: with tools present, checking committed un-synced register fails
+    const drift = checkRegisterDrift(committedRegister, newTools, null);
+    expect(drift.ok).toBe(false);
+    expect(drift.error).toContain("mcp_tool mismatch");
+  });
 });

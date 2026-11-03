@@ -1,3 +1,7 @@
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
+
 export function syncRegister(register, tools, evidence) {
   const opToTools = new Map();
   for (const t of tools) {
@@ -10,7 +14,8 @@ export function syncRegister(register, tools, evidence) {
   const updatedOperations = (register.operations || []).map((op) => {
     const tList = op.operation_id ? opToTools.get(op.operation_id) || [] : [];
     if (tList.length > 0) {
-      const mcp_tool = tList[0].name;
+      const selectedTool = tList.find((t) => t.name === `discord_${op.operation_id}`) ?? tList[0];
+      const mcp_tool = selectedTool.name;
       const implementation = "implemented";
       const liveTools = tList.filter((t) => evidence?.tools?.[t.name] != null);
 
@@ -46,12 +51,15 @@ export function syncRegister(register, tools, evidence) {
       implementation = "unmapped";
     }
 
+    const verification = op.implementation === "implemented" ? "not_tested" : op.verification;
+    const evidenceList = op.implementation === "implemented" ? [] : op.evidence || [];
+
     return {
       ...op,
       mcp_tool,
       implementation,
-      verification: op.verification,
-      evidence: op.evidence || [],
+      verification,
+      evidence: evidenceList,
     };
   });
 
@@ -116,4 +124,27 @@ export function checkRegisterDrift(register, tools, evidence) {
   }
 
   return { ok: true };
+}
+
+function main() {
+  const registerPath = join("coverage", "register.json");
+  const toolsPath = join("coverage", "tools.json");
+  const evidencePath = join("coverage", "live-evidence.json");
+
+  if (!existsSync(registerPath) || !existsSync(toolsPath)) {
+    console.error("Missing coverage/register.json or coverage/tools.json");
+    process.exit(1);
+  }
+
+  const register = JSON.parse(readFileSync(registerPath, "utf8"));
+  const tools = JSON.parse(readFileSync(toolsPath, "utf8"));
+  const evidence = existsSync(evidencePath) ? JSON.parse(readFileSync(evidencePath, "utf8")) : null;
+
+  const updated = syncRegister(register, tools, evidence);
+  writeFileSync(registerPath, `${JSON.stringify(updated, null, 2)}\n`);
+  console.log("coverage register synced");
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
 }

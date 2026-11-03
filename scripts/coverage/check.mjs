@@ -108,7 +108,9 @@ function main() {
   }
 
   // tools.json checks.
-  if (existsSync(toolsPath)) {
+  if (!existsSync(toolsPath)) {
+    fail("run pnpm build && pnpm tools:manifest first");
+  } else {
     const tools = readJson(toolsPath);
     const opIds = new Set((register.operations || []).map((o) => o.operation_id).filter(Boolean));
     if (Array.isArray(tools)) {

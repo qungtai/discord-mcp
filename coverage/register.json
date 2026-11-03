@@ -1207,7 +1207,7 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": "discord_download_attachment",
+      "mcp_tool": "discord_get_message",
       "implementation": "implemented",
       "availability": "unknown",
       "verification": "live action verified",
@@ -5270,11 +5270,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "delete_users__me_guilds__guild_id",
@@ -5396,11 +5396,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "get_users__me_applications__application_id__role_connection",
@@ -5420,11 +5420,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "get_users__me_connections",
@@ -5498,11 +5498,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "patch_users__me",
@@ -5564,11 +5564,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "get_voice_regions",
@@ -5630,11 +5630,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires webhook token in path; bots use bot credential and webhook ID instead"
     },
     {
       "capability_id": "delete_webhooks__webhook_id___webhook_token__messages__message_id",
@@ -5678,11 +5678,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Interaction-only route; not applicable to bot webhooks"
     },
     {
       "capability_id": "get_webhooks__webhook_id",
@@ -5723,11 +5723,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires webhook token in path; bots use bot credential and webhook ID instead"
     },
     {
       "capability_id": "get_webhooks__webhook_id___webhook_token__messages__message_id",
@@ -5746,7 +5746,7 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": "discord_edit_webhook_message",
+      "mcp_tool": "discord_get_webhook_message",
       "implementation": "implemented",
       "availability": "unknown",
       "verification": "mocked contract tested",
@@ -5771,11 +5771,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Interaction-only route; not applicable to bot webhooks"
     },
     {
       "capability_id": "patch_webhooks__webhook_id",
@@ -5816,11 +5816,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires webhook token in path; bots use bot credential and webhook ID instead"
     },
     {
       "capability_id": "patch_webhooks__webhook_id___webhook_token__messages__message_id",
@@ -5864,11 +5864,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Interaction-only route; not applicable to bot webhooks"
     },
     {
       "capability_id": "post_webhooks__webhook_id___webhook_token",
@@ -5912,11 +5912,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Third-party platform webhook format; not applicable to bot MCP tools"
     },
     {
       "capability_id": "post_webhooks__webhook_id___webhook_token__slack",
@@ -5936,11 +5936,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Third-party platform webhook format; not applicable to bot MCP tools"
     }
   ],
   "preview_only_operations": []
