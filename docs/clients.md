@@ -232,6 +232,7 @@ Destructive tools ask for confirmation with MCP elicitation (`elicitation/create
 ## File access
 
 Local file access is open by default:
+
 - Uploads: Any absolute path is accessible by default, except hidden files and directories (paths containing a segment starting with `.`). To restrict access, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories.
 - Downloads: Attachments downloaded with `discord_download_attachment` save to `~/Downloads/discord-mcp` by default. You can change this path by setting `DISCORD_MCP_DOWNLOAD_DIR`. The directory is created automatically on first download.
 

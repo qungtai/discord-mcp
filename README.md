@@ -40,9 +40,9 @@ Add the server to your MCP client configuration:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-      "env": {
-        "DISCORD_TOKEN": "your-bot-token"
-      }
+        "env": {
+          "DISCORD_TOKEN": "your-bot-token"
+        }
       }
     }
   }
@@ -454,7 +454,7 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 | `DISCORD_MCP_TOOLSETS`           | `core,messages`           | Comma-separated list of enabled toolsets. <!-- config-toolsets:start --> Available: core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites. <!-- config-toolsets:end --> |
 | `DISCORD_MCP_READ_ONLY`          | `false`                   | Blocks all mutating actions and allows read-only tools only (`true` or `false`). Any other value stops startup.                                                                                                              |
 | `DISCORD_MCP_APPROVAL`           | `elicitation`             | Confirmation mode for destructive operations (`elicitation` or `none`). Any other value stops startup.                                                                                                                       |
-| `DISCORD_MCP_FILE_ROOTS`         | _(empty)_                 | Optional comma-separated list of absolute directory paths accessible for uploads. When unset or empty, file access is open by default for any absolute path, except hidden files and directories.                            |
+| `DISCORD_MCP_FILE_ROOTS`         | _(empty)_                 | Optional comma-separated list of absolute directory paths accessible for uploads. When unset, empty, or parsing to no entries, file access is open by default for any absolute path, except hidden files and directories.    |
 | `DISCORD_MCP_DOWNLOAD_DIR`       | `~/Downloads/discord-mcp` | Absolute directory path where attachment downloads are stored. Defaults to `~/Downloads/discord-mcp` and is created recursively on first download.                                                                           |
 | `DISCORD_MCP_REQUEST_TIMEOUT_MS` | `15000`                   | HTTP request timeout in milliseconds for Discord REST API requests.                                                                                                                                                          |
 | `DISCORD_MCP_RATE_LIMIT_WAIT_MS` | `5000`                    | Maximum wait duration in milliseconds when encountering a Discord rate limit before aborting.                                                                                                                                |
@@ -484,7 +484,7 @@ Setting `DISCORD_MCP_READ_ONLY=true` rejects all mutating tools (writes and dest
 
 ### Filesystem boundaries
 
-- Uploads: File access is open by default. When `DISCORD_MCP_FILE_ROOTS` is unset or empty, tools that attach files can read any absolute path except hidden files and directories (paths containing a component that starts with `.`). To restrict uploads, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories. Inside explicit roots, hidden files are permitted. Path traversal outside roots or relative paths are always blocked.
+- Uploads: File access is open by default. When `DISCORD_MCP_FILE_ROOTS` is unset or empty, tools that attach files can read any absolute path except hidden files and directories (paths containing a component that starts with `.`). To restrict uploads, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories. Inside explicit roots, hidden files are permitted. Relative paths and `..` segments are always refused. The hidden-file rule is name-based; hardlinks and non-dot-named secrets such as `~/Library/Keychains` are not detected.
 - Downloads: Attachments downloaded with `discord_download_attachment` are saved inside `DISCORD_MCP_DOWNLOAD_DIR` (defaults to `~/Downloads/discord-mcp`), created recursively on first download, with SHA-256 integrity verification.
 
 ### Credential protection

@@ -116,7 +116,11 @@ export const allowedMentions = z
   })
   .default({ parse: [] });
 export const fileUpload = z.strictObject({
-  path: z.string().describe("Absolute path inside DISCORD_MCP_FILE_ROOTS"),
+  path: z
+    .string()
+    .describe(
+      "Absolute path of the file to upload. Hidden files and folders are refused unless DISCORD_MCP_FILE_ROOTS is set",
+    ),
   filename: z.string().optional(),
   description: z.string().optional(),
   is_spoiler: z.boolean().optional(),
