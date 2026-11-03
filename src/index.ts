@@ -4,7 +4,7 @@ import { PDiscordRestAdapter } from "./adapters/discord-rest/discord-rest.js";
 import { PAttachmentService } from "./adapters/files/attachment-service.js";
 import { createServer } from "./adapters/mcp/server.js";
 import { PToolPipeline } from "./core/pipeline.js";
-import { PPolicyEngine } from "./core/policy.js";
+import { approvalNotice, PPolicyEngine } from "./core/policy.js";
 import { createScopeResolver } from "./core/scope.js";
 import { PToolRegistry } from "./core/tool-registry.js";
 
@@ -23,10 +23,8 @@ const bot = new PDiscordRestAdapter(token, {
   rateLimitWaitMs: positiveInt("DISCORD_MCP_RATE_LIMIT_WAIT_MS"),
 });
 const policy = PPolicyEngine.fromEnv(process.env);
-if (policy.approval === "none")
-  process.stderr.write(
-    "DISCORD_MCP_APPROVAL=none: server-side approval for destructive tools is disabled\n",
-  );
+const notice = approvalNotice(policy.approval);
+if (notice) process.stderr.write(notice);
 const registry = await PToolRegistry.load();
 const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
   .split(",")

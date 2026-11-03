@@ -46,6 +46,15 @@ export function json(body: unknown, init: ResponseInit = {}): ResponseLike {
   }) as unknown as ResponseLike;
 }
 
+// A registry holding one tool, so a test cannot reach another tool through the harness.
+export async function singleToolRegistry(name: string): Promise<PToolRegistry> {
+  const tool = (await PToolRegistry.load()).get(name);
+  if (!tool) throw new Error(`Missing tool: ${name}`);
+  const registry = new PToolRegistry();
+  registry.register(tool);
+  return registry;
+}
+
 // Approval tools need a client that accepts elicitation; pass clientCapabilities: {} to test a client without it.
 export const acceptElicitation = () =>
   ({ action: "accept", content: { approve: true } }) as ElicitResult;
@@ -92,6 +101,19 @@ export async function harness(
     return { url, method: init?.method, body: init?.body, headers: init?.headers };
   };
   return { client, makeRequest, request, pipeline };
+}
+
+// A harness limited to one tool, with only that tool's toolset enabled.
+export async function toolHarness(name: string, options: Parameters<typeof harness>[0] = {}) {
+  const tool = (await PToolRegistry.load()).get(name);
+  if (!tool) throw new Error(`Missing tool: ${name}`);
+  const registry = new PToolRegistry();
+  registry.register(tool);
+  return harness({
+    policy: new PPolicyEngine([], [tool.toolset], false),
+    ...options,
+    registry,
+  });
 }
 
 // Error results carry the error as JSON text only (no structuredContent).

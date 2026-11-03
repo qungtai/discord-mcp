@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { errorOf, json, toolHarness } from "../../support/harness.js";
 
 beforeEach(() => {
   vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -10,15 +10,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-async function toolHarness(options: Parameters<typeof harness>[0] = {}) {
-  return harness({
-    ...options,
-    policy: options.policy ?? new PPolicyEngine([], ["channels"], false),
-  });
-}
-
 it("sets channel permission overwrite with literal method, route and body", async () => {
-  const { client, request } = await toolHarness({
+  const { client, request } = await toolHarness("discord_set_channel_permission_overwrite", {
     respond: () => ({}),
   });
   const result = await client.callTool({
@@ -53,7 +46,7 @@ it("sets channel permission overwrite with literal method, route and body", asyn
 });
 
 it("rejects invalid overwrite type", async () => {
-  const { client, makeRequest } = await toolHarness();
+  const { client, makeRequest } = await toolHarness("discord_set_channel_permission_overwrite");
   const result = await client.callTool({
     name: "discord_set_channel_permission_overwrite",
     arguments: {
@@ -67,7 +60,7 @@ it("rejects invalid overwrite type", async () => {
 });
 
 it("rejects non-digit bitfield string in allow or deny", async () => {
-  const { client, makeRequest } = await toolHarness();
+  const { client, makeRequest } = await toolHarness("discord_set_channel_permission_overwrite");
   const res1 = await client.callTool({
     name: "discord_set_channel_permission_overwrite",
     arguments: {
@@ -93,7 +86,7 @@ it("rejects non-digit bitfield string in allow or deny", async () => {
 });
 
 it("maps 403 to permission with ManageRoles requirement", async () => {
-  const { client } = await toolHarness({
+  const { client } = await toolHarness("discord_set_channel_permission_overwrite", {
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -113,7 +106,7 @@ it("maps 403 to permission with ManageRoles requirement", async () => {
 });
 
 it("maps 404 to not_found", async () => {
-  const { client } = await toolHarness({
+  const { client } = await toolHarness("discord_set_channel_permission_overwrite", {
     makeRequest: async () => json({ message: "Unknown Channel", code: 10003 }, { status: 404 }),
   });
   const result = await client.callTool({
@@ -132,7 +125,7 @@ it("maps 404 to not_found", async () => {
 });
 
 it("succeeds when channel is in allowlist and denies when it is not", async () => {
-  const allowed = await toolHarness({
+  const allowed = await toolHarness("discord_set_channel_permission_overwrite", {
     policy: new PPolicyEngine(["500"], ["channels"], false),
     makeRequest: async (url) => {
       const u = String(url);
@@ -159,7 +152,7 @@ it("succeeds when channel is in allowlist and denies when it is not", async () =
     url: "https://discord.com/api/v10/channels/100/permissions/200",
   });
 
-  const denied = await toolHarness({
+  const denied = await toolHarness("discord_set_channel_permission_overwrite", {
     policy: new PPolicyEngine(["500"], ["channels"], false),
     respond: () => ({ id: "100", guild_id: "999" }),
   });

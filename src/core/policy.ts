@@ -4,6 +4,13 @@ import { DEFAULT_TOOLSETS, TOOLSETS, type ToolDescriptor, type Toolset } from ".
 
 export type ApprovalMode = "elicitation" | "none";
 
+// One startup line when server-side approval is off, so the operator makes an informed choice.
+export function approvalNotice(approval: ApprovalMode): string | undefined {
+  return approval === "none"
+    ? "DISCORD_MCP_APPROVAL=none: server-side approval for destructive tools is disabled\n"
+    : undefined;
+}
+
 export class PPolicyEngine {
   constructor(
     readonly allowedGuilds: string[],

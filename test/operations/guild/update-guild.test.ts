@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { PToolRegistry } from "../../../src/core/tool-registry.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { errorOf, json, toolHarness } from "../../support/harness.js";
 
 beforeEach(() => {
   vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -13,20 +12,8 @@ afterEach(() => {
 
 const GUILD = { id: "123", name: "Updated Guild", description: "A great server" };
 
-async function toolHarness(options = {}) {
-  const base = (await PToolRegistry.load()).get("discord_update_guild");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register(base);
-  return harness({
-    registry,
-    policy: new PPolicyEngine([], ["guild"], false),
-    ...options,
-  });
-}
-
 it("updates a guild and passes comprehensive literal body and reason after the client accepts approval", async () => {
-  const { client, request } = await toolHarness({ respond: () => GUILD });
+  const { client, request } = await toolHarness("discord_update_guild", { respond: () => GUILD });
   const result = await client.callTool({
     name: "discord_update_guild",
     arguments: {
@@ -82,7 +69,7 @@ it("updates a guild and passes comprehensive literal body and reason after the c
 });
 
 it("clears the guild channels with literal nulls and no scope lookup", async () => {
-  const { client, request, makeRequest } = await toolHarness({
+  const { client, request, makeRequest } = await toolHarness("discord_update_guild", {
     policy: new PPolicyEngine(["123"], ["guild"], false),
     respond: () => GUILD,
   });
@@ -110,7 +97,7 @@ it("clears the guild channels with literal nulls and no scope lookup", async () 
 });
 
 it("validates input name min length", async () => {
-  const { client, makeRequest } = await toolHarness();
+  const { client, makeRequest } = await toolHarness("discord_update_guild");
   const result = await client.callTool({
     name: "discord_update_guild",
     arguments: { guild_id: "123", name: "a" },
@@ -120,7 +107,7 @@ it("validates input name min length", async () => {
 });
 
 it("maps a 403 error to permission with required permissions", async () => {
-  const { client } = await toolHarness({
+  const { client } = await toolHarness("discord_update_guild", {
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -136,7 +123,7 @@ it("maps a 403 error to permission with required permissions", async () => {
 });
 
 it("maps a 404 error to not_found", async () => {
-  const { client } = await toolHarness({
+  const { client } = await toolHarness("discord_update_guild", {
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
   const result = await client.callTool({
@@ -151,12 +138,7 @@ it("maps a 404 error to not_found", async () => {
 });
 
 it("allows update when guild and scoped channels are in allowlist", async () => {
-  const base = (await PToolRegistry.load()).get("discord_update_guild");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register(base);
-  const { client, request } = await harness({
-    registry,
+  const { client, request } = await toolHarness("discord_update_guild", {
     policy: new PPolicyEngine(["123"], ["guild"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/channels/456")) return json({ id: "456", guild_id: "123" });
@@ -173,12 +155,7 @@ it("allows update when guild and scoped channels are in allowlist", async () => 
 });
 
 it("denies update when guild is not in allowlist", async () => {
-  const base = (await PToolRegistry.load()).get("discord_update_guild");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register(base);
-  const { client, makeRequest } = await harness({
-    registry,
+  const { client, makeRequest } = await toolHarness("discord_update_guild", {
     policy: new PPolicyEngine(["999"], ["guild"], false),
   });
   const result = await client.callTool({
@@ -193,12 +170,7 @@ it("denies update when guild is not in allowlist", async () => {
 });
 
 it("denies update when a scoped channel belongs to another guild before write", async () => {
-  const base = (await PToolRegistry.load()).get("discord_update_guild");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register(base);
-  const { client, makeRequest } = await harness({
-    registry,
+  const { client, makeRequest } = await toolHarness("discord_update_guild", {
     policy: new PPolicyEngine(["123"], ["guild"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/channels/456")) return json({ id: "456", guild_id: "999" });

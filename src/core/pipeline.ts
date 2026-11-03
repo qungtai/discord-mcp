@@ -254,9 +254,11 @@ function mayHaveCommitted(error: unknown): boolean {
   return error.category === "discord" && (error.status === undefined || error.status >= 500);
 }
 // Long values are usually base64 images; a human approving a change does not need the payload.
+// Redaction runs first so a token cut at the limit is not left half-masked.
 function truncate(_key: string, value: unknown): unknown {
-  if (typeof value !== "string" || value.length <= 200) return value;
-  return `${value.slice(0, 200)}…(${value.length} chars)`;
+  if (typeof value !== "string") return value;
+  const safe = redact(value);
+  return safe.length <= 200 ? safe : `${safe.slice(0, 200)}…(${safe.length} chars)`;
 }
 function nonceOf(body: unknown): string | undefined {
   return typeof body === "object" &&

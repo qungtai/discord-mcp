@@ -145,6 +145,8 @@ export function searchNextOffset(
   page: { has_more?: boolean; total_results?: number },
 ): number | null {
   const current = offset ?? 0;
+  // A page with no results cannot advance the cursor, or paging would loop.
+  if (!returned) return null;
   const hasMore = page.has_more ?? (page.total_results ?? 0) > current + returned;
   return hasMore ? current + returned : null;
 }

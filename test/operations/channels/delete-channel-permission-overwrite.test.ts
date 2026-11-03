@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { errorOf, json, toolHarness } from "../../support/harness.js";
 
 beforeEach(() => {
   vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -10,15 +10,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-async function toolHarness(options: Parameters<typeof harness>[0] = {}) {
-  return harness({
-    ...options,
-    policy: options.policy ?? new PPolicyEngine([], ["channels"], false),
-  });
-}
-
 it("deletes channel permission overwrite with literal method, route and headers", async () => {
-  const { client, request } = await toolHarness({
+  const { client, request } = await toolHarness("discord_delete_channel_permission_overwrite", {
     respond: () => ({}),
   });
   const result = await client.callTool({
@@ -45,7 +38,7 @@ it("deletes channel permission overwrite with literal method, route and headers"
 });
 
 it("maps 403 to permission with ManageRoles requirement", async () => {
-  const { client } = await toolHarness({
+  const { client } = await toolHarness("discord_delete_channel_permission_overwrite", {
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -61,7 +54,7 @@ it("maps 403 to permission with ManageRoles requirement", async () => {
 });
 
 it("maps 404 to not_found", async () => {
-  const { client } = await toolHarness({
+  const { client } = await toolHarness("discord_delete_channel_permission_overwrite", {
     makeRequest: async () => json({ message: "Unknown Overwrite", code: 10003 }, { status: 404 }),
   });
   const result = await client.callTool({
@@ -75,7 +68,7 @@ it("maps 404 to not_found", async () => {
 });
 
 it("succeeds when channel is in allowlist and denies when it is not", async () => {
-  const allowed = await toolHarness({
+  const allowed = await toolHarness("discord_delete_channel_permission_overwrite", {
     policy: new PPolicyEngine(["500"], ["channels"], false),
     makeRequest: async (url) => {
       const u = String(url);
@@ -102,7 +95,7 @@ it("succeeds when channel is in allowlist and denies when it is not", async () =
     url: "https://discord.com/api/v10/channels/100/permissions/200",
   });
 
-  const denied = await toolHarness({
+  const denied = await toolHarness("discord_delete_channel_permission_overwrite", {
     policy: new PPolicyEngine(["500"], ["channels"], false),
     respond: () => ({ id: "100", guild_id: "999" }),
   });

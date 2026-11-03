@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { z } from "zod/v4";
 import { PAttachmentService } from "../../src/adapters/files/attachment-service.js";
 import { PToolPipeline } from "../../src/core/pipeline.js";
-import { PPolicyEngine } from "../../src/core/policy.js";
+import { approvalNotice, PPolicyEngine } from "../../src/core/policy.js";
 import type { DiscordRequest } from "../../src/core/ports.js";
 import { createScopeResolver } from "../../src/core/scope.js";
 import { redact } from "../../src/core/tool-error.js";
@@ -129,6 +129,12 @@ describe("policy configuration", () => {
     expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_APPROVAL: "invalid" })).toThrow(
       "DISCORD_MCP_APPROVAL must be elicitation or none",
     );
+  });
+  it("warns once at startup when DISCORD_MCP_APPROVAL=none", () => {
+    expect(approvalNotice("none")).toBe(
+      "DISCORD_MCP_APPROVAL=none: server-side approval for destructive tools is disabled\n",
+    );
+    expect(approvalNotice("elicitation")).toBeUndefined();
   });
   it.each(["1", "TRUE", "yes"])("fails closed on DISCORD_MCP_READ_ONLY=%s", (value) => {
     expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_READ_ONLY: value })).toThrow(

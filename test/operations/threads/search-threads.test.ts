@@ -85,6 +85,17 @@ it("handles 202 SearchIndexNotReady response by returning retryable rate_limited
   });
 });
 
+it("returns no next_offset when a page reports has_more with zero results", async () => {
+  const { client } = await threadHarness({
+    respond: () => ({ ...SEARCH_RESULT, threads: [], members: [], has_more: true }),
+  });
+  const result = await client.callTool({
+    name: "discord_search_threads",
+    arguments: { channel_id: "1", offset: 3 },
+  });
+  expect(result.structuredContent).toMatchObject({ next_offset: null });
+});
+
 it("validates limit range (min 1, max 25)", async () => {
   const { client, makeRequest } = await threadHarness();
   const result = await client.callTool({

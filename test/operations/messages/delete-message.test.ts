@@ -1,8 +1,7 @@
 import type { ResponseLike } from "@discordjs/rest";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { PToolRegistry } from "../../../src/core/tool-registry.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { errorOf, json, toolHarness } from "../../support/harness.js";
 
 beforeEach(() => {
   vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -15,16 +14,8 @@ afterEach(() => {
 const args = { channel_id: "1", message_id: "2", reason: "cleanup message" };
 const empty204 = () => new Response(null, { status: 204 }) as unknown as ResponseLike;
 
-async function toolHarness(options: Parameters<typeof harness>[0] = {}) {
-  const base = (await PToolRegistry.load()).get("discord_delete_message");
-  if (!base) throw new Error("Missing tool");
-  const registry = new PToolRegistry();
-  registry.register(base);
-  return harness({ ...options, registry });
-}
-
 it("deletes a message with an audit reason after the client accepts approval", async () => {
-  const { client, request } = await toolHarness({
+  const { client, request } = await toolHarness("discord_delete_message", {
     makeRequest: async () => empty204(),
   });
   const result = await client.callTool({
@@ -42,7 +33,7 @@ it("deletes a message with an audit reason after the client accepts approval", a
 });
 
 it("allows access under an allowed guild", async () => {
-  const { client } = await toolHarness({
+  const { client } = await toolHarness("discord_delete_message", {
     policy: new PPolicyEngine(["100"], ["core", "messages"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/channels/1")) return json({ id: "1", guild_id: "100" });
@@ -61,7 +52,7 @@ it("allows access under an allowed guild", async () => {
 });
 
 it("blocks access when channel belongs to a disallowed guild", async () => {
-  const { client, makeRequest } = await toolHarness({
+  const { client, makeRequest } = await toolHarness("discord_delete_message", {
     policy: new PPolicyEngine(["100"], ["core", "messages"], false),
     respond: () => ({ id: "1", guild_id: "200" }),
   });
@@ -74,7 +65,7 @@ it("blocks access when channel belongs to a disallowed guild", async () => {
 });
 
 it("blocks mutating call in read-only mode", async () => {
-  const { client, makeRequest } = await toolHarness({
+  const { client, makeRequest } = await toolHarness("discord_delete_message", {
     policy: new PPolicyEngine([], ["messages"], true),
   });
   const result = await client.callTool({
@@ -86,7 +77,7 @@ it("blocks mutating call in read-only mode", async () => {
 });
 
 it("maps a 403 to permission error", async () => {
-  const { client } = await toolHarness({
+  const { client } = await toolHarness("discord_delete_message", {
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -107,7 +98,7 @@ it("maps a 403 to permission error", async () => {
 });
 
 it("maps a 404 to not_found error", async () => {
-  const { client } = await toolHarness({
+  const { client } = await toolHarness("discord_delete_message", {
     makeRequest: async () => json({ message: "Unknown Message", code: 10008 }, { status: 404 }),
   });
   const result = await client.callTool({
