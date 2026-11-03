@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto";
-import { MessageFlags, type RESTPostAPIChannelMessageResult, Routes } from "discord-api-types/v10";
+import { type RESTPostAPIChannelMessageResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { fileUpload, snowflake } from "../schemas.js";
+import { fileUpload, messageFlags, snowflake } from "../schemas.js";
 import { messageBody, messageResult, poll } from "./schemas.js";
 
 export const sendMessage = defineTool({
@@ -28,19 +28,7 @@ export const sendMessage = defineTool({
     files: z.array(fileUpload).default([]),
     poll: poll.optional(),
     tts: z.boolean().optional(),
-    flags: z
-      .number()
-      .int()
-      .min(0)
-      .refine(
-        (flags) =>
-          (flags & ~(MessageFlags.SuppressEmbeds | MessageFlags.SuppressNotifications)) === 0,
-        {
-          message: "Only SUPPRESS_EMBEDS (4) and SUPPRESS_NOTIFICATIONS (4096) are supported",
-        },
-      )
-      .optional()
-      .describe("Message flags bitfield"),
+    flags: messageFlags,
     sticker_ids: z.array(snowflake).max(3).optional(),
     nonce: z
       .string()

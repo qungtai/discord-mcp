@@ -1,12 +1,7 @@
 import { z } from "zod/v4";
-import { resource, snowflake } from "../schemas.js";
+import { dataUri, resource, snowflake } from "../schemas.js";
 
-export const dataUri = z
-  .string()
-  .regex(
-    /^data:image\/(?:png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/,
-    "Expected a base64 data URI",
-  );
+export { dataUri };
 
 export const partialGuild = resource(
   z.looseObject({

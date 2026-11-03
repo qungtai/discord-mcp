@@ -1,8 +1,7 @@
 import { type RESTPatchAPICurrentUserResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { user } from "../schemas.js";
-import { dataUri } from "./schemas.js";
+import { dataUri, user } from "../schemas.js";
 
 export const updateMyUser = defineTool({
   name: "discord_update_my_user",

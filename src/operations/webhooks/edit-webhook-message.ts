@@ -16,9 +16,7 @@ export const editWebhookMessage = defineTool({
   toolset: "webhooks",
   scope: { webhook: "webhook_id", channel: "thread_id" },
   permissions: ["ManageWebhooks"],
-  // Replacing content is not additive, but editing the webhook's own message needs no approval.
   effect: "destructive",
-  approval: false,
   idempotent: false,
   output: messageResult,
   input: z.object({

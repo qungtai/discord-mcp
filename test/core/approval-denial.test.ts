@@ -50,6 +50,8 @@ const ARGUMENTS: Record<string, Record<string, unknown>> = {
   },
   discord_delete_webhook: { webhook_id: "1" },
   discord_delete_webhook_message: { webhook_id: "1", message_id: "2" },
+  discord_edit_webhook_message: { webhook_id: "1", message_id: "2", content: "x" },
+  discord_execute_webhook: { webhook_id: "1", content: "x" },
   discord_leave_guild: { guild_id: "1" },
   discord_prune_guild: { guild_id: "1" },
   discord_review_guild_join_request: { guild_id: "1", request_id: "2", action: "APPROVED" },

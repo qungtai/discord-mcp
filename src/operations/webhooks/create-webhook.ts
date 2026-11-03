@@ -1,7 +1,7 @@
 import { type RESTPostAPIChannelWebhookResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { reason, snowflake } from "../schemas.js";
+import { dataUri, reason, snowflake } from "../schemas.js";
 import { sanitizeWebhook, webhook } from "./schemas.js";
 
 export const createWebhook = defineTool({
@@ -16,7 +16,7 @@ export const createWebhook = defineTool({
   input: z.object({
     channel_id: snowflake,
     name: z.string().min(1).max(80).describe("Name of the webhook (1-80 characters)"),
-    avatar: z.string().nullish().describe("Base64 image data URI for the default avatar"),
+    avatar: dataUri.nullish().describe("Base64 image data URI for the default avatar"),
     reason,
   }),
   output: z.object({

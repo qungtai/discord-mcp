@@ -28,7 +28,7 @@ async function tempDir() {
   return dir;
 }
 
-it("edits webhook message content and embeds without approval and without auth header", async () => {
+it("edits webhook message content and embeds with approval and without auth header", async () => {
   const { client, request, makeRequest } = await harness({
     policy: new PPolicyEngine([], ["webhooks"], false),
     makeRequest: async (url) => {

@@ -1,7 +1,7 @@
 import { type RESTPatchAPIWebhookResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { reason, snowflake } from "../schemas.js";
+import { dataUri, reason, snowflake } from "../schemas.js";
 import { sanitizeWebhook, webhook } from "./schemas.js";
 
 export const updateWebhook = defineTool({
@@ -16,7 +16,7 @@ export const updateWebhook = defineTool({
   input: z.object({
     webhook_id: snowflake,
     name: z.string().min(1).max(80).optional().describe("Default name of the webhook"),
-    avatar: z.string().nullish().describe("Base64 image data URI for the default avatar"),
+    avatar: dataUri.nullish().describe("Base64 image data URI for the default avatar"),
     channel_id: snowflake.optional().describe("Channel ID to move this webhook to"),
     reason,
   }),

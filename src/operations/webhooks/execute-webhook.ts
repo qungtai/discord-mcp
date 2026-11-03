@@ -1,12 +1,8 @@
-import {
-  MessageFlags,
-  type RESTPostAPIWebhookWithTokenWaitResult,
-  Routes,
-} from "discord-api-types/v10";
+import { type RESTPostAPIWebhookWithTokenWaitResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { messageBody, messageResult, poll } from "../messages/schemas.js";
-import { fileUpload, snowflake } from "../schemas.js";
+import { fileUpload, messageFlags, snowflake } from "../schemas.js";
 import { resolveWebhookToken } from "./schemas.js";
 
 export const executeWebhook = defineTool({
@@ -17,6 +13,8 @@ export const executeWebhook = defineTool({
   scope: { webhook: "webhook_id", channel: "thread_id" },
   permissions: ["ManageWebhooks"],
   effect: "write",
+  // Webhooks can post under any name and avatar through webhooks other integrations own.
+  approval: true,
   idempotent: false,
   output: messageResult,
   input: z.object({
@@ -27,19 +25,7 @@ export const executeWebhook = defineTool({
     tts: z.boolean().optional(),
     files: z.array(fileUpload).default([]),
     poll: poll.optional(),
-    flags: z
-      .number()
-      .int()
-      .min(0)
-      .refine(
-        (flags) =>
-          (flags & ~(MessageFlags.SuppressEmbeds | MessageFlags.SuppressNotifications)) === 0,
-        {
-          message: "Only SUPPRESS_EMBEDS (4) and SUPPRESS_NOTIFICATIONS (4096) are supported",
-        },
-      )
-      .optional()
-      .describe("Message flags bitfield"),
+    flags: messageFlags,
     thread_id: snowflake.optional().describe("Send message to a thread within the webhook channel"),
     thread_name: z.string().optional().describe("Name of thread to create in a forum channel"),
     applied_tags: z
