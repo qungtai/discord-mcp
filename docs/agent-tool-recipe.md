@@ -56,7 +56,7 @@ export const getChannel = defineTool({
 - IDs that Discord checks against the guild or channel in the route need no scope: role, member, emoji and overwrite IDs, and channel IDs inside `PATCH /guilds/{guild_id}/channels`. Message IDs take `message` next to their `channel`, as in the message tools. Every top-level `*_id`, `*_ids` and `code` input is audited whether scoped or not.
 - `test/core/scope-declarations.test.ts` fails when a top-level guild, channel, thread or webhook ID input is not scoped. Add a key to its exception list only when Discord checks it against the route, with the reason in the PR.
 - Never add a `guild_id` or `channel_id` input just to satisfy the allowlist, and never read a resource ID from a nested object.
-- `scope: "none"` is for tools that touch no guild resource (current user, gateway, voice regions); the allowlist does not apply to them. Tools that list guilds or guild-owned resources across guilds filter the result with `context.allowsGuild(guild_id)`.
+- `scope: "none"` is for tools that touch no guild resource (current user, gateway, voice regions); the allowlist does not apply to them. Tools that list guilds or guild-owned resources across guilds filter the result with `context.allowsGuild(guild_id)`. Use `context.hasAllowlist` when a tool must behave differently under an allowlist.
 
 ## Inputs and outputs
 - No function defaults in inputs. Generate values in `execute` (`p.nonce ?? randomBytes(12).toString("hex")`).

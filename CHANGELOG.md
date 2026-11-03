@@ -20,7 +20,11 @@ follows [Semantic Versioning](https://semver.org/).
   `discord_list_my_connections` and `discord_create_dm`.
 - DM policy switch (`DISCORD_MCP_ALLOW_DMS`, default `false`): a guild allowlist
   never implies DM access; direct messages and user-scoped operations require
-  `DISCORD_MCP_ALLOW_DMS=true` when an allowlist is active.
+  `DISCORD_MCP_ALLOW_DMS=true` when an allowlist is active. With an allowlist,
+  resources outside any guild that are not DMs (application webhooks, friend
+  invites) are refused whatever DISCORD_MCP_ALLOW_DMS says;
+  `discord_list_my_guilds` returns every allowed guild in one call and refuses
+  before, after and limit.
 - 137 Discord tools across twelve toolsets: channels (13), core (6), events (11),
   guild (22), invites (12), members (12), messages (15), moderation (10),
   reactions (6), roles (7), threads (13) and webhooks (10), registered from one

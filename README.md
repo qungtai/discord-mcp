@@ -59,7 +59,11 @@ is never a tool argument and is never logged.
 
 - `DISCORD_TOKEN` - bot token (required)
 - `DISCORD_MCP_ALLOWED_GUILDS` - comma-separated guild IDs; empty means no
-  restriction (planned: guild and channel allowlists across every access path)
+  restriction (planned: guild and channel allowlists across every access path).
+  With an allowlist, resources outside any guild that are not DMs (application
+  webhooks, friend invites) are refused whatever DISCORD_MCP_ALLOW_DMS says;
+  `discord_list_my_guilds` returns every allowed guild in one call and refuses
+  before, after and limit.
 - `DISCORD_MCP_ALLOW_DMS` - `true` or `false` (default `false`); controls whether
   direct messages (or user-scoped tools) are permitted when a guild allowlist is configured.
   A guild allowlist never implies DM access.
