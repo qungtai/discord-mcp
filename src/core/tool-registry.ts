@@ -47,6 +47,7 @@ export interface ToolContext {
   correlationId: string;
   // Listing tools drop guilds outside DISCORD_MCP_ALLOWED_GUILDS with this.
   allowsGuild: (guildId: string) => boolean;
+  hasAllowlist: boolean;
 }
 export interface ToolSpec<I extends z.ZodObject, O extends z.ZodObject> {
   name: `discord_${string}`;

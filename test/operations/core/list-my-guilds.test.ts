@@ -99,7 +99,7 @@ it("filters guilds outside the allowlist across multiple internal pages and retu
 
   const result = await client.callTool({
     name: "discord_list_my_guilds",
-    arguments: { limit: 50, with_counts: true },
+    arguments: { with_counts: true },
   });
 
   expect(result.structuredContent).toEqual({
@@ -119,6 +119,61 @@ it("filters guilds outside the allowlist across multiple internal pages and retu
     "https://discord.com/api/v10/users/@me/guilds?limit=200&with_counts=true",
     `https://discord.com/api/v10/users/@me/guilds?limit=200&after=${page1.at(-1)?.id}&with_counts=true`,
   ]);
+});
+
+it("refuses paging inputs under an allowlist with validation error", async () => {
+  const { client } = await harness({
+    policy: new PPolicyEngine([GUILD_1.id], ["core"], false),
+  });
+  for (const input of [{ before: "100" }, { after: "100" }, { limit: 10 }]) {
+    const result = await client.callTool({
+      name: "discord_list_my_guilds",
+      arguments: input,
+    });
+    expect(errorOf(result)).toMatchObject({
+      category: "validation",
+      retryable: false,
+      message:
+        "Paging is not available with DISCORD_MCP_ALLOWED_GUILDS; every allowed guild is returned in one call",
+    });
+  }
+});
+
+it("returns all allowed guilds in one call when more allowed guilds than one Discord page holds", async () => {
+  // 250 allowed guilds across 2 pages (200 on page 1, 50 on page 2)
+  const allowedGuilds = Array.from({ length: 250 }, (_, i) => ({
+    id: `700000000000000${String(i).padStart(3, "0")}`,
+    name: `Allowed Guild ${i}`,
+    icon: null,
+    owner: false,
+    permissions: "0",
+    features: [],
+  }));
+  const page1 = allowedGuilds.slice(0, 200);
+  const page2 = allowedGuilds.slice(200);
+
+  const { client } = await harness({
+    policy: new PPolicyEngine(
+      allowedGuilds.map((g) => g.id),
+      ["core"],
+      false,
+    ),
+    makeRequest: async (url) => {
+      const u = new URL(String(url));
+      if (!u.searchParams.get("after")) return json(page1);
+      return json(page2);
+    },
+  });
+
+  const result = await client.callTool({
+    name: "discord_list_my_guilds",
+    arguments: {},
+  });
+  expect(result.structuredContent).toEqual({
+    guilds: allowedGuilds,
+    next_before: null,
+    next_after: null,
+  });
 });
 
 it("returns null cursors when Discord returns empty list", async () => {
