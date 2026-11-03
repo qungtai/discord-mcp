@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
 import { constants } from "node:fs";
-import { open, realpath, unlink } from "node:fs/promises";
-import { basename, isAbsolute, relative, resolve, sep } from "node:path";
+import { mkdir, open, realpath, unlink } from "node:fs/promises";
+import { homedir } from "node:os";
+import { basename, isAbsolute, join, relative, resolve, sep } from "node:path";
 import type {
   AttachmentPort,
   AttachmentUpdate,
@@ -12,10 +13,31 @@ import type {
 } from "../../core/ports.js";
 import { PToolError } from "../../core/tool-error.js";
 
+function hasHiddenComponent(path: string): boolean {
+  return path.split(/[\\/]/).some((part) => part.startsWith("."));
+}
+
 export class PAttachmentService implements AttachmentPort {
+  static fromEnv(env: NodeJS.ProcessEnv = process.env): PAttachmentService {
+    const roots = (env.DISCORD_MCP_FILE_ROOTS ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const downloadDir = env.DISCORD_MCP_DOWNLOAD_DIR || join(homedir(), "Downloads", "discord-mcp");
+    const rawMax = env.DISCORD_MCP_MAX_UPLOAD_BYTES;
+    let maxUploadBytes: number | undefined;
+    if (rawMax !== undefined) {
+      const parsed = Number(rawMax);
+      if (!Number.isInteger(parsed) || parsed <= 0)
+        throw new Error("DISCORD_MCP_MAX_UPLOAD_BYTES must be a positive integer");
+      maxUploadBytes = parsed;
+    }
+    return new PAttachmentService(roots, downloadDir, maxUploadBytes);
+  }
+
   constructor(
     private readonly roots: string[],
-    private readonly downloadDir: string,
+    private readonly downloadDir: string = join(homedir(), "Downloads", "discord-mcp"),
     private readonly maxUploadBytes = 20 * 1024 * 1024,
   ) {}
   async prepare(uploads: readonly FileUpload[]): Promise<Multipart> {
@@ -73,6 +95,46 @@ export class PAttachmentService implements AttachmentPort {
         retryable: false,
         remediation: "Use an absolute upload path",
       });
+    if (this.roots.length === 0) {
+      if (hasHiddenComponent(path))
+        throw new PToolError("Hidden files and folders are not uploaded by default", {
+          category: "policy",
+          retryable: false,
+          remediation: "Set DISCORD_MCP_FILE_ROOTS to a folder that contains the file to allow it",
+        });
+      const target = await realpath(path).catch((error: unknown) => {
+        throw code(error) === "ENOENT"
+          ? new PToolError("Upload file not found", {
+              category: "not_found",
+              retryable: false,
+              remediation: "Check the upload path",
+              cause: error,
+            })
+          : error;
+      });
+      if (hasHiddenComponent(target))
+        throw new PToolError("Hidden files and folders are not uploaded by default", {
+          category: "policy",
+          retryable: false,
+          remediation: "Set DISCORD_MCP_FILE_ROOTS to a folder that contains the file to allow it",
+        });
+      const handle = await open(target, constants.O_RDONLY | constants.O_NOFOLLOW);
+      try {
+        const info = await handle.stat();
+        if (!info.isFile() || info.size > this.maxUploadBytes)
+          throw new PToolError(
+            `Upload must be a regular file of at most ${this.maxUploadBytes} bytes`,
+            {
+              category: "validation",
+              retryable: false,
+              remediation: "Choose a smaller regular file",
+            },
+          );
+        return { name: filename ?? basename(target), data: await handle.readFile() };
+      } finally {
+        await handle.close();
+      }
+    }
     if (this.roots.some((root) => !isAbsolute(root)))
       throw new PToolError("Upload roots must be absolute", {
         category: "validation",
@@ -148,19 +210,13 @@ export class PAttachmentService implements AttachmentPort {
         remediation: "Configure an absolute download directory and valid filename",
       });
     const path = resolve(this.downloadDir, filename);
+    await mkdir(this.downloadDir, { recursive: true });
     const handle = await open(path, "wx").catch((error: unknown) => {
       if (code(error) === "EEXIST")
         throw new PToolError("Download already exists", {
           category: "conflict",
           retryable: false,
           remediation: "Remove or move the existing file first",
-          cause: error,
-        });
-      if (code(error) === "ENOENT")
-        throw new PToolError("Download directory does not exist", {
-          category: "validation",
-          retryable: false,
-          remediation: "Create DISCORD_MCP_DOWNLOAD_DIR or point it at an existing directory",
           cause: error,
         });
       throw error;

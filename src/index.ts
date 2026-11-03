@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { PDiscordRestAdapter } from "./adapters/discord-rest/discord-rest.js";
 import { PAttachmentService } from "./adapters/files/attachment-service.js";
@@ -30,9 +32,11 @@ const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
+const downloadDir =
+  process.env.DISCORD_MCP_DOWNLOAD_DIR || join(homedir(), "Downloads", "discord-mcp");
 const files = new PAttachmentService(
   roots,
-  process.env.DISCORD_MCP_DOWNLOAD_DIR ?? "",
+  downloadDir,
   positiveInt("DISCORD_MCP_MAX_UPLOAD_BYTES"),
 );
 const pipeline = new PToolPipeline(registry, policy, {

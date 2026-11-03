@@ -1,5 +1,14 @@
-import { access, mkdir, mkdtemp, realpath, symlink, truncate, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import {
+  access,
+  mkdir,
+  mkdtemp,
+  readFile,
+  realpath,
+  symlink,
+  truncate,
+  writeFile,
+} from "node:fs/promises";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PAttachmentService } from "../../src/adapters/files/attachment-service.js";
@@ -96,6 +105,45 @@ describe("uploads", () => {
       "Upload file not found",
     );
   });
+  it("allows a file in a temp folder by default", async () => {
+    const file = await new PAttachmentService([], "").upload(join(root, "a.txt"));
+    expect([file.name, file.data.toString()]).toEqual(["a.txt", "hello"]);
+  });
+  it("refuses a hidden file by default", async () => {
+    await writeFile(join(dir, ".secret"), "secret");
+    await rejects(
+      new PAttachmentService([], "").upload(join(dir, ".secret")),
+      "policy",
+      "Hidden files and folders are not uploaded by default",
+    );
+  });
+  it("refuses a file inside a hidden folder by default", async () => {
+    const hiddenDir = join(dir, ".hidden");
+    await mkdir(hiddenDir);
+    await writeFile(join(hiddenDir, "file.txt"), "hidden content");
+    await rejects(
+      new PAttachmentService([], "").upload(join(hiddenDir, "file.txt")),
+      "policy",
+      "Hidden files and folders are not uploaded by default",
+    );
+  });
+  it("refuses a symlink in a normal folder pointing at a hidden target by default", async () => {
+    await writeFile(join(dir, ".target"), "hidden target");
+    const linkPath = join(root, "link-to-hidden");
+    await symlink(join(dir, ".target"), linkPath);
+    await rejects(
+      new PAttachmentService([], "").upload(linkPath),
+      "policy",
+      "Hidden files and folders are not uploaded by default",
+    );
+  });
+  it("allows hidden files when configured roots contain them", async () => {
+    const hiddenDir = join(dir, ".allowed-hidden");
+    await mkdir(hiddenDir);
+    await writeFile(join(hiddenDir, "file.txt"), "inside root");
+    const file = await new PAttachmentService([hiddenDir], "").upload(join(hiddenDir, "file.txt"));
+    expect([file.name, file.data.toString()]).toEqual(["file.txt", "inside root"]);
+  });
 });
 
 describe("downloads", () => {
@@ -112,12 +160,35 @@ describe("downloads", () => {
       "Invalid attachment URL",
     );
   });
-  it("rejects a missing download directory", async () => {
-    await rejects(
-      new PAttachmentService([], join(dir, "nope")).download("https://cdn.discordapp.com/a", "x"),
-      "validation",
-      "Download directory does not exist",
+  it("creates the download directory recursively on first download", async () => {
+    const freshDir = join(dir, "fresh", "nested");
+    const result = await new PAttachmentService([], freshDir).download(
+      "https://cdn.discordapp.com/a",
+      "x.png",
     );
+    expect(result.path).toBe(join(freshDir, "x.png"));
+    expect(await readFile(join(freshDir, "x.png"), "utf8")).toBe("hello");
+  });
+  it("uses and creates the default download dir when unset (pointing homedir at temp)", async () => {
+    const fakeHome = join(dir, "home");
+    await mkdir(fakeHome);
+    const origHome = process.env.HOME;
+    const origUserProfile = process.env.USERPROFILE;
+    try {
+      process.env.HOME = fakeHome;
+      process.env.USERPROFILE = fakeHome;
+      expect(homedir()).toBe(fakeHome);
+      const service = PAttachmentService.fromEnv({});
+      const result = await service.download("https://cdn.discordapp.com/a", "default.png");
+      const expectedDir = join(fakeHome, "Downloads", "discord-mcp");
+      expect(result.path).toBe(join(expectedDir, "default.png"));
+      expect(await readFile(join(expectedDir, "default.png"), "utf8")).toBe("hello");
+    } finally {
+      if (origHome !== undefined) process.env.HOME = origHome;
+      else delete process.env.HOME;
+      if (origUserProfile !== undefined) process.env.USERPROFILE = origUserProfile;
+      else delete process.env.USERPROFILE;
+    }
   });
   it("rejects an unset download directory and path-like names", async () => {
     await rejects(

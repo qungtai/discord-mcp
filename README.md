@@ -42,8 +42,7 @@ Add the server to your MCP client configuration:
       "env": {
         "DISCORD_TOKEN": "your-bot-token",
         "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678",
-        "DISCORD_MCP_TOOLSETS": "core,messages",
-        "DISCORD_MCP_FILE_ROOTS": "/absolute/path/to/allowed/files"
+        "DISCORD_MCP_TOOLSETS": "core,messages"
       }
     }
   }
@@ -200,10 +199,10 @@ Set `DISCORD_TOKEN` and `DISCORD_MCP_ALLOWED_GUILDS` in the inspector environmen
 
 ## Example prompts
 
-To run these prompts, enable the toolset each prompt needs with `DISCORD_MCP_TOOLSETS` (for example, `DISCORD_MCP_TOOLSETS="core,messages,threads,members,events,webhooks"`), and set `DISCORD_MCP_FILE_ROOTS` to allow file uploads.
+To run these prompts, enable the toolset each prompt needs with `DISCORD_MCP_TOOLSETS` (for example, `DISCORD_MCP_TOOLSETS="core,messages,threads,members,events,webhooks"`).
 
 - "Summarize the last 50 messages in channel 123456789012345678." (messages toolset)
-- "Post an announcement to channel 123456789012345678 with release notes and attach `/Users/name/Downloads/banner.png`." (messages toolset; requires `DISCORD_MCP_FILE_ROOTS`)
+- "Post an announcement to channel 123456789012345678 with release notes and attach `/Users/name/Downloads/banner.png`." (messages toolset)
 - "Create a private thread named 'incident-402' in channel 123456789012345678 and add user 987654321098765432." (threads toolset)
 - "List all guild members who currently have role 555666777888999000." (members toolset)
 - "Schedule an upcoming community call event named 'Sprint Planning' starting tomorrow at 18:00 UTC in stage channel 123456789012345678." (events toolset)
@@ -444,19 +443,19 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 
 ## Configuration
 
-| Variable                         | Default         | Description                                                                                                                                                                                                                  |
-| -------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DISCORD_TOKEN`                  | _required_      | Discord bot authentication token.                                                                                                                                                                                            |
-| `DISCORD_MCP_ALLOWED_GUILDS`     | _(empty)_       | Comma-separated list of allowed guild IDs. When set, operations outside these guilds are refused.                                                                                                                            |
-| `DISCORD_MCP_ALLOW_DMS`          | `false`         | Permits direct messages and user-scoped operations alongside an active guild allowlist (`true` or `false`). Any other value stops startup.                                                                                   |
-| `DISCORD_MCP_TOOLSETS`           | `core,messages` | Comma-separated list of enabled toolsets. <!-- config-toolsets:start --> Available: core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites. <!-- config-toolsets:end --> |
-| `DISCORD_MCP_READ_ONLY`          | `false`         | Blocks all mutating actions and allows read-only tools only (`true` or `false`). Any other value stops startup.                                                                                                              |
-| `DISCORD_MCP_APPROVAL`           | `elicitation`   | Confirmation mode for destructive operations (`elicitation` or `none`). Any other value stops startup.                                                                                                                       |
-| `DISCORD_MCP_FILE_ROOTS`         | _(empty)_       | Comma-separated list of absolute local directory paths accessible for uploads. When empty, file uploads are disabled.                                                                                                        |
-| `DISCORD_MCP_DOWNLOAD_DIR`       | _(empty)_       | Absolute directory path where attachment downloads are stored. When empty, `discord_download_attachment` fails with Invalid download location.                                                                               |
-| `DISCORD_MCP_REQUEST_TIMEOUT_MS` | `15000`         | HTTP request timeout in milliseconds for Discord REST API requests.                                                                                                                                                          |
-| `DISCORD_MCP_RATE_LIMIT_WAIT_MS` | `5000`          | Maximum wait duration in milliseconds when encountering a Discord rate limit before aborting.                                                                                                                                |
-| `DISCORD_MCP_MAX_UPLOAD_BYTES`   | `20971520`      | Maximum upload size in bytes (defaults to 20 MiB).                                                                                                                                                                           |
+| Variable                         | Default                   | Description                                                                                                                                                                                                                  |
+| -------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DISCORD_TOKEN`                  | _required_                | Discord bot authentication token.                                                                                                                                                                                            |
+| `DISCORD_MCP_ALLOWED_GUILDS`     | _(empty)_                 | Comma-separated list of allowed guild IDs. When set, operations outside these guilds are refused.                                                                                                                            |
+| `DISCORD_MCP_ALLOW_DMS`          | `false`                   | Permits direct messages and user-scoped operations alongside an active guild allowlist (`true` or `false`). Any other value stops startup.                                                                                   |
+| `DISCORD_MCP_TOOLSETS`           | `core,messages`           | Comma-separated list of enabled toolsets. <!-- config-toolsets:start --> Available: core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites. <!-- config-toolsets:end --> |
+| `DISCORD_MCP_READ_ONLY`          | `false`                   | Blocks all mutating actions and allows read-only tools only (`true` or `false`). Any other value stops startup.                                                                                                              |
+| `DISCORD_MCP_APPROVAL`           | `elicitation`             | Confirmation mode for destructive operations (`elicitation` or `none`). Any other value stops startup.                                                                                                                       |
+| `DISCORD_MCP_FILE_ROOTS`         | _(empty)_                 | Optional comma-separated list of absolute directory paths accessible for uploads. When unset or empty, file access is open by default for any absolute path, except hidden files and directories.                            |
+| `DISCORD_MCP_DOWNLOAD_DIR`       | `~/Downloads/discord-mcp` | Absolute directory path where attachment downloads are stored. Defaults to `~/Downloads/discord-mcp` and is created recursively on first download.                                                                           |
+| `DISCORD_MCP_REQUEST_TIMEOUT_MS` | `15000`                   | HTTP request timeout in milliseconds for Discord REST API requests.                                                                                                                                                          |
+| `DISCORD_MCP_RATE_LIMIT_WAIT_MS` | `5000`                    | Maximum wait duration in milliseconds when encountering a Discord rate limit before aborting.                                                                                                                                |
+| `DISCORD_MCP_MAX_UPLOAD_BYTES`   | `20971520`                | Maximum upload size in bytes (defaults to 20 MiB).                                                                                                                                                                           |
 
 ## Safety
 
@@ -482,8 +481,8 @@ Setting `DISCORD_MCP_READ_ONLY=true` rejects all mutating tools (writes and dest
 
 ### Filesystem boundaries
 
-- Uploads: Tools that attach files can only read from paths located within the directories specified in `DISCORD_MCP_FILE_ROOTS`. Path traversal outside these roots is blocked.
-- Downloads: Attachments downloaded with `discord_download_attachment` are saved inside `DISCORD_MCP_DOWNLOAD_DIR` with SHA-256 integrity verification.
+- Uploads: File access is open by default. When `DISCORD_MCP_FILE_ROOTS` is unset or empty, tools that attach files can read any absolute path except hidden files and directories (paths containing a component that starts with `.`). To restrict uploads, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories. Inside explicit roots, hidden files are permitted. Path traversal outside roots or relative paths are always blocked.
+- Downloads: Attachments downloaded with `discord_download_attachment` are saved inside `DISCORD_MCP_DOWNLOAD_DIR` (defaults to `~/Downloads/discord-mcp`), created recursively on first download, with SHA-256 integrity verification.
 
 ### Credential protection
 

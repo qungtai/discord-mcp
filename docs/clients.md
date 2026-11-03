@@ -239,6 +239,12 @@ Destructive tools ask for confirmation with MCP elicitation (`elicitation/create
 - Codex 0.166.0 was verified on 3 November 2026: with approval mode on-request (`codex -a on-request`) it first asks to allow the MCP tool call and then shows the server approval prompt, and accepting runs the tool end to end; in full-access mode Codex declines the elicitation without asking, so destructive tools return "Approval declined". Use on-request for destructive tools, or set `DISCORD_MCP_APPROVAL=none` if you rely on Codex's own approvals.
 - Other clients: check your client. If it does not support elicitation, set `DISCORD_MCP_APPROVAL=none` and rely on the client tool confirmation.
 
+## File access
+
+Local file access is open by default:
+- Uploads: Any absolute path is accessible by default, except hidden files and directories (paths containing a segment starting with `.`). To restrict access, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories.
+- Downloads: Attachments downloaded with `discord_download_attachment` save to `~/Downloads/discord-mcp` by default. You can change this path by setting `DISCORD_MCP_DOWNLOAD_DIR`. The directory is created automatically on first download.
+
 ## Environment variables
 
 For the full list of configuration variables and their behaviors, see the [Configuration section in README.md](../README.md#configuration).
