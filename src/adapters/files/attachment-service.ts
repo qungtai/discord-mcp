@@ -21,17 +21,26 @@ export function defaultDownloadDir(): string {
   return join(homedir(), "Downloads", "discord-mcp");
 }
 
-const HIDDEN_FILE_ERROR = new PToolError("Hidden files and folders are not uploaded by default", {
-  category: "policy",
-  retryable: false,
-  remediation: "Set DISCORD_MCP_FILE_ROOTS to a folder that contains the file to allow it",
-});
+function isProhibitedSystemPath(path: string): boolean {
+  return ["/proc", "/sys", "/dev"].some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+  );
+}
+
+function hiddenFileError(): PToolError {
+  return new PToolError("Hidden files and folders are not uploaded by default", {
+    category: "policy",
+    retryable: false,
+    remediation: "Set DISCORD_MCP_FILE_ROOTS to a folder that contains the file to allow it",
+  });
+}
 
 export class PAttachmentService implements AttachmentPort {
   constructor(
     private readonly roots: string[],
     private readonly downloadDir: string,
     private readonly maxUploadBytes = 20 * 1024 * 1024,
+    private readonly botToken?: string,
   ) {}
   async prepare(uploads: readonly FileUpload[]): Promise<Multipart> {
     const files = await Promise.all(
@@ -89,7 +98,7 @@ export class PAttachmentService implements AttachmentPort {
         remediation: "Use an absolute upload path",
       });
     if (this.roots.length === 0) {
-      if (hasHiddenComponent(path)) throw HIDDEN_FILE_ERROR;
+      if (hasHiddenComponent(path) || isProhibitedSystemPath(path)) throw hiddenFileError();
       const target = await realpath(path).catch((error: unknown) => {
         throw code(error) === "ENOENT"
           ? new PToolError("Upload file not found", {
@@ -100,7 +109,7 @@ export class PAttachmentService implements AttachmentPort {
             })
           : error;
       });
-      if (hasHiddenComponent(target)) throw HIDDEN_FILE_ERROR;
+      if (hasHiddenComponent(target) || isProhibitedSystemPath(target)) throw hiddenFileError();
       return this.readRegular(target, filename);
     }
     if (this.roots.some((root) => !isAbsolute(root)))
@@ -153,7 +162,14 @@ export class PAttachmentService implements AttachmentPort {
             remediation: "Choose a smaller regular file",
           },
         );
-      return { name: filename ?? basename(target), data: await handle.readFile() };
+      const data = await handle.readFile();
+      if (this.botToken && data.includes(this.botToken))
+        throw new PToolError("File contains the bot token", {
+          category: "policy",
+          retryable: false,
+          remediation: "Remove the bot token from the file before uploading",
+        });
+      return { name: filename ?? basename(target), data };
     } finally {
       await handle.close();
     }

@@ -35,6 +35,7 @@ const files = new PAttachmentService(
   roots,
   downloadDir,
   positiveInt("DISCORD_MCP_MAX_UPLOAD_BYTES"),
+  token,
 );
 const pipeline = new PToolPipeline(registry, policy, {
   credentials: { bot },

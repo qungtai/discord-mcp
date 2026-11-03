@@ -40,9 +40,7 @@ Add the server to your MCP client configuration:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "env": {
-          "DISCORD_TOKEN": "your-bot-token"
-        }
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -484,7 +482,7 @@ Setting `DISCORD_MCP_READ_ONLY=true` rejects all mutating tools (writes and dest
 
 ### Filesystem boundaries
 
-- Uploads: File access is open by default. When `DISCORD_MCP_FILE_ROOTS` is unset or empty, tools that attach files can read any absolute path except hidden files and directories (paths containing a component that starts with `.`). To restrict uploads, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories. Inside explicit roots, hidden files are permitted. Relative paths and `..` segments are always refused. The hidden-file rule is name-based; hardlinks and non-dot-named secrets such as `~/Library/Keychains` are not detected.
+- Uploads: File access is open by default. When `DISCORD_MCP_FILE_ROOTS` is unset or empty, tools that attach files can read any absolute path except hidden files and directories (paths containing a component that starts with `.`) and paths under `/proc`, `/sys`, or `/dev`. To restrict uploads, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories. Inside explicit roots, hidden files are permitted. Relative paths and `..` segments are always refused. The hidden-file rule is name-based; hardlinks and non-dot-named secrets such as `~/Library/Keychains` are not detected. Checks run on the resolved path and the bytes read, and a file changed between check and send is still subject to the token check.
 - Downloads: Attachments downloaded with `discord_download_attachment` are saved inside `DISCORD_MCP_DOWNLOAD_DIR` (defaults to `~/Downloads/discord-mcp`), created recursively on first download, with SHA-256 integrity verification.
 
 ### Credential protection

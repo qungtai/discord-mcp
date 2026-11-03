@@ -198,6 +198,66 @@ describe("uploads", () => {
     const file = await new PAttachmentService([hiddenDir], "").upload(join(hiddenDir, "file.txt"));
     expect([file.name, file.data.toString()]).toEqual(["file.txt", "inside root"]);
   });
+  it("refuses paths under /proc, /sys, or /dev in default mode", async () => {
+    const service = new PAttachmentService([], "");
+    for (const sysPath of ["/proc/version", "/sys/class", "/dev/null"]) {
+      await rejects(
+        service.upload(sysPath),
+        "policy",
+        "Hidden files and folders are not uploaded by default",
+      );
+    }
+  });
+  it("refuses a symlink pointing to /proc, /sys, or /dev in default mode", async () => {
+    const service = new PAttachmentService([], "");
+    const linkPath = join(root, "link-to-dev");
+    await symlink("/dev/null", linkPath);
+    await rejects(
+      service.upload(linkPath),
+      "policy",
+      "Hidden files and folders are not uploaded by default",
+    );
+  });
+  it("refuses an upload whose bytes contain the configured bot token in default and roots modes", async () => {
+    const fakeToken = "secret-token-12345";
+    const tokenFile = join(root, "with-token.txt");
+    await writeFile(tokenFile, `config: DISCORD_TOKEN=${fakeToken}\nother stuff`);
+
+    const defaultService = new PAttachmentService([], "", undefined, fakeToken);
+    await rejects(defaultService.upload(tokenFile), "policy", "File contains the bot token");
+    await expect(defaultService.upload(tokenFile)).rejects.toMatchObject({
+      name: "PToolError",
+      category: "policy",
+      retryable: false,
+      message: "File contains the bot token",
+      remediation: "Remove the bot token from the file before uploading",
+    });
+
+    const rootsService = new PAttachmentService([root], "", undefined, fakeToken);
+    await rejects(rootsService.upload(tokenFile), "policy", "File contains the bot token");
+
+    // Clean file without token succeeds
+    const cleanFile = join(root, "clean.txt");
+    await writeFile(cleanFile, "safe content");
+    const uploaded = await defaultService.upload(cleanFile);
+    expect(uploaded.data.toString()).toBe("safe content");
+  });
+  it("returns distinct error instances from hidden file refusal", async () => {
+    const service = new PAttachmentService([], "");
+    let err1: unknown;
+    let err2: unknown;
+    try {
+      await service.upload(join(dir, ".secret1"));
+    } catch (e) {
+      err1 = e;
+    }
+    try {
+      await service.upload(join(dir, ".secret2"));
+    } catch (e) {
+      err2 = e;
+    }
+    expect(err1).not.toBe(err2);
+  });
 });
 
 describe("downloads", () => {
