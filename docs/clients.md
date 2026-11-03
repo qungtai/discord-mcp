@@ -9,13 +9,13 @@ Pass the bot token through the environment. Never put it in a tool argument.
 Primary (`npx`):
 
 ```sh
-claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -- npx -y @qungtai/discord-mcp
 ```
 
 From source:
 
 ```sh
-claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- node /absolute/path/dist/index.js
+claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -- node /absolute/path/dist/index.js
 ```
 
 Or configure manually in `~/.claude.json`:
@@ -27,8 +27,7 @@ Or configure manually in `~/.claude.json`:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -44,8 +43,7 @@ From-source alternative:
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -58,7 +56,7 @@ Config file path:
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 - Linux: `~/.config/Claude/claude_desktop_config.json`
-
+ 
 Primary (`npx`):
 
 ```json
@@ -68,8 +66,7 @@ Primary (`npx`):
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -85,8 +82,7 @@ From-source alternative:
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -98,7 +94,7 @@ From-source alternative:
 Add with the CLI:
 
 ```sh
-codex mcp add discord --env DISCORD_TOKEN="your-bot-token" --env DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+codex mcp add discord --env DISCORD_TOKEN="your-bot-token" -- npx -y @qungtai/discord-mcp
 ```
 
 Or configure in `~/.codex/config.toml`:
@@ -110,7 +106,6 @@ args = ["-y", "@qungtai/discord-mcp"]
 
 [mcp_servers.discord.env]
 DISCORD_TOKEN = "your-bot-token"
-DISCORD_MCP_ALLOWED_GUILDS = "123456789012345678"
 ```
 
 From-source alternative:
@@ -122,7 +117,6 @@ args = ["/absolute/path/dist/index.js"]
 
 [mcp_servers.discord.env]
 DISCORD_TOKEN = "your-bot-token"
-DISCORD_MCP_ALLOWED_GUILDS = "123456789012345678"
 ```
 
 ## Cursor
@@ -136,8 +130,7 @@ Configure in `.cursor/mcp.json` or Cursor Settings > MCP:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -153,8 +146,7 @@ From-source alternative:
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -173,8 +165,7 @@ Configure in `.vscode/mcp.json`:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "${input:discordToken}",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "${input:discordToken}"
       }
     }
   },
@@ -199,8 +190,7 @@ From-source alternative:
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "${input:discordToken}",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "${input:discordToken}"
       }
     }
   },
@@ -229,7 +219,7 @@ From source:
 npx @modelcontextprotocol/inspector -- node /absolute/path/dist/index.js
 ```
 
-Set `DISCORD_TOKEN` and `DISCORD_MCP_ALLOWED_GUILDS` in the inspector environment panel before connecting.
+Set `DISCORD_TOKEN` in the inspector environment panel before connecting.
 
 ## Approval support in each client
 

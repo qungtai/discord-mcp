@@ -69,13 +69,13 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- Complete required bot permissions declared across operations so 403 error
-  remediation and README invitation bitfields include all permissions needed by
+- Complete bot permissions declared across operations so 403 error
+  remediation and README invitation bitfields include permissions needed by
   optional tool inputs (`AttachFiles`, `EmbedLinks`, `SendPolls`, `SendTTSMessages`,
   `ReadMessageHistory`, `SendMessagesInThreads`, `UseExternalStickers`,
   `MentionEveryone` on `discord_send_message`; `SendMessagesInThreads` on
   `discord_trigger_typing_indicator`; `AttachFiles`, `EmbedLinks` on
-  `discord_edit_message`; `ViewChannel`, `ReadMessageHistory` on reaction deletion tools;
+  `discord_edit_message`; defensive `ViewChannel`, `ReadMessageHistory` on reaction deletion tools;
   `UseExternalEmojis` on `discord_add_my_message_reaction`; `ManageRoles` on
   `discord_update_channel`; `ManageGuild` on `discord_create_channel_invite`;
   `ModerateMembers` on AutoMod rule operations; `SendMessages`, `ViewChannel`,

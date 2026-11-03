@@ -13,7 +13,7 @@ export const sendMessage = defineTool({
   scope: { channel: "channel_id" },
   // AttachFiles: files; EmbedLinks: embeds; SendPolls: polls; SendTTSMessages: tts;
   // ReadMessageHistory: reply; SendMessagesInThreads: thread; UseExternalStickers: sticker_ids;
-  // MentionEveryone: @everyone or @here mentions.
+  // MentionEveryone: only needed to ping @everyone or @here.
   permissions: [
     "ViewChannel",
     "SendMessages",

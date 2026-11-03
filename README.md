@@ -40,15 +40,20 @@ Add the server to your MCP client configuration:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678",
-        "DISCORD_MCP_TOOLSETS": "core,messages",
-        "DISCORD_MCP_FILE_ROOTS": "/absolute/path/to/allowed/files"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
 }
 ```
+
+Recommended: set `DISCORD_MCP_ALLOWED_GUILDS` to your server ID from step 5 so the bot can act only in that server.
+
+```json
+"DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+```
+
+Enable more toolsets with [`DISCORD_MCP_TOOLSETS`](#configuration). Allow uploads from a folder with [`DISCORD_MCP_FILE_ROOTS`](#configuration). Set [`DISCORD_MCP_DOWNLOAD_DIR`](#configuration) for downloads.
 
 ### 3. Client setup
 
@@ -60,7 +65,7 @@ Until the first release, build from source ([Install from source](#install-from-
 Add via the CLI (defaults to local project scope; add `-s user` for all projects):
 
 ```sh
-claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -- npx -y @qungtai/discord-mcp
 ```
 
 Or configure manually in `~/.claude.json`:
@@ -72,8 +77,7 @@ Or configure manually in `~/.claude.json`:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -99,8 +103,7 @@ Add the server block:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -115,7 +118,7 @@ Add the server block:
 Add via the CLI:
 
 ```sh
-codex mcp add discord --env DISCORD_TOKEN="your-bot-token" --env DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+codex mcp add discord --env DISCORD_TOKEN="your-bot-token" -- npx -y @qungtai/discord-mcp
 ```
 
 Or add to `~/.codex/config.toml`:
@@ -127,7 +130,6 @@ args = ["-y", "@qungtai/discord-mcp"]
 
 [mcp_servers.discord.env]
 DISCORD_TOKEN = "your-bot-token"
-DISCORD_MCP_ALLOWED_GUILDS = "123456789012345678"
 ```
 
 </details>
@@ -144,8 +146,7 @@ Add to `.cursor/mcp.json` or configure in Cursor Settings > MCP:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "your-bot-token"
       }
     }
   }
@@ -167,8 +168,7 @@ Configure in `.vscode/mcp.json` with an input variable for the bot token:
       "command": "npx",
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
-        "DISCORD_TOKEN": "${input:discordToken}",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_TOKEN": "${input:discordToken}"
       }
     }
   },
@@ -194,7 +194,7 @@ Run the inspector:
 npx @modelcontextprotocol/inspector -- npx -y @qungtai/discord-mcp
 ```
 
-Set `DISCORD_TOKEN` and `DISCORD_MCP_ALLOWED_GUILDS` in the inspector environment panel before connecting.
+Set `DISCORD_TOKEN` in the inspector environment panel before connecting.
 
 </details>
 
