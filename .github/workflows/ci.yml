@@ -19,6 +19,8 @@ jobs:
       # actions/checkout@v4.4.0
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
 
       # actions/setup-node@v4.4.0
       - name: Setup Node

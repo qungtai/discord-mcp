@@ -8,19 +8,19 @@ describe("server.json registry metadata", () => {
     const serverPath = join(process.cwd(), "server.json");
 
     const pkg = JSON.parse(readFileSync(pkgPath, "utf8")) as {
+      name: string;
       version: string;
       mcpName: string;
     };
     const server = JSON.parse(readFileSync(serverPath, "utf8")) as {
       name: string;
       version: string;
-      packages?: Array<{ version?: string }>;
+      packages?: Array<{ identifier?: string; version?: string }>;
     };
 
     expect(server.name).toBe(pkg.mcpName);
     expect(server.version).toBe(pkg.version);
-    if (server.packages && server.packages.length > 0) {
-      expect(server.packages[0]?.version).toBe(pkg.version);
-    }
+    expect(server.packages?.[0]?.version).toBe(pkg.version);
+    expect(server.packages?.[0]?.identifier).toBe(pkg.name);
   });
 });
