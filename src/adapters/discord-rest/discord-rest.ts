@@ -84,7 +84,7 @@ function toQuery(query: NonNullable<DiscordRequestInit["query"]>): URLSearchPara
 }
 function toToolError(error: unknown, cancelled: boolean): PToolError {
   if (error instanceof RateLimitError) {
-    if (error.retryAfter === 0 && error.timeToReset === 0)
+    if (error.retryAfter <= 0)
       return new PToolError("Discord rate limit exceeded", {
         category: "rate_limited",
         retryable: true,
