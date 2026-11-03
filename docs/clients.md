@@ -98,7 +98,7 @@ From-source alternative:
 Add with the CLI:
 
 ```sh
-codex mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+codex mcp add discord --env DISCORD_TOKEN="your-bot-token" --env DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
 ```
 
 Or configure in `~/.codex/config.toml`:
@@ -220,7 +220,7 @@ From-source alternative:
 Primary (`npx`):
 
 ```sh
-npx @modelcontextprotocol/inspector npx -y @qungtai/discord-mcp
+npx @modelcontextprotocol/inspector -- npx -y @qungtai/discord-mcp
 ```
 
 From source:
@@ -241,16 +241,4 @@ Destructive tools ask for confirmation with MCP elicitation (`elicitation/create
 
 ## Environment variables
 
-| Variable | Default | Description |
-| --- | --- | --- |
-| `DISCORD_TOKEN` | *required* | Discord bot authentication token |
-| `DISCORD_MCP_ALLOWED_GUILDS` | *(empty)* | Comma-separated list of allowed guild (server) IDs. When set, only operations on these guilds are permitted. Non-guild resources that are not DMs are refused. |
-| `DISCORD_MCP_ALLOW_DMS` | `false` | Set to `true` to allow direct messages and user-scoped operations when a guild allowlist is configured. |
-| `DISCORD_MCP_TOOLSETS` | `core,messages` | Comma-separated list of enabled toolsets. Available: core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites. |
-| `DISCORD_MCP_READ_ONLY` | `false` | Set to `true` to block all mutating operations and allow read-only tools only. |
-| `DISCORD_MCP_APPROVAL` | `elicitation` | Approval mechanism for destructive actions. `elicitation` prompts via MCP elicitation; `none` bypasses server-side prompting. |
-| `DISCORD_MCP_FILE_ROOTS` | *(empty)* | Comma-separated absolute filesystem directory paths permitted for file attachments and uploads. |
-| `DISCORD_MCP_DOWNLOAD_DIR` | *(empty)* | Absolute directory path where downloaded attachments are saved. |
-| `DISCORD_MCP_REQUEST_TIMEOUT_MS` | `15000` | HTTP request timeout in milliseconds for Discord API calls. |
-| `DISCORD_MCP_RATE_LIMIT_WAIT_MS` | `5000` | Maximum wait time in milliseconds for Discord rate limits before aborting. |
-| `DISCORD_MCP_MAX_UPLOAD_BYTES` | `20971520` | Maximum upload size in bytes (defaults to 20 MiB). |
+For the full list of configuration variables and their behaviors, see the [Configuration section in README.md](../README.md#configuration).

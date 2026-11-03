@@ -6,12 +6,14 @@
 
 A community Model Context Protocol (MCP) server for the Discord REST API.
 
-- 137 tools across messages, threads, channels, webhooks, guild, roles, members, moderation, events, and invites.
+<!-- summary:start -->
+- 137 tools across core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites.
+- Measured coverage of the Discord API with 141 of 250 operations implemented (see [docs/coverage.md](docs/coverage.md)). The 141 operations map to 137 tools because 4 operations share multi-purpose tool implementations. In docs/coverage.md, 39 operations are live verified and 102 are mock tested.
+<!-- summary:end -->
 - File uploads and downloads with sandboxed directory boundaries and SHA-256 integrity checks.
 - Approval before destructive actions through MCP elicitation.
-- Guild allowlists, read-only mode, and granular toolset selection.
+- Guild allowlists, read-only mode, and toolset selection.
 - Tokens never appear in tool arguments, outputs, or log streams.
-- Measured coverage of the Discord API with 141 of 250 operations implemented (see [docs/coverage.md](docs/coverage.md)).
 
 ## Status
 
@@ -24,7 +26,7 @@ Pre-release, not yet published to npm. Until publication, use the from-source co
 1. Open the [Discord Developer Portal](https://discord.com/developers/applications) and select New Application.
 2. Go to the Bot tab, select Reset Token, and copy the bot token to a secure location.
 3. Under Privileged Gateway Intents, enable Message Content intent (required to read message text) and Server Members intent (required for member listing and search). Do not enable Presence intent; this server uses the REST API and does not connect to the Gateway.
-4. Go to OAuth2 > URL Generator. Select the `bot` scope, then select the permissions your tools need (see the Toolsets section below for per-toolset requirements). Open the generated URL in your browser to invite the bot to your server.
+4. Go to OAuth2 > URL Generator. Select the `bot` scope, then select the permissions your tools need (see the Toolsets section below for per-toolset requirements). The Developer Portal displays permissions with spaces (such as "Send Messages" or "Manage Channels"). If managing roles or members, ensure the bot's highest role in Discord Server Settings > Roles sits above any role it manages. Open the generated URL in your browser to invite the bot to your server.
 5. In your Discord client, open User Settings > Advanced and enable Developer Mode. Right-click your server icon in the sidebar and choose Copy Server ID.
 
 ### 2. Standard configuration
@@ -39,7 +41,9 @@ Add the server to your MCP client configuration:
       "args": ["-y", "@qungtai/discord-mcp"],
       "env": {
         "DISCORD_TOKEN": "your-bot-token",
-        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678",
+        "DISCORD_MCP_TOOLSETS": "core,messages",
+        "DISCORD_MCP_FILE_ROOTS": "/absolute/path/to/allowed/files"
       }
     }
   }
@@ -48,10 +52,12 @@ Add the server to your MCP client configuration:
 
 ### 3. Client setup
 
+Until the first release, replace `npx -y @qungtai/discord-mcp` with `node /absolute/path/to/discord-mcp/dist/index.js`.
+
 <details>
 <summary>Claude Code</summary>
 
-Add via the CLI:
+Add via the CLI (defaults to local project scope; add `-s user` for all projects):
 
 ```sh
 claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
@@ -82,7 +88,7 @@ Or configure manually in `~/.claude.json`:
 Edit the configuration file for your operating system:
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%/Claude/claude_desktop_config.json`
-- Linux: `~/.config/Claude/claude_desktop_config.json`
+- Linux: `~/.config/Claude/claude_desktop_config.json` (unofficial builds)
 
 Add the server block:
 
@@ -109,7 +115,7 @@ Add the server block:
 Add via the CLI:
 
 ```sh
-codex mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+codex mcp add discord --env DISCORD_TOKEN="your-bot-token" --env DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
 ```
 
 Or add to `~/.codex/config.toml`:
@@ -185,7 +191,7 @@ Configure in `.vscode/mcp.json` with an input variable for the bot token:
 Run the inspector:
 
 ```sh
-npx @modelcontextprotocol/inspector npx -y @qungtai/discord-mcp
+npx @modelcontextprotocol/inspector -- npx -y @qungtai/discord-mcp
 ```
 
 Set `DISCORD_TOKEN` and `DISCORD_MCP_ALLOWED_GUILDS` in the inspector environment panel before connecting.
@@ -194,12 +200,14 @@ Set `DISCORD_TOKEN` and `DISCORD_MCP_ALLOWED_GUILDS` in the inspector environmen
 
 ## Example prompts
 
-- "Summarize the last 50 messages in channel 123456789012345678."
-- "Post an announcement to channel 123456789012345678 with release notes and attach `/Users/name/Downloads/banner.png`."
-- "Create a private thread named 'incident-402' in channel 123456789012345678 and add user 987654321098765432."
-- "List all guild members who currently have role 555666777888999000."
-- "Schedule an upcoming community call event named 'Sprint Planning' starting tomorrow at 18:00 UTC in stage channel 123456789012345678."
-- "Send a release notification using webhook 111222333444555666 with the custom username 'Deploy Bot'."
+To run these prompts, enable the toolset each prompt needs with `DISCORD_MCP_TOOLSETS` (for example, `DISCORD_MCP_TOOLSETS="core,messages,threads,members,events,webhooks"`), and set `DISCORD_MCP_FILE_ROOTS` to allow file uploads.
+
+- "Summarize the last 50 messages in channel 123456789012345678." (messages toolset)
+- "Post an announcement to channel 123456789012345678 with release notes and attach `/Users/name/Downloads/banner.png`." (messages toolset; requires `DISCORD_MCP_FILE_ROOTS`)
+- "Create a private thread named 'incident-402' in channel 123456789012345678 and add user 987654321098765432." (threads toolset)
+- "List all guild members who currently have role 555666777888999000." (members toolset)
+- "Schedule an upcoming community call event named 'Sprint Planning' starting tomorrow at 18:00 UTC in stage channel 123456789012345678." (events toolset)
+- "Send a release notification using webhook 111222333444555666 with the custom username 'Deploy Bot'." (webhooks toolset)
 
 ## Toolsets
 
@@ -220,6 +228,9 @@ Set `DISCORD_TOKEN` and `DISCORD_MCP_ALLOWED_GUILDS` in the inspector environmen
 | invites    | No      |    12 | Create, get, delete invites, guild/channel invites, target users      | CreateInstantInvite, ManageChannels, ManageGuild, ManageRoles                                                                    |
 
 Default is `core,messages`. Enable more toolsets with `DISCORD_MCP_TOOLSETS` (comma-separated).
+
+Permissions integer for the default toolsets: `2251799813762048`.
+Permissions integer for all implemented toolsets: `2552371252112631`.
 
 <details>
 <summary>core (6 tools)</summary>
@@ -433,19 +444,19 @@ Default is `core,messages`. Enable more toolsets with `DISCORD_MCP_TOOLSETS` (co
 
 ## Configuration
 
-| Variable                         | Default         | Description                                                                                                                                                      |
-| -------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DISCORD_TOKEN`                  | _required_      | Discord bot authentication token.                                                                                                                                |
-| `DISCORD_MCP_ALLOWED_GUILDS`     | _(empty)_       | Comma-separated list of allowed guild IDs. When set, operations outside these guilds are refused.                                                                |
-| `DISCORD_MCP_ALLOW_DMS`          | `false`         | When true, permits direct messages and user-scoped operations alongside an active guild allowlist.                                                               |
-| `DISCORD_MCP_TOOLSETS`           | `core,messages` | Comma-separated list of enabled toolsets. Available: core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites. |
-| `DISCORD_MCP_READ_ONLY`          | `false`         | When true, blocks all mutating actions and allows read-only tools only.                                                                                          |
-| `DISCORD_MCP_APPROVAL`           | `elicitation`   | Confirmation mode for destructive operations. Options: `elicitation` (prompts via MCP elicitation) or `none` (disables server-side prompting).                   |
-| `DISCORD_MCP_FILE_ROOTS`         | _(empty)_       | Comma-separated list of absolute local directory paths accessible for uploads.                                                                                   |
-| `DISCORD_MCP_DOWNLOAD_DIR`       | _(empty)_       | Absolute directory path where attachment downloads are stored.                                                                                                   |
-| `DISCORD_MCP_REQUEST_TIMEOUT_MS` | `15000`         | HTTP request timeout in milliseconds for Discord REST API requests.                                                                                              |
-| `DISCORD_MCP_RATE_LIMIT_WAIT_MS` | `5000`          | Maximum wait duration in milliseconds when encountering a Discord rate limit before aborting.                                                                    |
-| `DISCORD_MCP_MAX_UPLOAD_BYTES`   | `20971520`      | Maximum upload size in bytes (defaults to 20 MiB).                                                                                                               |
+| Variable                         | Default         | Description                                                                                                                                                                                                                                                                                                         |
+| -------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DISCORD_TOKEN`                  | _required_      | Discord bot authentication token.                                                                                                                                                                                                                                                                                   |
+| `DISCORD_MCP_ALLOWED_GUILDS`     | _(empty)_       | Comma-separated list of allowed guild IDs. When set, operations outside these guilds are refused.                                                                                                                                                                                                                   |
+| `DISCORD_MCP_ALLOW_DMS`          | `false`         | Permits direct messages and user-scoped operations alongside an active guild allowlist (`true` or `false`). Any other value stops startup.                                                                                                                                                                          |
+| `DISCORD_MCP_TOOLSETS`           | `core,messages` | Comma-separated list of enabled toolsets. <!-- config-toolsets:start --> Available: core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites, expressions, voice, commands, monetization, oauth_user, social_sdk, utility, realtime. <!-- config-toolsets:end --> |
+| `DISCORD_MCP_READ_ONLY`          | `false`         | Blocks all mutating actions and allows read-only tools only (`true` or `false`). Any other value stops startup.                                                                                                                                                                                                     |
+| `DISCORD_MCP_APPROVAL`           | `elicitation`   | Confirmation mode for destructive operations (`elicitation` or `none`). Any other value stops startup.                                                                                                                                                                                                              |
+| `DISCORD_MCP_FILE_ROOTS`         | _(empty)_       | Comma-separated list of absolute local directory paths accessible for uploads. When empty, file uploads are disabled.                                                                                                                                                                                               |
+| `DISCORD_MCP_DOWNLOAD_DIR`       | _(empty)_       | Absolute directory path where attachment downloads are stored. When empty, `discord_download_attachment` is disabled.                                                                                                                                                                                               |
+| `DISCORD_MCP_REQUEST_TIMEOUT_MS` | `15000`         | HTTP request timeout in milliseconds for Discord REST API requests.                                                                                                                                                                                                                                                 |
+| `DISCORD_MCP_RATE_LIMIT_WAIT_MS` | `5000`          | Maximum wait duration in milliseconds when encountering a Discord rate limit before aborting.                                                                                                                                                                                                                       |
+| `DISCORD_MCP_MAX_UPLOAD_BYTES`   | `20971520`      | Maximum upload size in bytes (defaults to 20 MiB).                                                                                                                                                                                                                                                                  |
 
 ## Safety
 
@@ -454,20 +465,20 @@ Default is `core,messages`. Enable more toolsets with `DISCORD_MCP_TOOLSETS` (co
 - `DISCORD_MCP_ALLOWED_GUILDS`: Limits all bot operations to specific guild IDs. Any operation targeting a guild not on the allowlist is rejected.
 - Non-guild resources that are not DMs (such as application-level webhooks and friend invites) are refused when a guild allowlist is active, regardless of `DISCORD_MCP_ALLOW_DMS`.
 - `discord_list_my_guilds` returns all allowed guilds in one response and rejects pagination parameters (`before`, `after`, `limit`) when an allowlist is configured.
-- A guild allowlist never implies DM access. Direct messages and user-scoped operations require `DISCORD_MCP_ALLOW_DMS=true`.
+- With a guild allowlist, direct messages and user-scoped operations require `DISCORD_MCP_ALLOW_DMS=true`.
 
 ### Approval through elicitation
 
-Destructive operations (such as deleting messages, banning members, or pruning guild members) require confirmation using MCP elicitation (`elicitation/create`).
+Destructive operations (such as deleting messages, banning members, or pruning guild members) require confirmation using MCP elicitation (`elicitation/create`). The server requires the client to advertise `elicitation.form`. Only Claude Code and Codex were verified. Claude Desktop, Cursor, and VS Code are untested.
 
 - Claude Code displays the elicitation dialog and proceeds upon user approval.
 - Codex in on-request approval mode (`codex -a on-request`) displays the confirmation prompt. In full-access mode, Codex declines elicitation requests automatically and the tool returns "Approval declined".
-- When using clients without MCP elicitation support, set `DISCORD_MCP_APPROVAL=none` to bypass server-side elicitation and rely on your client's native tool execution confirmations.
-- When `DISCORD_MCP_APPROVAL=none` is set, server-side approval for destructive tools is completely disabled. The server outputs a warning notice to stderr at startup.
+- When using clients without MCP elicitation support, set `DISCORD_MCP_APPROVAL=none` to bypass server-side elicitation and rely on your client's native tool execution confirmations. Without elicitation, destructive tools are refused with a policy error naming `DISCORD_MCP_APPROVAL=none`.
+- When `DISCORD_MCP_APPROVAL=none` is set, server-side approval for destructive tools is disabled. The server outputs a warning notice to stderr at startup.
 
 ### Read-only mode
 
-Setting `DISCORD_MCP_READ_ONLY=true` rejects all mutating tools (writes and destructive actions) at the pipeline level, ensuring only read operations can execute.
+Setting `DISCORD_MCP_READ_ONLY=true` rejects all mutating tools (writes and destructive actions) at the pipeline level.
 
 ### Filesystem boundaries
 
@@ -482,9 +493,14 @@ Setting `DISCORD_MCP_READ_ONLY=true` rejects all mutating tools (writes and dest
 
 ### Install from source
 
+Prerequisites: Node >= 22.
+
 Clone the repository and install dependencies:
 
 ```sh
+git clone https://github.com/qungtai/discord-mcp.git
+cd discord-mcp
+corepack enable
 pnpm install --frozen-lockfile
 pnpm build
 ```
@@ -497,7 +513,7 @@ DISCORD_TOKEN="your-bot-token" node dist/index.js
 
 ### Client configuration for local builds
 
-Point your MCP client configuration at `dist/index.js`:
+Get the absolute path to `dist/index.js` by running `pwd` inside the cloned repository (for example, `/Users/name/discord-mcp/dist/index.js`). Point your MCP client configuration at `dist/index.js`:
 
 ```json
 {
@@ -516,10 +532,10 @@ Point your MCP client configuration at `dist/index.js`:
 
 ### Verification
 
-Run the full verification suite:
+Run the full verification suite defined in [AGENTS.md](AGENTS.md):
 
 ```sh
-pnpm install --frozen-lockfile && pnpm biome check --write . && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm tools:manifest && pnpm docs:tools && pnpm coverage:check
+pnpm install --frozen-lockfile && pnpm biome check --write . && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm tools:manifest && pnpm docs:tools && pnpm coverage:sync && pnpm coverage:report && pnpm coverage:check
 ```
 
 For contribution guidelines and security disclosure policies, see [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
