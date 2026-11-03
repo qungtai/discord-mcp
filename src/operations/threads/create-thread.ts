@@ -11,7 +11,14 @@ export const createThread = defineTool({
   operationIds: ["create_thread"],
   toolset: "threads",
   scope: { channel: "channel_id" },
-  permissions: ["CreatePublicThreads", "CreatePrivateThreads"],
+  // SendMessages, ViewChannel, and EmbedLinks are required when posting in forum or media channels.
+  permissions: [
+    "CreatePublicThreads",
+    "CreatePrivateThreads",
+    "SendMessages",
+    "ViewChannel",
+    "EmbedLinks",
+  ],
   effect: "write",
   idempotent: false,
   input: z.object({

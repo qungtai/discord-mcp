@@ -112,7 +112,7 @@ it("maps a 403 error to permission with ManageGuild", async () => {
     category: "permission",
     status: 403,
     message: "Discord rejected the request (HTTP 403): Missing Permissions",
-    remediation: "Check the bot permissions; this tool needs ManageGuild",
+    remediation: "Check the bot permissions; this tool needs ManageGuild, ManageRoles",
   });
 });
 

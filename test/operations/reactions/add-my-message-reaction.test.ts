@@ -83,7 +83,7 @@ it("maps 403 to permission error with ViewChannel, ReadMessageHistory and AddRea
     status: 403,
     discord_code: 50013,
     remediation:
-      "Check the bot permissions; this tool needs ViewChannel, ReadMessageHistory, AddReactions",
+      "Check the bot permissions; this tool needs ViewChannel, ReadMessageHistory, AddReactions, UseExternalEmojis",
   });
 });
 

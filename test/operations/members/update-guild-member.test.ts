@@ -211,7 +211,7 @@ it("handles 403 missing permissions error", async () => {
     status: 403,
     discord_code: 50013,
     remediation:
-      "Check the bot permissions; this tool needs ManageNicknames, ManageRoles, MuteMembers, DeafenMembers, MoveMembers, ModerateMembers",
+      "Check the bot permissions; this tool needs ManageNicknames, ManageRoles, MuteMembers, DeafenMembers, MoveMembers, ModerateMembers, Connect",
   });
 });
 

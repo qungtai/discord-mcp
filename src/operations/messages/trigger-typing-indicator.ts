@@ -9,7 +9,8 @@ export const triggerTypingIndicator = defineTool({
   operationIds: ["trigger_typing_indicator"],
   toolset: "messages",
   scope: { channel: "channel_id" },
-  permissions: ["ViewChannel", "SendMessages"],
+  // SendMessagesInThreads is required when triggering typing in a thread channel.
+  permissions: ["ViewChannel", "SendMessages", "SendMessagesInThreads"],
   effect: "write",
   idempotent: false,
   output: z.object({

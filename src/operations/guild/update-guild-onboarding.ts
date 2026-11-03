@@ -34,7 +34,8 @@ export const updateGuildOnboarding = defineTool({
     guild: "guild_id",
     channel: "default_channel_ids",
   },
-  permissions: ["ManageGuild"],
+  // ManageRoles is required when updating onboarding prompts and roles.
+  permissions: ["ManageGuild", "ManageRoles"],
   effect: "destructive",
   idempotent: true,
   input: z.object({

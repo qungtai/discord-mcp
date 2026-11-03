@@ -163,7 +163,7 @@ it("maps 403 to permission error with ManageGuild remediation and literal messag
     category: "permission",
     status: 403,
     message: "Discord rejected the request (HTTP 403): Missing Permissions",
-    remediation: "Check the bot permissions; this tool needs ManageGuild",
+    remediation: "Check the bot permissions; this tool needs ManageGuild, ModerateMembers",
   });
 });
 
