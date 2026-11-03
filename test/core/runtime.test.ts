@@ -9,7 +9,12 @@ import { approvalNotice, PPolicyEngine } from "../../src/core/policy.js";
 import type { DiscordRequest } from "../../src/core/ports.js";
 import { createScopeResolver } from "../../src/core/scope.js";
 import { redact } from "../../src/core/tool-error.js";
-import { defineTool, PToolRegistry, type ToolDescriptor } from "../../src/core/tool-registry.js";
+import {
+  defineTool,
+  PToolRegistry,
+  type ToolDescriptor,
+  type Toolset,
+} from "../../src/core/tool-registry.js";
 import { errorOf, harness, json, MESSAGE } from "../support/harness.js";
 
 const probe = defineTool({
@@ -155,6 +160,15 @@ describe("policy configuration", () => {
     expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_TOOLSETS: value })).toThrow(
       "Invalid DISCORD_MCP_TOOLSETS",
     );
+  });
+  it("fails when DISCORD_MCP_TOOLSETS names a toolset with no registered tools", () => {
+    const registered = new Set<Toolset>(["core", "messages"]);
+    expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_TOOLSETS: "core,voice" }, registered)).toThrow(
+      "Toolset voice has no tools yet",
+    );
+    expect(() =>
+      PPolicyEngine.fromEnv({ DISCORD_MCP_TOOLSETS: "core,invalid" }, registered),
+    ).toThrow("Invalid DISCORD_MCP_TOOLSETS");
   });
 });
 

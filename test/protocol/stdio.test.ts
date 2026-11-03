@@ -112,3 +112,71 @@ it("refuses uploading a file that contains the bot token with a policy error", a
     rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+it("exits with status 1 and writes single stderr line without stack trace when DISCORD_TOKEN is missing", async () => {
+  const child = spawn(process.execPath, ["dist/index.js"], {
+    env: { PATH: process.env.PATH },
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+
+  const stderrChunks: string[] = [];
+  child.stderr.on("data", (chunk: Buffer) => {
+    stderrChunks.push(chunk.toString());
+  });
+
+  const exitCode = await new Promise<number | null>((resolve) => {
+    child.on("exit", (code) => resolve(code));
+  });
+
+  expect(exitCode).toBe(1);
+  const stderrOutput = stderrChunks.join("");
+  expect(stderrOutput).toBe("DISCORD_TOKEN is required\n");
+});
+
+it("fails startup when DISCORD_MCP_TOOLSETS includes a toolset without tools", async () => {
+  const child = spawn(process.execPath, ["dist/index.js"], {
+    env: {
+      PATH: process.env.PATH,
+      DISCORD_TOKEN: "dummy-token",
+      DISCORD_MCP_TOOLSETS: "core,voice",
+    },
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+
+  const stderrChunks: string[] = [];
+  child.stderr.on("data", (chunk: Buffer) => {
+    stderrChunks.push(chunk.toString());
+  });
+
+  const exitCode = await new Promise<number | null>((resolve) => {
+    child.on("exit", (code) => resolve(code));
+  });
+
+  expect(exitCode).not.toBe(0);
+  expect(stderrChunks.join("")).toContain("Toolset voice has no tools yet");
+});
+
+it("fails startup when DISCORD_MCP_MAX_DOWNLOAD_BYTES is invalid", async () => {
+  const child = spawn(process.execPath, ["dist/index.js"], {
+    env: {
+      PATH: process.env.PATH,
+      DISCORD_TOKEN: "dummy-token",
+      DISCORD_MCP_MAX_DOWNLOAD_BYTES: "0",
+    },
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+
+  const stderrChunks: string[] = [];
+  child.stderr.on("data", (chunk: Buffer) => {
+    stderrChunks.push(chunk.toString());
+  });
+
+  const exitCode = await new Promise<number | null>((resolve) => {
+    child.on("exit", (code) => resolve(code));
+  });
+
+  expect(exitCode).not.toBe(0);
+  expect(stderrChunks.join("")).toContain(
+    "DISCORD_MCP_MAX_DOWNLOAD_BYTES must be a positive integer",
+  );
+});
