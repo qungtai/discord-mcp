@@ -103,6 +103,14 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
     csv: CSV_CONTENT,
   });
   expect(allowed.makeRequest).toHaveBeenCalledTimes(2);
+  expect(allowed.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/vipinvite",
+  });
+  expect(allowed.request(1)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/vipinvite/target-users",
+  });
 
   const denied = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
@@ -117,4 +125,8 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
     message: "Guild is not allowed",
   });
   expect(denied.makeRequest).toHaveBeenCalledTimes(1);
+  expect(denied.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/vipinvite",
+  });
 });

@@ -1,7 +1,6 @@
 import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { fileUpload } from "../schemas.js";
 import { inviteCode } from "./schemas.js";
 
 export const setInviteTargetUsers = defineTool({
@@ -15,7 +14,10 @@ export const setInviteTargetUsers = defineTool({
   idempotent: true,
   input: z.object({
     code: inviteCode,
-    file: fileUpload,
+    file: z.strictObject({
+      path: z.string(),
+      filename: z.string().optional(),
+    }),
   }),
   output: z.object({
     updated: z.literal(true),
@@ -23,10 +25,16 @@ export const setInviteTargetUsers = defineTool({
   }),
   execute: async ({ code, file }, { discord, files }) => {
     const prepared = await files.prepare([file]);
+    const fileWithKey = prepared.files.map((f) => ({
+      name: f.name,
+      data: f.data,
+      contentType: f.contentType,
+      key: "target_users_file",
+    }));
     await discord<void>({
       method: "PUT",
       route: Routes.inviteTargetUsers(encodeURIComponent(code)),
-      files: prepared.files,
+      files: fileWithKey,
     });
     return {
       updated: true as const,

@@ -54,6 +54,23 @@ it("rejects an invalid code with dot segments", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
+it("rejects a non-snowflake user_id", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["invites"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_add_invite_target_user",
+    arguments: {
+      code: "userinvite",
+      user_id: "not-a-snowflake",
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
 it("maps 403 to permission with ManageGuild requirement", async () => {
   const { client } = await harness({
     policy: new PPolicyEngine([], ["invites"], false),
@@ -95,9 +112,8 @@ it("maps 404 to not_found", async () => {
 it("succeeds when invite resolves to an allowed guild and denies when not allowed", async () => {
   const allowed = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
-    makeRequest: async (url) => {
-      const u = String(url);
-      if (u.includes("/target-users/123456789012345678")) return empty204();
+    makeRequest: async (_url, init) => {
+      if (init?.method === "PUT") return empty204();
       return json({ code: "userinvite", guild_id: "500" });
     },
   });
@@ -114,6 +130,14 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
     user_id: "123456789012345678",
   });
   expect(allowed.makeRequest).toHaveBeenCalledTimes(2);
+  expect(allowed.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/userinvite",
+  });
+  expect(allowed.request(1)).toMatchObject({
+    method: "PUT",
+    url: "https://discord.com/api/v10/invites/userinvite/target-users/123456789012345678",
+  });
 
   const denied = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
@@ -131,4 +155,8 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
     message: "Guild is not allowed",
   });
   expect(denied.makeRequest).toHaveBeenCalledTimes(1);
+  expect(denied.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/userinvite",
+  });
 });

@@ -52,6 +52,23 @@ it("rejects an invalid code with dot segments", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
+it("rejects reason longer than 512 characters", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["invites"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_delete_invite",
+    arguments: {
+      code: "revokeme",
+      reason: "a".repeat(513),
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
 it("maps 403 to permission with ManageChannels, ManageGuild requirement", async () => {
   const { client } = await harness({
     policy: new PPolicyEngine([], ["invites"], false),
@@ -87,7 +104,12 @@ it("maps 404 to not_found", async () => {
 it("succeeds when invite resolves to an allowed guild and denies when not allowed", async () => {
   const allowed = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
-    makeRequest: async () => json(DELETED_INVITE),
+    makeRequest: async (_url, init) => {
+      if (init?.method === "DELETE") {
+        return json(DELETED_INVITE);
+      }
+      return json({ code: "revokeme", guild_id: "500" });
+    },
   });
   const successResult = await allowed.client.callTool({
     name: "discord_delete_invite",
@@ -96,7 +118,15 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
   expect(successResult.structuredContent).toEqual({
     invite: DELETED_INVITE,
   });
-  expect(allowed.makeRequest).toHaveBeenCalled();
+  expect(allowed.makeRequest).toHaveBeenCalledTimes(2);
+  expect(allowed.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/revokeme",
+  });
+  expect(allowed.request(1)).toMatchObject({
+    method: "DELETE",
+    url: "https://discord.com/api/v10/invites/revokeme",
+  });
 
   const denied = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
@@ -109,5 +139,10 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
   expect(errorOf(deniedResult)).toMatchObject({
     category: "policy",
     message: "Guild is not allowed",
+  });
+  expect(denied.makeRequest).toHaveBeenCalledTimes(1);
+  expect(denied.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/revokeme",
   });
 });

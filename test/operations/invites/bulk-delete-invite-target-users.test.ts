@@ -57,6 +57,40 @@ it("rejects an empty user_ids array", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
+it("rejects user_ids array exceeding 1000 items", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["invites"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_bulk_delete_invite_target_users",
+    arguments: {
+      code: "bulkcode",
+      user_ids: Array.from({ length: 1001 }, (_, i) => String(i + 1)),
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it("rejects non-snowflake entry in user_ids", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["invites"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_bulk_delete_invite_target_users",
+    arguments: {
+      code: "bulkcode",
+      user_ids: ["invalid-id"],
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
 it("maps 403 to permission with ManageGuild requirement", async () => {
   const { client } = await harness({
     policy: new PPolicyEngine([], ["invites"], false),
@@ -98,9 +132,8 @@ it("maps 404 to not_found", async () => {
 it("succeeds when invite resolves to an allowed guild and denies when not allowed", async () => {
   const allowed = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
-    makeRequest: async (url) => {
-      const u = String(url);
-      if (u.endsWith("/bulk-delete")) return empty204();
+    makeRequest: async (_url, init) => {
+      if (init?.method === "POST") return empty204();
       return json({ code: "bulkcode", guild_id: "500" });
     },
   });
@@ -117,6 +150,14 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
     count: 1,
   });
   expect(allowed.makeRequest).toHaveBeenCalledTimes(2);
+  expect(allowed.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/bulkcode",
+  });
+  expect(allowed.request(1)).toMatchObject({
+    method: "POST",
+    url: "https://discord.com/api/v10/invites/bulkcode/target-users/bulk-delete",
+  });
 
   const denied = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
@@ -134,4 +175,8 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
     message: "Guild is not allowed",
   });
   expect(denied.makeRequest).toHaveBeenCalledTimes(1);
+  expect(denied.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/bulkcode",
+  });
 });

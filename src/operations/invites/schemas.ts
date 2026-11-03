@@ -3,7 +3,6 @@ import { channel, resource, snowflake, user } from "../schemas.js";
 
 export const inviteCode = z
   .string()
-  .min(1)
   .regex(/^[\w-]+$/, "Expected an invite code without path segments");
 
 export const invite = resource(

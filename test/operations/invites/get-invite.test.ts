@@ -28,8 +28,9 @@ it("resolves an invite by code with literal method, route and query", async () =
     arguments: {
       code: "testcode",
       with_counts: true,
-      with_expiration: true,
       guild_scheduled_event_id: "777",
+      target_channel_id: "100",
+      target_message_id: "200",
     },
   });
   expect(result.structuredContent).toEqual({
@@ -38,7 +39,7 @@ it("resolves an invite by code with literal method, route and query", async () =
   const req = request();
   expect([req.method, req.url]).toEqual([
     "GET",
-    "https://discord.com/api/v10/invites/testcode?with_counts=true&with_expiration=true&guild_scheduled_event_id=777",
+    "https://discord.com/api/v10/invites/testcode?with_counts=true&guild_scheduled_event_id=777&target_channel_id=100&target_message_id=200",
   ]);
 });
 
@@ -74,13 +75,7 @@ it("maps 404 to not_found", async () => {
 it("succeeds when invite resolves to an allowed guild and denies when not allowed", async () => {
   const allowed = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
-    makeRequest: async (url) => {
-      const u = String(url);
-      if (u.includes("/invites/testcode")) {
-        return json(INVITE);
-      }
-      return json(INVITE);
-    },
+    respond: () => INVITE,
   });
   const successResult = await allowed.client.callTool({
     name: "discord_get_invite",
@@ -89,8 +84,15 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
   expect(successResult.structuredContent).toEqual({
     invite: INVITE,
   });
-  // Scope resolution caches or queries the invite
-  expect(allowed.makeRequest).toHaveBeenCalled();
+  expect(allowed.makeRequest).toHaveBeenCalledTimes(2);
+  expect(allowed.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/testcode",
+  });
+  expect(allowed.request(1)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/testcode",
+  });
 
   const denied = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
@@ -101,6 +103,35 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
     arguments: { code: "testcode" },
   });
   expect(errorOf(deniedResult)).toMatchObject({
+    category: "policy",
+    message: "Guild is not allowed",
+  });
+  expect(denied.makeRequest).toHaveBeenCalledTimes(1);
+  expect(denied.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/testcode",
+  });
+});
+
+it("denies when target_channel_id belongs to another guild", async () => {
+  const clientHarness = await harness({
+    policy: new PPolicyEngine(["500"], ["invites"], false),
+    makeRequest: async (url) => {
+      const u = String(url);
+      if (u.includes("/channels/999")) {
+        return json({ id: "999", guild_id: "777" });
+      }
+      return json(INVITE);
+    },
+  });
+  const result = await clientHarness.client.callTool({
+    name: "discord_get_invite",
+    arguments: {
+      code: "testcode",
+      target_channel_id: "999",
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
     category: "policy",
     message: "Guild is not allowed",
   });

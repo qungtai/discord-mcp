@@ -37,7 +37,6 @@ it("updates invite target users via multipart upload", async () => {
       code: "csvinvite",
       file: {
         path: join(dir, "root", "users.csv"),
-        content_type: "text/csv",
       },
     },
   });
@@ -51,8 +50,11 @@ it("updates invite target users via multipart upload", async () => {
     "https://discord.com/api/v10/invites/csvinvite/target-users",
   ]);
   const form = req.body as FormData;
-  const part = form.get("files[0]") as Blob;
-  expect([await part.text(), part.type]).toEqual(["123456789\n987654321\n", "text/csv"]);
+  expect(form.get("files[0]")).toBeNull();
+  const part = form.get("target_users_file") as File;
+  expect(part).not.toBeNull();
+  expect(part.name).toBe("users.csv");
+  expect(await part.text()).toEqual("123456789\n987654321\n");
 });
 
 it("rejects an invalid code with dot segments", async () => {
@@ -68,6 +70,26 @@ it("rejects an invalid code with dot segments", async () => {
   });
   expect(errorOf(result)).toMatchObject({
     category: "validation",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it("refuses file path outside file roots", async () => {
+  const dir = await tempDir();
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["invites"], false),
+    files: new PAttachmentService([join(dir, "root")], ""),
+  });
+  const result = await client.callTool({
+    name: "discord_set_invite_target_users",
+    arguments: {
+      code: "csvinvite",
+      file: { path: "/etc/passwd" },
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "policy",
+    retryable: false,
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
@@ -137,6 +159,14 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
     code: "csvinvite",
   });
   expect(allowed.makeRequest).toHaveBeenCalledTimes(2);
+  expect(allowed.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/csvinvite",
+  });
+  expect(allowed.request(1)).toMatchObject({
+    method: "PUT",
+    url: "https://discord.com/api/v10/invites/csvinvite/target-users",
+  });
 
   const denied = await harness({
     policy: new PPolicyEngine(["500"], ["invites"], false),
@@ -155,4 +185,8 @@ it("succeeds when invite resolves to an allowed guild and denies when not allowe
     message: "Guild is not allowed",
   });
   expect(denied.makeRequest).toHaveBeenCalledTimes(1);
+  expect(denied.request(0)).toMatchObject({
+    method: "GET",
+    url: "https://discord.com/api/v10/invites/csvinvite",
+  });
 });
