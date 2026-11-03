@@ -170,3 +170,8 @@ export function searchNextOffset(
   const hasMore = page.has_more ?? (page.total_results ?? 0) > current + returned;
   return hasMore ? current + returned : null;
 }
+
+export const sanitizeWebhook = <T extends object>(raw: T): Omit<T, "token" | "url"> => {
+  const { token: _token, url: _url, ...rest } = raw as Record<string, unknown>;
+  return rest as Omit<T, "token" | "url">;
+};

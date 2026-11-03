@@ -2,7 +2,7 @@ import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import type { DiscordRequest } from "../../core/ports.js";
 import { PToolError } from "../../core/tool-error.js";
-import { resource, snowflake, user } from "../schemas.js";
+import { resource, sanitizeWebhook, snowflake, user } from "../schemas.js";
 
 export const webhook = resource(
   z.looseObject({
@@ -19,10 +19,7 @@ export const webhook = resource(
   }),
 );
 
-export const sanitizeWebhook = <T extends object>(raw: T): Omit<T, "token" | "url"> => {
-  const { token: _token, url: _url, ...rest } = raw as Record<string, unknown>;
-  return rest as Omit<T, "token" | "url">;
-};
+export { sanitizeWebhook };
 
 export const resolveWebhookToken = async (
   webhookId: string,
