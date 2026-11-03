@@ -1,5 +1,7 @@
 import { execFileSync, spawn } from "node:child_process";
-import { rmSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { beforeAll, expect, it } from "vitest";
 
@@ -49,4 +51,64 @@ it("writes only JSON-RPC messages to stdout", async () => {
     category: "validation",
     tool: "discord_get_message",
   });
+});
+
+it("refuses uploading a file that contains the bot token with a policy error", async () => {
+  const dummyToken = "dummy-token";
+  const tempDir = mkdtempSync(join(tmpdir(), "stdio-token-test-"));
+  const tempFile = join(tempDir, "token-leak.txt");
+  writeFileSync(tempFile, `some preamble ${dummyToken} postamble`);
+
+  const child = spawn(process.execPath, ["dist/index.js"], {
+    env: { PATH: process.env.PATH, DISCORD_TOKEN: dummyToken },
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+
+  try {
+    const lines: string[] = [];
+    const listed = new Promise<void>((resolve) => {
+      createInterface({ input: child.stdout }).on("line", (line) => {
+        lines.push(line);
+        if (line.includes('"id":2')) resolve();
+      });
+    });
+    const send = (message: object) =>
+      child.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", ...message })}\n`);
+    send({
+      id: 1,
+      method: "initialize",
+      params: {
+        protocolVersion: "2025-11-25",
+        capabilities: {},
+        clientInfo: { name: "t", version: "1" },
+      },
+    });
+    send({ method: "notifications/initialized" });
+    send({
+      id: 2,
+      method: "tools/call",
+      params: {
+        name: "discord_send_message",
+        arguments: {
+          channel_id: "123456789012345678",
+          content: "hello",
+          files: [{ path: tempFile }],
+        },
+      },
+    });
+    await listed;
+
+    const messages = lines.map((line) => JSON.parse(line));
+    const callResult = messages.find((m) => m.id === 2);
+    expect(callResult.result.isError).toBe(true);
+    const errorBody = JSON.parse(callResult.result.content[0].text).error;
+    expect(errorBody).toMatchObject({
+      category: "policy",
+      message: "File contains the bot token",
+      tool: "discord_send_message",
+    });
+  } finally {
+    child.kill();
+    rmSync(tempDir, { recursive: true, force: true });
+  }
 });

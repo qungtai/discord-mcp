@@ -5,7 +5,7 @@ import { inviteCode } from "./schemas.js";
 
 export const setInviteTargetUsers = defineTool({
   name: "discord_set_invite_target_users",
-  description: "Set the target users for an invite using a CSV file from sandboxed file roots.",
+  description: "Set the target users for an invite using a CSV file.",
   operationIds: ["update_invite_target_users"],
   toolset: "invites",
   scope: { invite: "code" },
