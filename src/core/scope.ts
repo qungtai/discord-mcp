@@ -40,11 +40,14 @@ export function createScopeResolver(): ScopeResolver {
   return async (ids, discord) => {
     // A message is checked by the channel in its route, so it needs a channel next to it.
     if (ids.message?.length && !ids.channel?.length) throw unchecked("message");
-    const locations = await Promise.all(
-      (Object.entries(ids) as [ScopeKind, string[]][])
-        .filter(([kind]) => kind !== "guild" && kind !== "message")
-        .flatMap(([kind, values]) => [...new Set(values)].map((id) => locate(kind, id, discord))),
-    );
+    const userLocations: Location[] = (ids.user ?? []).map(() => ({ guild: null }));
+    const locations = (
+      await Promise.all(
+        (Object.entries(ids) as [ScopeKind, string[]][])
+          .filter(([kind]) => kind !== "guild" && kind !== "message" && kind !== "user")
+          .flatMap(([kind, values]) => [...new Set(values)].map((id) => locate(kind, id, discord))),
+      )
+    ).concat(userLocations);
     const guilds = locations.map((l) => l.guild);
     return {
       guildIds: [...new Set([...(ids.guild ?? []), ...guilds.filter((g) => g !== null)])],

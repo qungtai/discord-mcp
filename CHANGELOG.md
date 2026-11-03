@@ -13,6 +13,12 @@ follows [Semantic Versioning](https://semver.org/).
 - Webhooks toolset (10 tools): channel/guild webhook listing, creation, retrieval,
   modification, deletion, webhook execution with multipart attachment support,
   and webhook message retrieval, editing, and deletion.
+- Core and channels user/DM tools: `discord_get_my_user`, `discord_update_my_user`,
+  `discord_get_user`, `discord_list_my_guilds`, `discord_leave_guild`,
+  `discord_list_my_connections` and `discord_create_dm`.
+- DM policy switch (`DISCORD_MCP_ALLOW_DMS`, default `false`): a guild allowlist
+  never implies DM access; direct messages and user-scoped operations require
+  `DISCORD_MCP_ALLOW_DMS=true` when an allowlist is active.
 - CI workflow (`.github/workflows/ci.yml`) running lint, typecheck and tests.
 - Community documentation: README, client configurations, contributing guide,
   security policy, changelog and license.
