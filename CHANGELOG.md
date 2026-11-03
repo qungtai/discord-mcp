@@ -10,6 +10,9 @@ follows [Semantic Versioning](https://semver.org/).
 
 - Live evidence file (`coverage/live-evidence.json`) recording real Discord actions
   and outcomes, synced automatically into the coverage register.
+- Webhooks toolset (10 tools): channel/guild webhook listing, creation, retrieval,
+  modification, deletion, webhook execution with multipart attachment support,
+  and webhook message retrieval, editing, and deletion.
 - CI workflow (`.github/workflows/ci.yml`) running lint, typecheck and tests.
 - Community documentation: README, client configurations, contributing guide,
   security policy, changelog and license.
