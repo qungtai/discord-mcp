@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-import { homedir } from "node:os";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { PDiscordRestAdapter } from "./adapters/discord-rest/discord-rest.js";
-import { defaultDownloadDir, PAttachmentService } from "./adapters/files/attachment-service.js";
+import {
+  defaultDownloadDir,
+  expandHome,
+  PAttachmentService,
+} from "./adapters/files/attachment-service.js";
 import { createServer } from "./adapters/mcp/server.js";
 import { PToolPipeline } from "./core/pipeline.js";
 import { approvalNotice, PPolicyEngine } from "./core/policy.js";
@@ -31,8 +34,6 @@ const registeredToolsets = new Set(registry.list().map((t) => t.toolset));
 const policy = PPolicyEngine.fromEnv(process.env, registeredToolsets);
 const notice = approvalNotice(policy.approval);
 if (notice) process.stderr.write(notice);
-const expandHome = (path: string) =>
-  path === "~" ? homedir() : path.startsWith("~/") ? `${homedir()}${path.slice(1)}` : path;
 const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
   .split(",")
   .map((s) => s.trim())

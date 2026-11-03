@@ -2,6 +2,7 @@ import {
   access,
   mkdir,
   mkdtemp,
+  readdir,
   readFile,
   realpath,
   symlink,
@@ -13,6 +14,7 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   defaultDownloadDir,
+  expandHome,
   PAttachmentService,
 } from "../../src/adapters/files/attachment-service.js";
 
@@ -272,15 +274,25 @@ describe("uploads", () => {
 
     const origHome = process.env.HOME;
     const origUserProfile = process.env.USERPROFILE;
+    const origPlatform = process.platform;
     try {
       process.env.HOME = fakeHome;
       process.env.USERPROFILE = fakeHome;
+      Object.defineProperty(process, "platform", { value: "darwin", configurable: true });
 
       const service = new PAttachmentService([], "");
 
       // Direct path refusal
       await rejects(
         service.upload(secretFile),
+        "policy",
+        "Application configuration directories are not uploaded by default",
+      );
+
+      // Firmlink-prefixed path refusal (/System/Volumes/Data/...)
+      const firmlinkPath = `/System/Volumes/Data${secretFile}`;
+      await rejects(
+        service.upload(firmlinkPath),
         "policy",
         "Application configuration directories are not uploaded by default",
       );
@@ -303,6 +315,7 @@ describe("uploads", () => {
       else delete process.env.HOME;
       if (origUserProfile !== undefined) process.env.USERPROFILE = origUserProfile;
       else delete process.env.USERPROFILE;
+      Object.defineProperty(process, "platform", { value: origPlatform, configurable: true });
     }
   });
   it("refuses paths under APPDATA and LOCALAPPDATA in open mode", async () => {
@@ -338,6 +351,13 @@ describe("uploads", () => {
       if (origLocalAppData !== undefined) process.env.LOCALAPPDATA = origLocalAppData;
       else delete process.env.LOCALAPPDATA;
     }
+  });
+  it("expands leading ~/ with homedir in expandHome helper", () => {
+    const home = homedir();
+    expect(expandHome("~")).toBe(home);
+    expect(expandHome("~/Downloads/discord-mcp")).toBe(join(home, "Downloads", "discord-mcp"));
+    expect(expandHome("~custom/path")).toBe("~custom/path");
+    expect(expandHome("/absolute/path")).toBe("/absolute/path");
   });
 });
 
@@ -450,12 +470,14 @@ describe("downloads", () => {
       "fetch",
       vi.fn(async () => new Response("short", { headers: { "content-length": "200" } })),
     );
-    const service = new PAttachmentService([], dir, undefined, undefined, 100);
+    const downloadTargetDir = join(dir, "dl-limit-header");
+    const service = new PAttachmentService([], downloadTargetDir, undefined, undefined, 100);
     await rejects(
       service.download("https://cdn.discordapp.com/a", "big.png"),
       "validation",
       "Attachment exceeds maximum download size of 100 bytes",
     );
+    expect(await readdir(downloadTargetDir)).toEqual([]);
   });
   it("stops streaming downloads past maxDownloadBytes", async () => {
     const stream = new ReadableStream({
@@ -469,11 +491,13 @@ describe("downloads", () => {
       "fetch",
       vi.fn(async () => new Response(stream)),
     );
-    const service = new PAttachmentService([], dir, undefined, undefined, 100);
+    const downloadTargetDir = join(dir, "dl-limit-stream");
+    const service = new PAttachmentService([], downloadTargetDir, undefined, undefined, 100);
     await rejects(
       service.download("https://cdn.discordapp.com/a", "stream-big.png"),
       "validation",
       "Attachment exceeds maximum download size of 100 bytes",
     );
+    expect(await readdir(downloadTargetDir)).toEqual([]);
   });
 });

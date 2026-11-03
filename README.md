@@ -505,7 +505,7 @@ Tools marked "asks for approval" require confirmation using MCP elicitation (`el
 - `discord_delete_pin`: Unpinning is reversible and removes no message content.
 - `discord_delete_my_message_reaction`: Removing the bot's own reaction affects only the bot's own state.
 - `discord_leave_thread`: Leaving a public thread removes only the bot's own membership.
-- `discord_update_my_guild_member`: Editing the bot's own guild member profile affects only the bot's own nickname and avatar.
+- `discord_update_my_guild_member`: Editing the bot's own guild member profile affects only the bot's own nickname, avatar, and banner.
 
 The server requires the client to advertise `elicitation.form`. Only Claude Code and Codex were verified. Claude Desktop, Cursor, and VS Code are untested.
 
@@ -520,7 +520,7 @@ Setting `DISCORD_MCP_READ_ONLY=true` rejects all mutating tools (writes and dest
 
 ### Filesystem boundaries
 
-- Uploads: File access is open by default. When `DISCORD_MCP_FILE_ROOTS` is unset or empty, tools that attach files can read any absolute path except hidden files and directories (paths containing a component that starts with `.`), system paths under `/proc`, `/sys`, or `/dev`, and application configuration directories (`~/Library` on macOS, `%APPDATA%` and `%LOCALAPPDATA%` on Windows). Open-mode rules defend against prompt injection from channel content attempting to leak credentials. Uploads whose bytes contain the bot token are refused. To restrict uploads, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories. Inside explicit roots, hidden files are permitted. Relative paths and `..` segments are always refused. Checks run on both lexical and resolved realpath.
+- Uploads: File access is open by default. When `DISCORD_MCP_FILE_ROOTS` is unset or empty, tools that attach files can read any absolute path except hidden files and directories (paths containing a component that starts with `.`), system paths under `/proc`, `/sys`, or `/dev`, and application configuration directories (`~/Library` on macOS, `%APPDATA%` and `%LOCALAPPDATA%` on Windows). Open-mode rules defend against prompt injection from channel content attempting to leak credentials. Hardlinks to files in these directories and non-dot-named secrets elsewhere are not detected. Uploads whose bytes contain the bot token are refused. To restrict uploads, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories. Inside explicit roots, hidden files are permitted. Relative paths and `..` segments are always refused. Checks run on both lexical and resolved realpath.
 - Downloads: Attachments downloaded with `discord_download_attachment` are saved inside `DISCORD_MCP_DOWNLOAD_DIR` (defaults to `~/Downloads/discord-mcp`), created recursively on first download, with SHA-256 integrity verification. Downloads exceeding `DISCORD_MCP_MAX_DOWNLOAD_BYTES` (default 100 MiB) are refused before downloading or aborted while streaming.
 
 ### Credential protection
