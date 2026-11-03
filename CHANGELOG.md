@@ -8,12 +8,27 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- CI workflow (`.github/workflows/ci.yml`) running lint, typecheck and tests.
+- Live evidence file (`coverage/live-evidence.json`) recording real Discord actions
+  and outcomes, synced into the register by `pnpm coverage:sync`.
 - Community documentation: README, client configurations, contributing guide,
   security policy, changelog and license.
-- 110 Discord tools across ten toolsets: channels (12), events (11), guild (22),
-  invites (2), members (12), messages (15), moderation (10), reactions (6),
-  roles (7) and threads (13), registered from one operation descriptor each.
+- Webhooks toolset (10 tools): channel/guild webhook listing, creation, retrieval,
+  modification, deletion, webhook execution with multipart attachment support,
+  and webhook message retrieval, editing, and deletion.
+- Core and channels user/DM tools: `discord_get_my_user`, `discord_update_my_user`,
+  `discord_get_user`, `discord_list_my_guilds`, `discord_leave_guild`,
+  `discord_list_my_connections` and `discord_create_dm`.
+- DM policy switch (`DISCORD_MCP_ALLOW_DMS`, default `false`): a guild allowlist
+  never implies DM access; direct messages and user-scoped operations require
+  `DISCORD_MCP_ALLOW_DMS=true` when an allowlist is active. With an allowlist,
+  resources outside any guild that are not DMs (application webhooks, friend
+  invites) are refused whatever DISCORD_MCP_ALLOW_DMS says;
+  `discord_list_my_guilds` returns every allowed guild in one call and refuses
+  before, after and limit.
+- 137 Discord tools across twelve toolsets: channels (13), core (6), events (11),
+  guild (22), invites (12), members (12), messages (15), moderation (10),
+  reactions (6), roles (7), threads (13) and webhooks (10), registered from one
+  operation descriptor each.
 - Approval through MCP elicitation: destructive tools ask the user before they
   run, and `DISCORD_MCP_APPROVAL` selects `elicitation` or `none`. In `none` mode
   the server prints a warning at startup because server-side approval is off.
@@ -26,6 +41,10 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Tool manifest generation writes `coverage/tools.json`; explicit `coverage:sync`
+  updates the committed register (`coverage/register.json`) from tools and live
+  evidence, and `coverage:check` fails when tools.json is missing or when the
+  committed register differs from sync output.
 - Resource outputs are loose objects: every field Discord sends reaches the
   caller, so `discord_get_channel` now returns `permission_overwrites`, `nsfw`,
   `rate_limit_per_user` and future fields instead of dropping them. Input

@@ -13,7 +13,8 @@ import { threadList } from "./schemas.js";
 
 export const searchThreads = defineTool({
   name: "discord_search_threads",
-  description: "Search threads in a channel. Page with offset=next_offset",
+  description:
+    "Search threads in a channel. A new thread can take about 30 seconds to appear in results. Page with offset=next_offset",
   operationIds: ["thread_search"],
   toolset: "threads",
   scope: { channel: "channel_id" },

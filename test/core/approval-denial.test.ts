@@ -6,8 +6,11 @@ import { errorOf, harness } from "../support/harness.js";
 // Minimal valid input per approval tool; the denial happens after validation and before any request.
 const ARGUMENTS: Record<string, Record<string, unknown>> = {
   discord_add_guild_member_role: { guild_id: "1", user_id: "2", role_id: "3" },
+  discord_add_invite_target_user: { code: "abc", user_id: "2" },
   discord_ban_user_from_guild: { guild_id: "1", user_id: "2" },
+  discord_bulk_add_invite_target_users: { code: "abc", user_ids: ["2"] },
   discord_bulk_ban_users_from_guild: { guild_id: "1", user_ids: ["2"] },
+  discord_bulk_delete_invite_target_users: { code: "abc", user_ids: ["2"] },
   discord_bulk_delete_messages: { channel_id: "1", message_ids: ["2", "3"] },
   discord_bulk_update_guild_channels: { guild_id: "1", channels: [{ id: "2", position: 1 }] },
   discord_bulk_update_guild_roles: { guild_id: "1", roles: [{ id: "2", position: 1 }] },
@@ -37,6 +40,8 @@ const ARGUMENTS: Record<string, Record<string, unknown>> = {
     exception_id: "3",
   },
   discord_delete_guild_template: { guild_id: "1", code: "abc" },
+  discord_delete_invite: { code: "abc" },
+  discord_delete_invite_target_user: { code: "abc", user_id: "2" },
   discord_delete_message: { channel_id: "1", message_id: "2" },
   discord_delete_thread_member: { channel_id: "1", user_id: "2" },
   discord_delete_user_message_reaction: {
@@ -45,9 +50,15 @@ const ARGUMENTS: Record<string, Record<string, unknown>> = {
     emoji: "👍",
     user_id: "3",
   },
+  discord_delete_webhook: { webhook_id: "1" },
+  discord_delete_webhook_message: { webhook_id: "1", message_id: "2" },
+  discord_edit_webhook_message: { webhook_id: "1", message_id: "2", content: "x" },
+  discord_execute_webhook: { webhook_id: "1", content: "x" },
+  discord_leave_guild: { guild_id: "1" },
   discord_prune_guild: { guild_id: "1" },
   discord_review_guild_join_request: { guild_id: "1", request_id: "2", action: "APPROVED" },
   discord_set_channel_permission_overwrite: { channel_id: "1", overwrite_id: "2", type: 0 },
+  discord_set_invite_target_users: { code: "abc", file: { path: "users.csv" } },
   discord_sync_guild_template: { guild_id: "1", code: "abc" },
   discord_unban_user_from_guild: { guild_id: "1", user_id: "2" },
   discord_update_auto_moderation_rule: { guild_id: "1", rule_id: "2" },
@@ -66,7 +77,9 @@ const ARGUMENTS: Record<string, Record<string, unknown>> = {
   discord_update_guild_template: { guild_id: "1", code: "abc" },
   discord_update_guild_welcome_screen: { guild_id: "1" },
   discord_update_guild_widget_settings: { guild_id: "1" },
+  discord_update_my_user: { username: "new-bot-name" },
   discord_update_voice_channel_status: { channel_id: "1", status: "live" },
+  discord_update_webhook: { webhook_id: "1" },
 };
 
 const approvalTools = (await PToolRegistry.load()).list().filter((tool) => tool.approval);
@@ -76,6 +89,7 @@ describe("approval denial without elicitation", () => {
     expect(approvalTools.map((tool) => tool.name).filter((name) => !(name in ARGUMENTS))).toEqual(
       [],
     );
+    expect(Object.keys(ARGUMENTS).sort()).toEqual(approvalTools.map((tool) => tool.name).sort());
   });
 
   it.each(approvalTools.map((tool) => [tool.name, ARGUMENTS[tool.name]] as const))(

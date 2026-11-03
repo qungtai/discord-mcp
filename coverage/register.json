@@ -864,11 +864,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_channel",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_delete_channel",
+          "evidence": "channel and thread absent from listings after delete"
+        }
+      ],
       "notes": null
     },
     {
@@ -885,10 +891,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -906,10 +912,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_all_message_reactions",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -927,10 +933,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_all_message_reactions_by_emoji",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -948,10 +954,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_user_message_reaction",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -969,10 +975,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_my_message_reaction",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -990,10 +996,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_pin",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1011,10 +1017,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_channel_permission_overwrite",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1032,10 +1038,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_pin",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1074,10 +1080,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_thread_member",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1095,10 +1101,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_leave_thread",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1116,11 +1122,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_channel",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_get_channel",
+          "evidence": "returned the created channel"
+        }
+      ],
       "notes": null
     },
     {
@@ -1137,11 +1149,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_channel_invites",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_channel_invites",
+          "evidence": "listed the created invite"
+        }
+      ],
       "notes": null
     },
     {
@@ -1162,11 +1180,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_messages",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_messages",
+          "evidence": "listed the sent message"
+        }
+      ],
       "notes": null
     },
     {
@@ -1183,11 +1207,27 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_download_attachment",
+          "evidence": "downloaded files matched the uploaded SHA-256"
+        },
+        {
+          "date": "2026-11-03",
+          "tool": "discord_edit_message",
+          "evidence": "edit kept both attachments, read back with discord_get_message"
+        },
+        {
+          "date": "2026-11-03",
+          "tool": "discord_get_message",
+          "evidence": "returned the sent content and attachments"
+        }
+      ],
       "notes": null
     },
     {
@@ -1204,11 +1244,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_message_reactions_by_emoji",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_message_reactions_by_emoji",
+          "evidence": "listed the bot after it reacted"
+        }
+      ],
       "notes": null
     },
     {
@@ -1225,11 +1271,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_pins",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_pins",
+          "evidence": "listed the pinned message"
+        }
+      ],
       "notes": null
     },
     {
@@ -1246,10 +1298,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_member_permissions",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1267,10 +1319,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_role_permissions",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1288,11 +1340,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_pins",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_pins",
+          "evidence": "listed the pinned message"
+        }
+      ],
       "notes": null
     },
     {
@@ -1309,10 +1367,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_poll_answer_voters",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1330,10 +1388,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_thread_members",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1351,10 +1409,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_thread_member",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1372,10 +1430,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_private_archived_threads",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1393,10 +1451,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_public_archived_threads",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1414,11 +1472,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_search_threads",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_search_threads",
+          "evidence": "found a new thread by name about 30 seconds after creation"
+        }
+      ],
       "notes": null
     },
     {
@@ -1435,10 +1499,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_my_private_archived_threads",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1456,10 +1520,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_channel_webhooks",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1477,11 +1541,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_channel",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_update_channel",
+          "evidence": "topic read back with discord_get_channel"
+        }
+      ],
       "notes": null
     },
     {
@@ -1498,11 +1568,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_edit_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_edit_message",
+          "evidence": "edit kept both attachments, read back with discord_get_message"
+        }
+      ],
       "notes": null
     },
     {
@@ -1519,10 +1595,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_follow_channel",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1540,11 +1616,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_channel_invite",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_create_channel_invite",
+          "evidence": "invite listed by discord_list_channel_invites"
+        }
+      ],
       "notes": null
     },
     {
@@ -1561,11 +1643,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_send_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_send_message",
+          "evidence": "sent with two uploads, read back with discord_get_message"
+        }
+      ],
       "notes": null
     },
     {
@@ -1582,10 +1670,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_crosspost_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1603,11 +1691,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_thread_from_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_create_thread_from_message",
+          "evidence": "thread listed by discord_list_active_guild_threads"
+        }
+      ],
       "notes": null
     },
     {
@@ -1624,11 +1718,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_bulk_delete_messages",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_bulk_delete_messages",
+          "evidence": "messages absent from discord_list_messages after delete"
+        }
+      ],
       "notes": null
     },
     {
@@ -1645,10 +1745,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_end_poll",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1687,11 +1787,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_thread",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_create_thread",
+          "evidence": "thread found by name with discord_search_threads"
+        }
+      ],
       "notes": null
     },
     {
@@ -1708,10 +1814,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_trigger_typing_indicator",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1729,10 +1835,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1750,11 +1856,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_add_my_message_reaction",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_add_my_message_reaction",
+          "evidence": "bot listed by discord_list_message_reactions_by_emoji"
+        }
+      ],
       "notes": null
     },
     {
@@ -1771,11 +1883,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_pin",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_create_pin",
+          "evidence": "pinned message listed by discord_list_pins"
+        }
+      ],
       "notes": null
     },
     {
@@ -1792,11 +1910,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_set_channel_permission_overwrite",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_set_channel_permission_overwrite",
+          "evidence": "overwrite deny 2048 read back with discord_get_channel"
+        }
+      ],
       "notes": null
     },
     {
@@ -1813,11 +1937,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_pin",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_create_pin",
+          "evidence": "pinned message listed by discord_list_pins"
+        }
+      ],
       "notes": null
     },
     {
@@ -1855,10 +1985,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_add_thread_member",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1876,10 +2006,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_join_thread",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1897,10 +2027,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_voice_channel_status",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1963,11 +2093,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_auto_moderation_rule",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_delete_auto_moderation_rule",
+          "evidence": "rule absent from discord_list_auto_moderation_rules after delete"
+        }
+      ],
       "notes": null
     },
     {
@@ -1984,10 +2120,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_unban_user_from_guild",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2026,10 +2162,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_guild_integration",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2047,10 +2183,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_guild_member",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2068,10 +2204,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_guild_member_role",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2089,11 +2225,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_guild_role",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_delete_guild_role",
+          "evidence": "role absent from discord_list_guild_roles after delete"
+        }
+      ],
       "notes": null
     },
     {
@@ -2110,11 +2252,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_guild_scheduled_event",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_delete_guild_scheduled_event",
+          "evidence": "events absent from discord_list_guild_scheduled_events after delete"
+        }
+      ],
       "notes": null
     },
     {
@@ -2131,10 +2279,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_guild_scheduled_event_exception",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2194,10 +2342,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_guild_template",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2215,11 +2363,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_get_guild",
+          "evidence": "returned the test guild"
+        }
+      ],
       "notes": null
     },
     {
@@ -2236,10 +2390,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_audit_log_entries",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2257,11 +2411,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_auto_moderation_rules",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_auto_moderation_rules",
+          "evidence": "listed a rule, then none after delete"
+        }
+      ],
       "notes": null
     },
     {
@@ -2278,10 +2438,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_auto_moderation_rule",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2299,10 +2459,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_bans",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2320,10 +2480,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_ban",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2345,11 +2505,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_channels",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_guild_channels",
+          "evidence": "listed a channel created by the run"
+        }
+      ],
       "notes": null
     },
     {
@@ -2408,10 +2574,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_integrations",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2429,10 +2595,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_invites",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2450,10 +2616,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_members",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2471,11 +2637,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_member",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_get_guild_member",
+          "evidence": "returned the bot member with the added role"
+        }
+      ],
       "notes": null
     },
     {
@@ -2492,10 +2664,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_search_guild_members",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2517,10 +2689,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_search_guild_messages",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2538,10 +2710,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_new_member_welcome",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2559,10 +2731,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_onboarding",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2580,10 +2752,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_member_permissions",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2601,10 +2773,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_role_permissions",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2622,10 +2794,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_preview",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2643,10 +2815,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_preview_prune_guild",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2685,10 +2857,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_join_requests",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2706,11 +2878,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_roles",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_guild_roles",
+          "evidence": "listed a role created by the run"
+        }
+      ],
       "notes": null
     },
     {
@@ -2727,11 +2905,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_role",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_get_guild_role",
+          "evidence": "returned the updated role"
+        }
+      ],
       "notes": null
     },
     {
@@ -2748,10 +2932,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_role_member_counts",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2769,11 +2953,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_scheduled_events",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_guild_scheduled_events",
+          "evidence": "listed the created event"
+        }
+      ],
       "notes": null
     },
     {
@@ -2790,11 +2980,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_scheduled_event",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_get_guild_scheduled_event",
+          "evidence": "returned the updated event"
+        }
+      ],
       "notes": null
     },
     {
@@ -2811,10 +3007,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_scheduled_event_exception_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2832,10 +3028,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_scheduled_event_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2853,10 +3049,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_count_guild_scheduled_event_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2958,10 +3154,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_templates",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2979,11 +3175,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_active_guild_threads",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_list_active_guild_threads",
+          "evidence": "listed the created thread"
+        }
+      ],
       "notes": null
     },
     {
@@ -3000,10 +3202,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_vanity_url",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3063,10 +3265,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_webhooks",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3084,10 +3286,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_welcome_screen",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3105,10 +3307,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_widget_settings",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3129,10 +3331,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_widget",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3177,10 +3379,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_guild_template",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3198,10 +3400,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3219,10 +3421,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_auto_moderation_rule",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3240,10 +3442,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_bulk_update_guild_channels",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3282,10 +3484,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild_member",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3303,11 +3505,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_my_guild_member",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_update_my_guild_member",
+          "evidence": "nickname cleared with null, read back with discord_get_guild_member"
+        }
+      ],
       "notes": null
     },
     {
@@ -3324,10 +3532,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_review_guild_join_request",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3345,10 +3553,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_bulk_update_guild_roles",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3366,11 +3574,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild_role",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_update_guild_role",
+          "evidence": "color read back with discord_get_guild_role"
+        }
+      ],
       "notes": null
     },
     {
@@ -3387,11 +3601,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild_scheduled_event",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_update_guild_scheduled_event",
+          "evidence": "description read back with discord_get_guild_scheduled_event"
+        }
+      ],
       "notes": null
     },
     {
@@ -3408,10 +3628,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild_scheduled_event_exception",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3471,10 +3691,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild_template",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3534,10 +3754,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild_welcome_screen",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3555,10 +3775,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild_widget_settings",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3576,10 +3796,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_auto_moderation_rule",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3597,10 +3817,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_bulk_ban_users_from_guild",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3618,11 +3838,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_guild_channel",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_create_guild_channel",
+          "evidence": "created channel read back by name with discord_get_channel"
+        }
+      ],
       "notes": null
     },
     {
@@ -3660,10 +3886,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_prune_guild",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3681,11 +3907,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_guild_role",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_create_guild_role",
+          "evidence": "created role read back with discord_get_guild_role"
+        }
+      ],
       "notes": null
     },
     {
@@ -3702,11 +3934,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_guild_scheduled_event",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_create_guild_scheduled_event",
+          "evidence": "event read back with discord_get_guild_scheduled_event"
+        }
+      ],
       "notes": null
     },
     {
@@ -3723,10 +3961,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_guild_scheduled_event_exception",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3786,10 +4024,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_guild_template",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3807,10 +4045,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_ban_user_from_guild",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3828,10 +4066,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild_incident_actions",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3870,11 +4108,17 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_add_guild_member_role",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
-      "evidence": [],
+      "verification": "live action verified",
+      "evidence": [
+        {
+          "date": "2026-11-03",
+          "tool": "discord_add_guild_member_role",
+          "evidence": "role read back on the bot with discord_get_guild_member"
+        }
+      ],
       "notes": null
     },
     {
@@ -3891,10 +4135,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_guild_onboarding",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3912,10 +4156,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_sync_guild_template",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3957,10 +4201,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_invite",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3978,10 +4222,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_invite_target_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4002,10 +4246,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_invite",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4023,10 +4267,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_invite_target_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4044,10 +4288,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_invite_target_users_job_status",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4065,10 +4309,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_bulk_add_invite_target_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4086,10 +4330,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_bulk_delete_invite_target_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4107,10 +4351,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_set_invite_target_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4128,10 +4372,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_add_invite_target_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5026,11 +5270,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "delete_users__me_guilds__guild_id",
@@ -5046,10 +5290,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_leave_guild",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5067,10 +5311,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5094,10 +5338,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_my_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5152,11 +5396,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "get_users__me_applications__application_id__role_connection",
@@ -5176,11 +5420,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "get_users__me_connections",
@@ -5202,10 +5446,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_my_connections",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5229,10 +5473,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_my_guilds",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5254,11 +5498,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "patch_users__me",
@@ -5274,10 +5518,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_my_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5295,10 +5539,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_dm",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5320,11 +5564,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires OAuth2 bearer token; not accessible to bot accounts"
     },
     {
       "capability_id": "get_voice_regions",
@@ -5361,10 +5605,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5386,11 +5630,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires webhook token in path; bots use bot credential and webhook ID instead"
     },
     {
       "capability_id": "delete_webhooks__webhook_id___webhook_token__messages__message_id",
@@ -5409,10 +5653,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_webhook_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5434,11 +5678,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Interaction-only route; not applicable to bot webhooks"
     },
     {
       "capability_id": "get_webhooks__webhook_id",
@@ -5454,10 +5698,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5479,11 +5723,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires webhook token in path; bots use bot credential and webhook ID instead"
     },
     {
       "capability_id": "get_webhooks__webhook_id___webhook_token__messages__message_id",
@@ -5502,10 +5746,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_webhook_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5527,11 +5771,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Interaction-only route; not applicable to bot webhooks"
     },
     {
       "capability_id": "patch_webhooks__webhook_id",
@@ -5547,10 +5791,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5572,11 +5816,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Requires webhook token in path; bots use bot credential and webhook ID instead"
     },
     {
       "capability_id": "patch_webhooks__webhook_id___webhook_token__messages__message_id",
@@ -5595,10 +5839,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_edit_webhook_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5620,11 +5864,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Interaction-only route; not applicable to bot webhooks"
     },
     {
       "capability_id": "post_webhooks__webhook_id___webhook_token",
@@ -5643,10 +5887,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_execute_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5668,11 +5912,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Third-party platform webhook format; not applicable to bot MCP tools"
     },
     {
       "capability_id": "post_webhooks__webhook_id___webhook_token__slack",
@@ -5692,11 +5936,11 @@
       ],
       "permissions": null,
       "mcp_tool": null,
-      "implementation": "unmapped",
+      "implementation": "deferred",
       "availability": "unknown",
       "verification": "not_tested",
       "evidence": [],
-      "notes": null
+      "notes": "Third-party platform webhook format; not applicable to bot MCP tools"
     }
   ],
   "preview_only_operations": []

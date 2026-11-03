@@ -14,6 +14,7 @@
     "lint": "biome check .",
     "test": "vitest run --coverage",
     "coverage:import": "node scripts/coverage/import-baseline.mjs",
+    "coverage:sync": "node scripts/coverage/sync.mjs",
     "coverage:report": "node scripts/coverage/report.mjs",
     "coverage:check": "node scripts/coverage/check.mjs",
     "tools:manifest": "node dist/tools-manifest.js"

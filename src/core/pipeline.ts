@@ -186,6 +186,7 @@ export class PToolPipeline {
           log,
           correlationId,
           allowsGuild: (id) => this.policy.allowsGuild(id),
+          hasAllowlist: this.policy.allowedGuilds.length > 0,
         })
         .catch((error: unknown) => {
           // A failure after an earlier write committed leaves a partial change behind.

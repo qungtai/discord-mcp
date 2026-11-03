@@ -115,13 +115,23 @@ describe("policy configuration", () => {
     const p = PPolicyEngine.fromEnv({
       DISCORD_MCP_ALLOWED_GUILDS: "1, 2,",
       DISCORD_MCP_READ_ONLY: "true",
+      DISCORD_MCP_ALLOW_DMS: "true",
     });
-    expect([p.allowedGuilds, p.toolsets, p.readOnly, p.approval]).toEqual([
+    expect([p.allowedGuilds, p.toolsets, p.readOnly, p.approval, p.allowDms]).toEqual([
       ["1", "2"],
       ["core", "messages"],
       true,
       "elicitation",
+      true,
     ]);
+  });
+  it("defaults DISCORD_MCP_ALLOW_DMS to false", () => {
+    expect(PPolicyEngine.fromEnv({}).allowDms).toBe(false);
+  });
+  it.each(["1", "TRUE", "yes"])("fails closed on DISCORD_MCP_ALLOW_DMS=%s", (value) => {
+    expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_ALLOW_DMS: value })).toThrow(
+      "DISCORD_MCP_ALLOW_DMS must be true or false",
+    );
   });
   it("parses DISCORD_MCP_APPROVAL=none and defaults to elicitation", () => {
     expect(PPolicyEngine.fromEnv({}).approval).toBe("elicitation");
@@ -558,7 +568,7 @@ describe("guild allowlist", () => {
   const guilds: Record<string, unknown> = {
     "/channels/1": { id: "1", guild_id: "200" },
     "/channels/9": { id: "9", guild_id: "999" },
-    "/channels/8": { id: "8" },
+    "/channels/8": { id: "8", type: 1 },
   };
   const scopedCall = async (input: Record<string, unknown>) => {
     const { pipeline, makeRequest } = await harness({
@@ -590,6 +600,7 @@ describe("guild allowlist", () => {
       guildIds: ["200"],
       channelIds: ["1"],
       isDm: false,
+      noGuild: false,
     });
     expect(lookups).toBe(1);
     const { result } = await scopedCall({ guild_id: "200", channel_id: "1", target_ids: ["1"] });
@@ -652,9 +663,11 @@ describe("guild allowlist", () => {
   it("fails scope kinds it cannot check and a message without its channel", async () => {
     const discord: DiscordRequest = async <T>() => ({}) as T;
     const resolve = createScopeResolver();
-    await expect(resolve({ user: ["1"] }, discord)).rejects.toMatchObject({
+    await expect(
+      resolve({ role: ["1"] } as unknown as Parameters<typeof resolve>[0], discord),
+    ).rejects.toMatchObject({
       category: "policy",
-      message: "Scope kind user cannot be checked against the allowlist",
+      message: "Scope kind role cannot be checked against the allowlist",
     });
     await expect(resolve({ message: ["1"] }, discord)).rejects.toMatchObject({
       message: "Scope kind message cannot be checked against the allowlist",
@@ -672,8 +685,200 @@ describe("guild allowlist", () => {
       guildIds: ["200"],
       channelIds: ["1"],
       isDm: false,
+      noGuild: false,
     });
     expect(lookups).toBe(2);
+  });
+  it("enforces DM switch when guild allowlist is present", async () => {
+    const dmChannel = { id: "8", type: 1 };
+    const guildChannel = { id: "9", guild_id: "999" };
+    const allowedGuildChannel = { id: "11", guild_id: "200" };
+    const createDmTool = (await PToolRegistry.load()).get("discord_create_dm");
+    const sendMessageTool = (await PToolRegistry.load()).get("discord_send_message");
+    if (!createDmTool || !sendMessageTool) throw new Error("Tools missing");
+
+    const multiChannelTool = defineTool({
+      name: "discord_multi_channel_probe",
+      description: "test multi channel scope",
+      operationIds: ["test_multi"],
+      toolset: "channels",
+      scope: { channel: "channel_ids" },
+      permissions: ["ViewChannel"],
+      effect: "write",
+      idempotent: false,
+      input: z.object({ channel_ids: z.array(z.string()) }),
+      output: z.object({ ok: z.boolean() }),
+      execute: async () => ({ ok: true }),
+    });
+
+    const run = async (allowDms: boolean, tool: string, args: Record<string, unknown>) => {
+      const customRegistry = new PToolRegistry();
+      for (const t of (await PToolRegistry.load()).list()) customRegistry.register(t);
+      customRegistry.register(multiChannelTool);
+
+      const { pipeline, makeRequest } = await harness({
+        registry: customRegistry,
+        policy: new PPolicyEngine(
+          ["200"],
+          ["channels", "messages", "webhooks", "invites"],
+          false,
+          "elicitation",
+          allowDms,
+        ),
+        makeRequest: async (url) => {
+          const path = new URL(String(url)).pathname;
+          if (path === "/api/v10/channels/8") return json(dmChannel);
+          if (path === "/api/v10/channels/83") return json({ id: "83", type: 3 });
+          if (path === "/api/v10/channels/9") return json(guildChannel);
+          if (path === "/api/v10/channels/11") return json(allowedGuildChannel);
+          if (path === "/api/v10/users/@me/channels") return json(dmChannel);
+          if (path === "/api/v10/channels/8/messages") return json({ id: "10", channel_id: "8" });
+          if (path === "/api/v10/channels/83/messages")
+            return json({ id: "103", channel_id: "83" });
+          if (path === "/api/v10/webhooks/55") return json({ id: "55", type: 3, guild_id: null });
+          if (path === "/api/v10/webhooks/123456789")
+            return json({ id: "123456789", guild_id: null });
+          if (path === "/api/v10/invites/dm-invite") return json({ code: "dm-invite", type: 1 });
+          if (path === "/api/v10/invites/friend") return json({ code: "friend", type: 2 });
+          if (path === "/api/v10/invites/friend-invite")
+            return json({ code: "friend-invite", type: 2 });
+          return json({});
+        },
+      });
+      const result = await pipeline.call(tool, args);
+      return { result, calls: makeRequest.mock.calls.map(([u, i]) => `${i.method} ${u}`) };
+    };
+
+    // DMs off: refuses discord_create_dm and discord_send_message to DM channel with zero writes
+    const dmCreateOff = await run(false, "discord_create_dm", { recipient_id: "1" });
+    expect(dmCreateOff.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(dmCreateOff.calls).toEqual([]);
+
+    const dmSendOff = await run(false, "discord_send_message", { channel_id: "8", content: "hi" });
+    expect(dmSendOff.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(dmSendOff.calls).toEqual(["GET https://discord.com/api/v10/channels/8"]);
+
+    // DMs on: lets both through
+    const dmCreateOn = await run(true, "discord_create_dm", { recipient_id: "1" });
+    expect(dmCreateOn.result).toEqual({ ok: true, data: { channel: dmChannel } });
+    expect(dmCreateOn.calls).toEqual(["POST https://discord.com/api/v10/users/@me/channels"]);
+
+    const dmSendOn = await run(true, "discord_send_message", { channel_id: "8", content: "hi" });
+    expect(dmSendOn.result.ok).toBe(true);
+    expect(dmSendOn.calls).toEqual([
+      "GET https://discord.com/api/v10/channels/8",
+      "POST https://discord.com/api/v10/channels/8/messages",
+    ]);
+
+    // DMs on still refuses a channel in a guild outside the allowlist
+    const forbiddenGuildOn = await run(true, "discord_send_message", {
+      channel_id: "9",
+      content: "hi",
+    });
+    expect(forbiddenGuildOn.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(forbiddenGuildOn.calls).toEqual(["GET https://discord.com/api/v10/channels/9"]);
+
+    // DMs on: application webhook (guild_id null) and type 2 invite are refused
+    const appWebhookRes = await run(true, "discord_get_webhook", { webhook_id: "123456789" });
+    expect(appWebhookRes.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+
+    const friendInviteRes = await run(true, "discord_get_invite", { code: "friend-invite" });
+    expect(friendInviteRes.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+
+    // Mixed {channel: [dmChannel, channelInGuild999]} with DMs on is refused with "Guild is not allowed" and no write
+    const mixedForbidden = await run(true, "discord_multi_channel_probe", {
+      channel_ids: ["8", "9"],
+    });
+    expect(mixedForbidden.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+
+    // Mixed DM plus allowed guild with DMs on passes
+    const mixedAllowed = await run(true, "discord_multi_channel_probe", {
+      channel_ids: ["8", "11"],
+    });
+    expect(mixedAllowed.result).toEqual({ ok: true, data: { ok: true } });
+
+    // Guild-less resource next to an allowed one is refused before any other check
+    const updateWebhookNoGuild = await run(false, "discord_update_webhook", {
+      webhook_id: "55",
+      channel_id: "11",
+      name: "x",
+    });
+    expect(updateWebhookNoGuild.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(updateWebhookNoGuild.calls).toEqual([
+      "GET https://discord.com/api/v10/webhooks/55",
+      "GET https://discord.com/api/v10/channels/11",
+    ]);
+
+    const inviteNoGuildOff = await run(false, "discord_get_invite", {
+      code: "friend",
+      target_channel_id: "11",
+    });
+    expect(inviteNoGuildOff.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(inviteNoGuildOff.calls).toEqual([
+      "GET https://discord.com/api/v10/invites/friend",
+      "GET https://discord.com/api/v10/channels/11",
+    ]);
+
+    const inviteNoGuildOn = await run(true, "discord_get_invite", {
+      code: "friend",
+      target_channel_id: "8",
+    });
+    expect(inviteNoGuildOn.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(inviteNoGuildOn.calls).toEqual([
+      "GET https://discord.com/api/v10/invites/friend",
+      "GET https://discord.com/api/v10/channels/8",
+    ]);
+
+    // Group DM (type 3) and type 1 invite: allowed with DMs on, refused with DMs off
+    const groupDmOff = await run(false, "discord_send_message", {
+      channel_id: "83",
+      content: "hi",
+    });
+    expect(groupDmOff.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(groupDmOff.calls).toEqual(["GET https://discord.com/api/v10/channels/83"]);
+
+    const groupDmOn = await run(true, "discord_send_message", {
+      channel_id: "83",
+      content: "hi",
+    });
+    expect(groupDmOn.result.ok).toBe(true);
+    expect(groupDmOn.calls).toEqual([
+      "GET https://discord.com/api/v10/channels/83",
+      "POST https://discord.com/api/v10/channels/83/messages",
+    ]);
+
+    const inviteType1Off = await run(false, "discord_get_invite", { code: "dm-invite" });
+    expect(inviteType1Off.result).toMatchObject({
+      error: { category: "policy", message: "Guild is not allowed" },
+    });
+    expect(inviteType1Off.calls).toEqual(["GET https://discord.com/api/v10/invites/dm-invite"]);
+
+    const inviteType1On = await run(true, "discord_get_invite", { code: "dm-invite" });
+    expect(inviteType1On.result.ok).toBe(true);
+    expect(inviteType1On.calls).toEqual([
+      "GET https://discord.com/api/v10/invites/dm-invite",
+      "GET https://discord.com/api/v10/invites/dm-invite",
+    ]);
   });
   it("fails closed on a scope key that is not a string or string[]", async () => {
     const bad = defineTool({

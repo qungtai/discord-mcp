@@ -17,7 +17,7 @@ first release.
 Tool names are `discord_<verb>_<noun>` (snake_case parameters). Toolsets are
 gated by `DISCORD_MCP_TOOLSETS` (default `core,messages`).
 
-- core: current user, user lookup, guilds, application, gateway info
+- core: current user (`discord_get_my_user`, `discord_update_my_user`), user lookup (`discord_get_user`), guilds (`discord_list_my_guilds`, `discord_leave_guild`), user connections (`discord_list_my_connections`), application, gateway info
 - messages: list/fetch/send/edit/delete, bulk delete, search, pins, typing,
   polls, reactions (separate toolset), downloads
 - threads: create, list, archive, members
@@ -29,7 +29,7 @@ gated by `DISCORD_MCP_TOOLSETS` (default `core,messages`).
 - members / roles: read, search, add, update, remove, roles, prune, join requests
 - moderation: bans, AutoMod rules
 - events: scheduled events and subscribers
-- invites: create, get, delete, target users
+- invites: create, get, delete, list guild/channel invites, target users (get, set CSV, bulk add/delete, single user add/delete, job status)
 - expressions: emojis, stickers, soundboard
 - voice: regions, voice states, stage instances
 - commands: application commands and permissions
@@ -59,7 +59,14 @@ is never a tool argument and is never logged.
 
 - `DISCORD_TOKEN` - bot token (required)
 - `DISCORD_MCP_ALLOWED_GUILDS` - comma-separated guild IDs; empty means no
-  restriction (planned: guild and channel allowlists across every access path)
+  restriction (planned: guild and channel allowlists across every access path).
+  With an allowlist, resources outside any guild that are not DMs (application
+  webhooks, friend invites) are refused whatever DISCORD_MCP_ALLOW_DMS says;
+  `discord_list_my_guilds` returns every allowed guild in one call and refuses
+  before, after and limit.
+- `DISCORD_MCP_ALLOW_DMS` - `true` or `false` (default `false`); controls whether
+  direct messages (or user-scoped tools) are permitted when a guild allowlist is configured.
+  A guild allowlist never implies DM access.
 - `DISCORD_MCP_TOOLSETS` - comma-separated toolsets; default `core,messages`
   (planned: invalid or empty values fail closed to this default set)
 - `DISCORD_MCP_READ_ONLY` - `true` blocks mutating tools (planned)
@@ -72,7 +79,7 @@ is never a tool argument and is never logged.
   uploads
 - `DISCORD_MCP_DOWNLOAD_DIR` - absolute directory for downloads
 
-DM access is a separate switch and is not implied by a guild allowlist (planned).
+DM access is a separate switch (`DISCORD_MCP_ALLOW_DMS`) and is not implied by a guild allowlist.
 Permission and scope reporting for denied operations is planned.
 
 ## Install from source

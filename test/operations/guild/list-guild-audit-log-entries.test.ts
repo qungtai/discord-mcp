@@ -154,3 +154,37 @@ it("denies access when guild is not in allowlist", async () => {
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
+
+it("sanitizes webhooks in audit log response, stripping token and url", async () => {
+  const rawAuditLog = {
+    audit_log_entries: [],
+    webhooks: [
+      {
+        id: "70",
+        name: "hook",
+        token: "super-secret-token",
+        url: "https://discord.com/api/webhooks/70/super-secret-token",
+      },
+    ],
+  };
+  const { client } = await harness({
+    policy: new PPolicyEngine([], ["guild"], false),
+    respond: () => rawAuditLog,
+  });
+  const result = await client.callTool({
+    name: "discord_list_guild_audit_log_entries",
+    arguments: { guild_id: "123" },
+  });
+  const serialized = JSON.stringify(result.structuredContent);
+  expect(serialized).not.toContain("super-secret-token");
+  expect(serialized).not.toContain("token");
+  expect(serialized).not.toContain("url");
+  expect(result.structuredContent).toEqual({
+    audit_log: {
+      audit_log_entries: [],
+      webhooks: [{ id: "70", name: "hook" }],
+    },
+    next_before: null,
+    next_after: null,
+  });
+});

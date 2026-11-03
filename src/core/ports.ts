@@ -2,6 +2,7 @@ export interface RawFile {
   name: string;
   data: Buffer;
   contentType?: string;
+  key?: string;
 }
 export interface DiscordRequestInit {
   method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
@@ -11,6 +12,7 @@ export interface DiscordRequestInit {
   body?: unknown;
   files?: RawFile[];
   reason?: string;
+  auth?: false;
 }
 export type DiscordRequest = <T = unknown>(request: DiscordRequestInit) => Promise<T>;
 // Implemented by transport adapters; failures are thrown as PToolError.
@@ -66,5 +68,6 @@ export interface ResolvedScope {
   guildIds: string[];
   channelIds: string[];
   isDm: boolean;
+  noGuild: boolean;
 }
 export type ScopeResolver = (ids: ScopeIds, discord: DiscordRequest) => Promise<ResolvedScope>;

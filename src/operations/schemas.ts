@@ -2,11 +2,34 @@
 // drops or nulls an optional field never turns a successful call into a failure. Resource outputs
 // are loose objects so every field Discord sends reaches the caller. Input objects are strict so
 // a misspelled nested key fails instead of being dropped.
-import { AllowedMentionsTypes } from "discord-api-types/v10";
+import { AllowedMentionsTypes, MessageFlags } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { PToolError } from "../core/tool-error.js";
 
 export const snowflake = z.string().regex(/^\d+$/, "Expected a Discord snowflake");
+
+export const codeParam = (name: string) =>
+  z.string().regex(/^[\w-]+$/, `Expected a ${name} code without path segments`);
+
+export const dataUri = z
+  .string()
+  .regex(
+    /^data:image\/(?:png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/,
+    "Expected a base64 data URI",
+  );
+
+export const messageFlags = z
+  .number()
+  .int()
+  .min(0)
+  .refine(
+    (flags) => (flags & ~(MessageFlags.SuppressEmbeds | MessageFlags.SuppressNotifications)) === 0,
+    {
+      message: "Only SUPPRESS_EMBEDS (4) and SUPPRESS_NOTIFICATIONS (4096) are supported",
+    },
+  )
+  .optional()
+  .describe("Message flags bitfield");
 
 // A Discord response interface has no index signature, so it does not satisfy a loose object type.
 // Widening the input type keeps every field typed on output and lets tools return Discord types
@@ -150,3 +173,8 @@ export function searchNextOffset(
   const hasMore = page.has_more ?? (page.total_results ?? 0) > current + returned;
   return hasMore ? current + returned : null;
 }
+
+export const sanitizeWebhook = <T extends object>(raw: T): Omit<T, "token" | "url"> => {
+  const { token: _token, url: _url, ...rest } = raw as Record<string, unknown>;
+  return rest as Omit<T, "token" | "url">;
+};

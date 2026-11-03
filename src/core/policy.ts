@@ -17,6 +17,7 @@ export class PPolicyEngine {
     readonly toolsets: readonly Toolset[],
     readonly readOnly: boolean,
     readonly approval: ApprovalMode = "elicitation",
+    readonly allowDms: boolean = false,
   ) {}
   static fromEnv(env: NodeJS.ProcessEnv): PPolicyEngine {
     const split = (s: string) =>
@@ -27,6 +28,9 @@ export class PPolicyEngine {
     const readOnly = env.DISCORD_MCP_READ_ONLY;
     if (readOnly !== undefined && readOnly !== "true" && readOnly !== "false")
       throw new Error("DISCORD_MCP_READ_ONLY must be true or false");
+    const allowDms = env.DISCORD_MCP_ALLOW_DMS;
+    if (allowDms !== undefined && allowDms !== "true" && allowDms !== "false")
+      throw new Error("DISCORD_MCP_ALLOW_DMS must be true or false");
     const approval = env.DISCORD_MCP_APPROVAL ?? "elicitation";
     if (approval !== "elicitation" && approval !== "none")
       throw new Error("DISCORD_MCP_APPROVAL must be elicitation or none");
@@ -38,6 +42,7 @@ export class PPolicyEngine {
       toolsets,
       readOnly === "true",
       approval,
+      allowDms === "true",
     );
   }
   allows(tool: ToolDescriptor): boolean {
@@ -56,15 +61,13 @@ export class PPolicyEngine {
     return !this.allowedGuilds.length || this.allowedGuilds.includes(id);
   }
   checkResource(scope: ResolvedScope): void {
-    if (
-      this.allowedGuilds.length &&
-      (!scope.guildIds.length || scope.isDm || !scope.guildIds.every((id) => this.allowsGuild(id)))
-    )
-      throw new PToolError("Guild is not allowed", {
-        category: "policy",
-        retryable: false,
-        remediation: "Choose an allowed guild",
-      });
+    if (!this.allowedGuilds.length) return;
+    const hasGuild = scope.guildIds.length > 0;
+    const allGuildsAllowed = hasGuild && scope.guildIds.every((id) => this.allowsGuild(id));
+    const refused =
+      scope.noGuild ||
+      (scope.isDm ? !this.allowDms || (hasGuild && !allGuildsAllowed) : !allGuildsAllowed);
+    if (refused) throw notAllowed();
   }
   private denial(tool: ToolDescriptor): [string, string] | undefined {
     if (!this.toolsets.includes(tool.toolset)) return ["Toolset disabled", "Enable the toolset"];
@@ -75,4 +78,12 @@ export class PPolicyEngine {
 }
 function isToolset(value: string): value is Toolset {
   return (TOOLSETS as readonly string[]).includes(value);
+}
+
+function notAllowed(): PToolError {
+  return new PToolError("Guild is not allowed", {
+    category: "policy",
+    retryable: false,
+    remediation: "Choose an allowed guild",
+  });
 }

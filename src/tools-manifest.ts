@@ -11,5 +11,6 @@ const manifest = registry.list().map((t) => ({
   credential: t.credential,
   permissions: t.permissions,
 }));
+
 await mkdir("coverage", { recursive: true });
 await writeFile("coverage/tools.json", `${JSON.stringify(manifest, null, 2)}\n`);
