@@ -281,12 +281,14 @@ it("returns Discord's field errors for a 400", async () => {
   });
 });
 
-it("blocks mutating tools in read-only mode and uploads outside the roots", async () => {
+it("blocks mutating tools in read-only mode and uploads outside configured roots", async () => {
   const readOnly = await harness({ policy: new PPolicyEngine([], ["messages"], true) });
   expect(
     await readOnly.pipeline.call("discord_send_message", { channel_id: "1", content: "x" }),
   ).toMatchObject({ error: { category: "policy", message: "Read-only mode" } });
-  const { pipeline, makeRequest } = await harness();
+  const { pipeline, makeRequest } = await harness({
+    files: new PAttachmentService(["/allowed/root"], ""),
+  });
   expect(
     await pipeline.call("discord_send_message", {
       channel_id: "1",

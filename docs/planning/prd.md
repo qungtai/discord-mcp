@@ -193,11 +193,11 @@ Behavior confirmed in current Discord documentation on 3 November 2026; items ma
 | Other carriers | Webhook messages, forum and thread starters, forwarded snapshots, interaction responses, stickers, application attachments | FR-FILE-10 |
 | Limits | Default 20 MiB per file since 3 September 2026, higher with boosts; the Message page still states a 25 MiB request limit (verify); maximum files per message not stated in the pages read (verify) | FR-FILE-11 |
 
-FR-FILE-01 (MUST): Upload one or more local files from operator-configured readable roots, including image, PDF and text. Set filename, MIME type, alt text and spoiler. Respect effective size limits reported by Discord instead of hardcoding a universal limit.
+FR-FILE-01 (MUST): Upload one or more local files, including image, PDF and text. Per owner decision on 3 November 2026, local file access is open by default: when `DISCORD_MCP_FILE_ROOTS` is unset or empty, any absolute path is allowed except hidden files and folders (refusing when any component of the requested path or its realpath starts with `.`). The rule is name-based; hardlinks and non-dot-named secrets such as `~/Library/Keychains` are not detected. When `DISCORD_MCP_FILE_ROOTS` is configured, uploads are restricted to paths inside those roots. Set filename, MIME type, alt text and spoiler. Respect effective size limits reported by Discord instead of hardcoding a universal limit.
 
 FR-FILE-02 (MUST): Edit attachments on bot-authored messages: add, keep, remove, replace and update `description` and `is_spoiler`, preserving text, embeds and other attachments unless explicitly changed. Return the final attachment set.
 
-FR-FILE-03 (MUST): Download an attachment identified by channel, message and attachment ID into an operator-configured output directory. Prevent traversal, symlink escapes and overwriting unrelated files. Return filename, size, MIME type, local path and SHA-256.
+FR-FILE-03 (MUST): Download an attachment identified by channel, message and attachment ID into a download directory. Per owner decision on 3 November 2026, `DISCORD_MCP_DOWNLOAD_DIR` defaults to `~/Downloads/discord-mcp` and the directory is created recursively on first download. Prevent traversal, symlink escapes and overwriting unrelated files. Return filename, size, MIME type, local path and SHA-256.
 
 FR-FILE-04 (MUST): Do not pass base64 file contents through the model for local workflows. For HTTP mode define an upload and download artifact protocol (for example resource URIs or presigned local endpoints) with size caps and retention before enabling file tools remotely.
 

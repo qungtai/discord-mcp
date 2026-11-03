@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { PDiscordRestAdapter } from "./adapters/discord-rest/discord-rest.js";
-import { PAttachmentService } from "./adapters/files/attachment-service.js";
+import { defaultDownloadDir, PAttachmentService } from "./adapters/files/attachment-service.js";
 import { createServer } from "./adapters/mcp/server.js";
 import { PToolPipeline } from "./core/pipeline.js";
 import { approvalNotice, PPolicyEngine } from "./core/policy.js";
@@ -30,10 +30,12 @@ const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
+const downloadDir = process.env.DISCORD_MCP_DOWNLOAD_DIR || defaultDownloadDir();
 const files = new PAttachmentService(
   roots,
-  process.env.DISCORD_MCP_DOWNLOAD_DIR ?? "",
+  downloadDir,
   positiveInt("DISCORD_MCP_MAX_UPLOAD_BYTES"),
+  token,
 );
 const pipeline = new PToolPipeline(registry, policy, {
   credentials: { bot },

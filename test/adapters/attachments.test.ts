@@ -1,8 +1,20 @@
-import { access, mkdir, mkdtemp, realpath, symlink, truncate, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import {
+  access,
+  mkdir,
+  mkdtemp,
+  readFile,
+  realpath,
+  symlink,
+  truncate,
+  writeFile,
+} from "node:fs/promises";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { PAttachmentService } from "../../src/adapters/files/attachment-service.js";
+import {
+  defaultDownloadDir,
+  PAttachmentService,
+} from "../../src/adapters/files/attachment-service.js";
 
 let dir: string;
 let root: string;
@@ -96,6 +108,156 @@ describe("uploads", () => {
       "Upload file not found",
     );
   });
+  it("allows a file in a temp folder by default", async () => {
+    const file = await new PAttachmentService([], "").upload(join(root, "a.txt"));
+    expect([file.name, file.data.toString()]).toEqual(["a.txt", "hello"]);
+  });
+  it("refuses a nonexistent hidden path with policy error before existence check", async () => {
+    await rejects(
+      new PAttachmentService([], "").upload(join(dir, ".nope")),
+      "policy",
+      "Hidden files and folders are not uploaded by default",
+    );
+  });
+  it("refuses a hidden file by default", async () => {
+    await writeFile(join(dir, ".secret"), "secret");
+    await expect(new PAttachmentService([], "").upload(join(dir, ".secret"))).rejects.toMatchObject(
+      {
+        name: "PToolError",
+        category: "policy",
+        retryable: false,
+        message: "Hidden files and folders are not uploaded by default",
+        remediation: "Set DISCORD_MCP_FILE_ROOTS to a folder that contains the file to allow it",
+      },
+    );
+  });
+  it("refuses a file inside a hidden folder by default", async () => {
+    const hiddenDir = join(dir, ".hidden");
+    await mkdir(hiddenDir);
+    await writeFile(join(hiddenDir, "file.txt"), "hidden content");
+    await rejects(
+      new PAttachmentService([], "").upload(join(hiddenDir, "file.txt")),
+      "policy",
+      "Hidden files and folders are not uploaded by default",
+    );
+  });
+  it("refuses a symlink in a normal folder pointing at a hidden target by default", async () => {
+    await writeFile(join(dir, ".target"), "hidden target");
+    const linkPath = join(root, "link-to-hidden");
+    await symlink(join(dir, ".target"), linkPath);
+    await rejects(
+      new PAttachmentService([], "").upload(linkPath),
+      "policy",
+      "Hidden files and folders are not uploaded by default",
+    );
+  });
+  it("refuses a directory symlink to a hidden folder by default", async () => {
+    const hiddenDir = join(dir, ".hidden-dir");
+    await mkdir(hiddenDir);
+    await writeFile(join(hiddenDir, "sub.txt"), "sub content");
+    const linkDir = join(root, "link-dir");
+    await symlink(hiddenDir, linkDir);
+    await rejects(
+      new PAttachmentService([], "").upload(join(linkDir, "sub.txt")),
+      "policy",
+      "Hidden files and folders are not uploaded by default",
+    );
+  });
+  it("uploads under target basename when symlink points to a normal file by default", async () => {
+    const targetFile = join(dir, "target.txt");
+    await writeFile(targetFile, "target content");
+    const linkPath = join(root, "link-to-target");
+    await symlink(targetFile, linkPath);
+    const file = await new PAttachmentService([], "").upload(linkPath);
+    expect([file.name, file.data.toString()]).toEqual(["target.txt", "target content"]);
+  });
+  it("enforces size limit, regular file check, and missing file in default mode", async () => {
+    const service = new PAttachmentService([], "", 10);
+    const bigPath = join(root, "big.txt");
+    await writeFile(bigPath, "123456789012345");
+    await rejects(
+      service.upload(bigPath),
+      "validation",
+      "Upload must be a regular file of at most 10 bytes",
+    );
+    await rejects(
+      service.upload(root),
+      "validation",
+      "Upload must be a regular file of at most 10 bytes",
+    );
+    await rejects(
+      service.upload(join(root, "nonexistent.txt")),
+      "not_found",
+      "Upload file not found",
+    );
+  });
+  it("allows hidden files when configured roots contain them", async () => {
+    const hiddenDir = join(dir, ".allowed-hidden");
+    await mkdir(hiddenDir);
+    await writeFile(join(hiddenDir, "file.txt"), "inside root");
+    const file = await new PAttachmentService([hiddenDir], "").upload(join(hiddenDir, "file.txt"));
+    expect([file.name, file.data.toString()]).toEqual(["file.txt", "inside root"]);
+  });
+  it("refuses paths under /proc, /sys, or /dev in default mode", async () => {
+    const service = new PAttachmentService([], "");
+    for (const sysPath of ["/proc/version", "/sys/class", "/dev/null"]) {
+      await rejects(
+        service.upload(sysPath),
+        "policy",
+        "Hidden files and folders are not uploaded by default",
+      );
+    }
+  });
+  it("refuses a symlink pointing to /proc, /sys, or /dev in default mode", async () => {
+    const service = new PAttachmentService([], "");
+    const linkPath = join(root, "link-to-dev");
+    await symlink("/dev/null", linkPath);
+    await rejects(
+      service.upload(linkPath),
+      "policy",
+      "Hidden files and folders are not uploaded by default",
+    );
+  });
+  it("refuses an upload whose bytes contain the configured bot token in default and roots modes", async () => {
+    const fakeToken = "secret-token-12345";
+    const tokenFile = join(root, "with-token.txt");
+    await writeFile(tokenFile, `config: DISCORD_TOKEN=${fakeToken}\nother stuff`);
+
+    const defaultService = new PAttachmentService([], "", undefined, fakeToken);
+    await rejects(defaultService.upload(tokenFile), "policy", "File contains the bot token");
+    await expect(defaultService.upload(tokenFile)).rejects.toMatchObject({
+      name: "PToolError",
+      category: "policy",
+      retryable: false,
+      message: "File contains the bot token",
+      remediation: "Remove the bot token from the file before uploading",
+    });
+
+    const rootsService = new PAttachmentService([root], "", undefined, fakeToken);
+    await rejects(rootsService.upload(tokenFile), "policy", "File contains the bot token");
+
+    // Clean file without token succeeds
+    const cleanFile = join(root, "clean.txt");
+    await writeFile(cleanFile, "safe content");
+    const uploaded = await defaultService.upload(cleanFile);
+    expect(uploaded.data.toString()).toBe("safe content");
+  });
+  it("returns distinct error instances from hidden file refusal", async () => {
+    const service = new PAttachmentService([], "");
+    let err1: unknown;
+    let err2: unknown;
+    try {
+      await service.upload(join(dir, ".secret1"));
+    } catch (e) {
+      err1 = e;
+    }
+    try {
+      await service.upload(join(dir, ".secret2"));
+    } catch (e) {
+      err2 = e;
+    }
+    expect(err1).not.toBe(err2);
+  });
 });
 
 describe("downloads", () => {
@@ -112,11 +274,45 @@ describe("downloads", () => {
       "Invalid attachment URL",
     );
   });
-  it("rejects a missing download directory", async () => {
+  it("creates the download directory recursively on first download", async () => {
+    const freshDir = join(dir, "fresh", "nested");
+    const result = await new PAttachmentService([], freshDir).download(
+      "https://cdn.discordapp.com/a",
+      "x.png",
+    );
+    expect(result.path).toBe(join(freshDir, "x.png"));
+    expect(await readFile(join(freshDir, "x.png"), "utf8")).toBe("hello");
+  });
+  it("uses and creates the default download dir when unset (pointing homedir at temp)", async () => {
+    const fakeHome = join(dir, "home");
+    await mkdir(fakeHome);
+    const origHome = process.env.HOME;
+    const origUserProfile = process.env.USERPROFILE;
+    try {
+      process.env.HOME = fakeHome;
+      process.env.USERPROFILE = fakeHome;
+      expect(homedir()).toBe(fakeHome);
+      const expectedDir = join(fakeHome, "Downloads", "discord-mcp");
+      expect(defaultDownloadDir()).toBe(expectedDir);
+      const service = new PAttachmentService([], defaultDownloadDir());
+      const result = await service.download("https://cdn.discordapp.com/a", "default.png");
+      expect(result.path).toBe(join(expectedDir, "default.png"));
+      expect(await readFile(join(expectedDir, "default.png"), "utf8")).toBe("hello");
+    } finally {
+      if (origHome !== undefined) process.env.HOME = origHome;
+      else delete process.env.HOME;
+      if (origUserProfile !== undefined) process.env.USERPROFILE = origUserProfile;
+      else delete process.env.USERPROFILE;
+    }
+  });
+  it("maps mkdir failure to a validation error when creating download directory", async () => {
+    const filePath = join(dir, "blocked-file");
+    await writeFile(filePath, "not a directory");
+    const blockedDownloadDir = join(filePath, "nested");
     await rejects(
-      new PAttachmentService([], join(dir, "nope")).download("https://cdn.discordapp.com/a", "x"),
+      new PAttachmentService([], blockedDownloadDir).download("https://cdn.discordapp.com/a", "x"),
       "validation",
-      "Download directory does not exist",
+      "Download directory cannot be created",
     );
   });
   it("rejects an unset download directory and path-like names", async () => {

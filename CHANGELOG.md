@@ -42,6 +42,7 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Local file access is open by default: uploads allow any absolute path except hidden files and directories and system paths (`/proc`, `/sys`, `/dev`) unless restricted by `DISCORD_MCP_FILE_ROOTS`, uploads containing the bot token are refused, and `DISCORD_MCP_DOWNLOAD_DIR` defaults to `~/Downloads/discord-mcp` with automatic directory creation on first download.
 - Tool manifest generation writes `coverage/tools.json`; explicit `coverage:sync`
   updates the committed register (`coverage/register.json`) from tools and live
   evidence, and `coverage:check` fails when tools.json is missing or when the
