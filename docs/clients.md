@@ -99,6 +99,12 @@ otherwise the tool is refused with a `policy` error.
 
 - Claude Code 2.1.309 was verified on 3 November 2026 to show the approval
   dialog and accept it end to end.
+- Codex 0.166.0 was verified on 3 November 2026: with approval mode on-request
+  (`codex -a on-request`) it first asks to allow the MCP tool call and then
+  shows the server's approval prompt, and accepting runs the tool end to end; in
+  full-access mode Codex declines the elicitation without asking, so destructive
+  tools return "Approval declined". Use on-request for destructive tools, or set
+  `DISCORD_MCP_APPROVAL=none` if you rely on Codex's own approvals.
 - Other clients: check your client. If it does not support elicitation, set
   `DISCORD_MCP_APPROVAL=none` and rely on the client's own tool confirmation.
 
