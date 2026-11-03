@@ -8,6 +8,9 @@ import { PToolError } from "../core/tool-error.js";
 
 export const snowflake = z.string().regex(/^\d+$/, "Expected a Discord snowflake");
 
+export const codeParam = (name: string) =>
+  z.string().regex(/^[\w-]+$/, `Expected a ${name} code without path segments`);
+
 export const dataUri = z
   .string()
   .regex(

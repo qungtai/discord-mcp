@@ -6,7 +6,9 @@ import { errorOf, harness } from "../support/harness.js";
 // Minimal valid input per approval tool; the denial happens after validation and before any request.
 const ARGUMENTS: Record<string, Record<string, unknown>> = {
   discord_add_guild_member_role: { guild_id: "1", user_id: "2", role_id: "3" },
+  discord_add_invite_target_user: { code: "abc", user_id: "2" },
   discord_ban_user_from_guild: { guild_id: "1", user_id: "2" },
+  discord_bulk_add_invite_target_users: { code: "abc", user_ids: ["2"] },
   discord_bulk_ban_users_from_guild: { guild_id: "1", user_ids: ["2"] },
   discord_bulk_delete_invite_target_users: { code: "abc", user_ids: ["2"] },
   discord_bulk_delete_messages: { channel_id: "1", message_ids: ["2", "3"] },

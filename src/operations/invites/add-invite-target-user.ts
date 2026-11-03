@@ -12,6 +12,8 @@ export const addInviteTargetUser = defineTool({
   scope: { invite: "code" },
   permissions: ["ManageGuild"],
   effect: "write",
+  // Target users can accept a role-granting invite, the same privilege path as add_guild_member_role.
+  approval: true,
   idempotent: true,
   input: z.object({
     code: inviteCode,

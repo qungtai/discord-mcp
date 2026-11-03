@@ -1,9 +1,9 @@
 import { z } from "zod/v4";
-import { channel, resource, snowflake, user } from "../schemas.js";
+import { channel, codeParam, resource, snowflake, user } from "../schemas.js";
 
-export const inviteCode = z
-  .string()
-  .regex(/^[\w-]+$/, "Expected an invite code without path segments");
+export const inviteCode = codeParam("invite");
+
+export const targetUserIds = z.array(snowflake).min(1).max(1000);
 
 export const invite = resource(
   z.looseObject({

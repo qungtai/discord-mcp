@@ -136,3 +136,21 @@ it("denies when target_channel_id belongs to another guild", async () => {
     message: "Guild is not allowed",
   });
 });
+
+it("denies when target_message_id is provided without target_channel_id under an allowlist", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine(["500"], ["invites"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_get_invite",
+    arguments: {
+      code: "testcode",
+      target_message_id: "200",
+    },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "policy",
+    message: "Scope kind message cannot be checked against the allowlist",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
