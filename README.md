@@ -17,7 +17,7 @@ A community Model Context Protocol (MCP) server for the Discord REST API.
 
 ## Status
 
-0.1.0, early release. Listed on the MCP Registry as io.github.qungtai/discord-mcp.
+0.1.0, early release. Available on npm as @qungtai/discord-mcp; MCP Registry name io.github.qungtai/discord-mcp.
 
 ## Quick start
 
@@ -540,7 +540,7 @@ Setting `DISCORD_MCP_READ_ONLY=true` rejects all mutating tools (writes and dest
 
 ### Install from source
 
-Prerequisites: Node >= 22. On Node 25 or later, first run npm install -g corepack.
+Prerequisites: Node >= 22. On Node 25 or later, first run `npm install -g corepack`.
 
 Clone the repository and install dependencies:
 

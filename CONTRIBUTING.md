@@ -4,7 +4,7 @@ Thank you for contributing to `@qungtai/discord-mcp`.
 
 ## Prerequisites
 
-- Node.js >= 22 (pinned in `engines` in `package.json`). On Node 25 or later, first run npm install -g corepack.
+- Node.js >= 22 (pinned in `engines` in `package.json`). On Node 25 or later, first run `npm install -g corepack`.
 - Corepack enabled (`corepack enable`)
 - pnpm (managed by corepack via `packageManager` in `package.json`)
 

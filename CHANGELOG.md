@@ -6,9 +6,7 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Changed
-
-- Release infrastructure hardened for public release v0.1.0.
+## [0.1.0] - 2026-11-04
 
 ### Added
 
@@ -49,6 +47,7 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Release infrastructure hardened for public release v0.1.0.
 - Hardened launch configuration, startup validation, and file safety:
   - Open-mode uploads refuse paths under `~/Library` (macOS), `%APPDATA%`, and `%LOCALAPPDATA%` (Windows) to defend against credential leakage from prompt injection.
   - Tilde expansion with `homedir()` for leading `~/` in `DISCORD_MCP_DOWNLOAD_DIR` and `DISCORD_MCP_FILE_ROOTS`.
@@ -106,3 +105,6 @@ follows [Semantic Versioning](https://semver.org/).
 - A route segment that decodes to `.` or `..` is refused before the request is
   sent, and the approval prompt truncates long argument values and redacts
   token-shaped strings.
+
+[Unreleased]: https://github.com/qungtai/discord-mcp/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/qungtai/discord-mcp/releases/tag/v0.1.0

@@ -68,6 +68,34 @@
           "description": "Absolute directory path where attachment downloads are stored. Defaults to ~/Downloads/discord-mcp and is created recursively on first download.",
           "isRequired": false,
           "isSecret": false
+        },
+        {
+          "name": "DISCORD_MCP_MAX_DOWNLOAD_BYTES",
+          "description": "Maximum download size in bytes for discord_download_attachment (defaults to 100 MiB).",
+          "isRequired": false,
+          "isSecret": false,
+          "default": "104857600"
+        },
+        {
+          "name": "DISCORD_MCP_MAX_UPLOAD_BYTES",
+          "description": "Maximum upload size in bytes (defaults to 20 MiB).",
+          "isRequired": false,
+          "isSecret": false,
+          "default": "20971520"
+        },
+        {
+          "name": "DISCORD_MCP_REQUEST_TIMEOUT_MS",
+          "description": "HTTP request timeout in milliseconds for Discord REST API requests.",
+          "isRequired": false,
+          "isSecret": false,
+          "default": "15000"
+        },
+        {
+          "name": "DISCORD_MCP_RATE_LIMIT_WAIT_MS",
+          "description": "Maximum wait duration in milliseconds when encountering a Discord rate limit before aborting.",
+          "isRequired": false,
+          "isSecret": false,
+          "default": "5000"
         }
       ]
     }
