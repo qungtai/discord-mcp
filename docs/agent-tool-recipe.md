@@ -52,7 +52,7 @@ export const getChannel = defineTool({
 
 ## Scope (guild allowlist)
 - Scope only IDs the route or body uses, as top-level inputs: `scope: { guild: "guild_id", channel: ["channel_id", "target_channel_ids"] }`. Values must be a string or string[].
-- Kinds: `guild`, `channel` (thread IDs are channel IDs), `webhook` (webhook IDs), `invite` (invite codes). Channels, webhooks and invites are looked up, so a guild input never vouches for them. `message` needs a `channel` next to it. Any other kind fails under an allowlist.
+- Kinds: `guild`, `channel` (thread IDs are channel IDs), `webhook` (webhook IDs), `invite` (invite codes), and `user`. Channels, webhooks and invites are looked up, so a guild input never vouches for them. The `user` kind resolves to a DM; use it only for tools that reach a user directly (e.g. `discord_create_dm`), never for guild member IDs (which belong to a guild and would refuse every guild call while DMs are off). `message` needs a `channel` next to it. Any other kind fails under an allowlist.
 - IDs that Discord checks against the guild or channel in the route need no scope: role, member, emoji and overwrite IDs, and channel IDs inside `PATCH /guilds/{guild_id}/channels`. Message IDs take `message` next to their `channel`, as in the message tools. Every top-level `*_id`, `*_ids` and `code` input is audited whether scoped or not.
 - `test/core/scope-declarations.test.ts` fails when a top-level guild, channel, thread or webhook ID input is not scoped. Add a key to its exception list only when Discord checks it against the route, with the reason in the PR.
 - Never add a `guild_id` or `channel_id` input just to satisfy the allowlist, and never read a resource ID from a nested object.
@@ -78,6 +78,6 @@ export const getChannel = defineTool({
 ## Before the PR
 ```sh
 pnpm biome check --write .
-pnpm install --frozen-lockfile && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm tools:manifest
+pnpm install --frozen-lockfile && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm tools:manifest && pnpm coverage:sync && pnpm coverage:report && pnpm coverage:check
 ```
 Check that your tools appear in `coverage/tools.json` with the right `effect` and `approval`.

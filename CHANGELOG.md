@@ -19,19 +19,10 @@ follows [Semantic Versioning](https://semver.org/).
 - DM policy switch (`DISCORD_MCP_ALLOW_DMS`, default `false`): a guild allowlist
   never implies DM access; direct messages and user-scoped operations require
   `DISCORD_MCP_ALLOW_DMS=true` when an allowlist is active.
-- CI workflow (`.github/workflows/ci.yml`) running lint, typecheck and tests.
-- Community documentation: README, client configurations, contributing guide,
-  security policy, changelog and license.
-- 110 Discord tools across ten toolsets: channels (12), events (11), guild (22),
-  invites (2), members (12), messages (15), moderation (10), reactions (6),
-  roles (7) and threads (13), registered from one operation descriptor each.
-- 10 invite operations in the invites toolset: resolve invite (`discord_get_invite`),
-  revoke invite (`discord_delete_invite`), list guild invites (`discord_list_guild_invites`),
-  target users CSV retrieval (`discord_list_invite_target_users`), target users CSV
-  upload (`discord_set_invite_target_users`), target users job status
-  (`discord_get_invite_target_users_job_status`), bulk add/delete target users
-  (`discord_bulk_add_invite_target_users`, `discord_bulk_delete_invite_target_users`),
-  and single target user add/delete (`discord_add_invite_target_user`, `discord_delete_invite_target_user`).
+- 137 Discord tools across twelve toolsets: channels (13), core (6), events (11),
+  guild (22), invites (12), members (12), messages (15), moderation (10),
+  reactions (6), roles (7), threads (13) and webhooks (10), registered from one
+  operation descriptor each.
 - Approval through MCP elicitation: destructive tools ask the user before they
   run, and `DISCORD_MCP_APPROVAL` selects `elicitation` or `none`. In `none` mode
   the server prints a warning at startup because server-side approval is off.
@@ -44,9 +35,10 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Automatic synchronization between the tool manifest, live evidence, and coverage
-  register (`coverage/register.json`) so operation statuses and evidence stay up
-  to date and drift checks fail on any discrepancy.
+- Tool manifest generation writes `coverage/tools.json`; explicit `coverage:sync`
+  updates the committed register (`coverage/register.json`) from tools and live
+  evidence, and `coverage:check` fails when tools.json is missing or when the
+  committed register differs from sync output.
 - Resource outputs are loose objects: every field Discord sends reaches the
   caller, so `discord_get_channel` now returns `permission_overwrites`, `nsfw`,
   `rate_limit_per_user` and future fields instead of dropping them. Input

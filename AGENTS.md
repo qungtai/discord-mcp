@@ -55,7 +55,7 @@ Avoid: deep inheritance, god classes, a generic "call any endpoint" tool outside
 - Every tool: schema tests, mocked REST contract tests and permission/error tests. Protocol tests run through a real MCP client over stdio and HTTP.
 - Live tests are opt-in via env vars and run only against the test server: lequangtai's server (`1381945630808604713`) with `lequangtaibot`. Create only run-owned resources, record their IDs, clean up only those IDs.
 - A schema rejection, dry-run preview or HTTP 2xx is not live verification; verification means reading the end state back.
-- Code coverage gates (vitest): at least 80% lines and branches overall, 90% for `src/core`. CI fails below these.
+- Code coverage gates (vitest): at least 80% lines and branches overall, 90% for `src/core`. Verification sequence: `pnpm install --frozen-lockfile && pnpm biome check --write . && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm tools:manifest && pnpm coverage:sync && pnpm coverage:report && pnpm coverage:check`.
 
 ## 7. Git workflow
 - Author: `Tai Q Le (Peter) <lequangtai1602@gmail.com>`, set per repo with `git config user.name` / `user.email`.
