@@ -17,7 +17,7 @@ A community Model Context Protocol (MCP) server for the Discord REST API.
 
 ## Status
 
-Pre-release, not yet published to npm. Will be listed on the official MCP Registry as `io.github.qungtai/discord-mcp` once published. Until publication, use the from-source configuration in the [Install from source](#install-from-source) section below.
+0.1.0, early release. Listed on the MCP Registry as io.github.qungtai/discord-mcp.
 
 ## Quick start
 
@@ -56,8 +56,6 @@ Recommended: add `DISCORD_MCP_ALLOWED_GUILDS` to `env`, set to your server ID fr
 Enable more toolsets with [`DISCORD_MCP_TOOLSETS`](#configuration). Restrict uploads to specific folders with [`DISCORD_MCP_FILE_ROOTS`](#configuration). Set [`DISCORD_MCP_DOWNLOAD_DIR`](#configuration) for downloads.
 
 ### 3. Client setup
-
-Until the first release, build from source ([Install from source](#install-from-source)) and set `command` to `node` and `args` to `["/absolute/path/to/discord-mcp/dist/index.js"]`; for the CLI one-liners, replace `npx -y @qungtai/discord-mcp` after `--`.
 
 <details>
 <summary>Claude Code</summary>
@@ -204,19 +202,30 @@ Set `DISCORD_TOKEN` in the inspector environment panel before connecting.
 Run the server with Docker:
 
 ```sh
-docker run -i --rm -e DISCORD_TOKEN="your-bot-token" -v /path/to/downloads:/home/node/Downloads/discord-mcp ghcr.io/qungtai/discord-mcp:latest
+docker run -i --rm -e DISCORD_TOKEN="your-bot-token" -v /path/to/downloads:/home/node/Downloads/discord-mcp -v /path/to/uploads:/uploads ghcr.io/qungtai/discord-mcp:latest
 ```
 
-When using file tools, mount host directories with `-v host_path:container_path` so uploads and downloads are accessible outside the container.
+When using file tools, mount host directories with `-v host_path:container_path` so uploads and downloads are accessible outside the container. Upload paths passed to tools must be container paths. On Linux bind mounts, pass `--user "$(id -u):$(id -g)" -e DISCORD_MCP_DOWNLOAD_DIR=/home/node/Downloads/discord-mcp` if container user permissions prevent writing to the mounted host directories.
 
-Configure in your MCP client:
+Configure in your MCP client (on Linux with custom `--user`, also add `-e DISCORD_MCP_DOWNLOAD_DIR=/home/node/Downloads/discord-mcp` to args):
 
 ```json
 {
   "mcpServers": {
     "discord": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "-e", "DISCORD_TOKEN", "ghcr.io/qungtai/discord-mcp:latest"],
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DISCORD_TOKEN",
+        "-v",
+        "/path/to/downloads:/home/node/Downloads/discord-mcp",
+        "-v",
+        "/path/to/uploads:/uploads",
+        "ghcr.io/qungtai/discord-mcp:latest"
+      ],
       "env": {
         "DISCORD_TOKEN": "your-bot-token"
       }
@@ -522,7 +531,7 @@ Setting `DISCORD_MCP_READ_ONLY=true` rejects all mutating tools (writes and dest
 
 ### Install from source
 
-Prerequisites: Node >= 22.
+Prerequisites: Node >= 22. On Node 25 or later, first run npm install -g corepack.
 
 Clone the repository and install dependencies:
 

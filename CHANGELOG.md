@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Release infrastructure hardened for public release v0.1.0.
+
 ### Added
 
 - Release infrastructure, CI workflows, Dependabot, multi-arch Docker image, and MCP Registry metadata.

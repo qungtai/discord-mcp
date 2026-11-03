@@ -1,12 +1,16 @@
+import { createRequire } from "node:module";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { toJsonSchemaCompat } from "@modelcontextprotocol/sdk/server/zod-json-schema-compat.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { PToolPipeline } from "../../core/pipeline.js";
 
+const require = createRequire(import.meta.url);
+const pkg = require("../../../package.json") as { version: string };
+
 // Low-level server so input validation runs in the pipeline and fails with the structured shape.
 export function createServer(pipeline: PToolPipeline): Server {
   const server = new Server(
-    { name: "discord-mcp", version: "0.1.0" },
+    { name: "discord-mcp", version: pkg.version },
     { capabilities: { tools: {}, logging: {} } },
   );
   const tools = pipeline.tools().map((tool) => ({
