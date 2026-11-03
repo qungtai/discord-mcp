@@ -1,0 +1,150 @@
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { PPolicyEngine } from "../../../src/core/policy.js";
+import { errorOf, harness, json } from "../../support/harness.js";
+
+beforeEach(() => {
+  vi.spyOn(process.stderr, "write").mockReturnValue(true);
+});
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
+
+it("adds a role to a guild member with reason", async () => {
+  const { client, request } = await harness({
+    policy: new PPolicyEngine([], ["members"], false),
+    respond: () => null,
+  });
+  const result = await client.callTool({
+    name: "discord_add_guild_member_role",
+    arguments: {
+      guild_id: "123",
+      user_id: "456",
+      role_id: "789",
+      reason: "Granted VIP",
+    },
+  });
+  const req = request();
+  expect(req.method).toBe("PUT");
+  expect(req.url).toBe("https://discord.com/api/v10/guilds/123/members/456/roles/789");
+  expect(new Headers(req.headers as HeadersInit).get("x-audit-log-reason")).toBe(
+    encodeURIComponent("Granted VIP"),
+  );
+  expect(result.structuredContent).toEqual({
+    added: true,
+    guild_id: "123",
+    user_id: "456",
+    role_id: "789",
+  });
+});
+
+it("passes allowlist check when guild is allowed", async () => {
+  const { client, request } = await harness({
+    policy: new PPolicyEngine(["123"], ["members"], false),
+    respond: () => null,
+  });
+  const result = await client.callTool({
+    name: "discord_add_guild_member_role",
+    arguments: { guild_id: "123", user_id: "456", role_id: "789" },
+  });
+  expect(result.structuredContent).toEqual({
+    added: true,
+    guild_id: "123",
+    user_id: "456",
+    role_id: "789",
+  });
+  expect(request()).toMatchObject({
+    method: "PUT",
+    url: "https://discord.com/api/v10/guilds/123/members/456/roles/789",
+  });
+});
+
+it("denies access when guild is not allowed", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine(["999"], ["members"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_add_guild_member_role",
+    arguments: { guild_id: "123", user_id: "456", role_id: "789" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "policy",
+    message: "Guild is not allowed",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it("blocks execution in read-only mode", async () => {
+  const { pipeline, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["members"], true),
+  });
+  const result = await pipeline.call("discord_add_guild_member_role", {
+    guild_id: "123",
+    user_id: "456",
+    role_id: "789",
+  });
+  expect(result).toMatchObject({
+    error: { category: "policy", message: "Read-only mode" },
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it.each([
+  ["invalid guild_id", { guild_id: "bad", user_id: "456", role_id: "789" }],
+  ["invalid user_id", { guild_id: "123", user_id: "bad", role_id: "789" }],
+  ["invalid role_id", { guild_id: "123", user_id: "456", role_id: "bad" }],
+])("validates input strictly: %s", async (_, args) => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["members"], false),
+  });
+  const result = await client.callTool({
+    name: "discord_add_guild_member_role",
+    arguments: args,
+  });
+  expect(errorOf(result)).toMatchObject({ category: "validation" });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it("handles 403 missing permissions error", async () => {
+  const { pipeline } = await harness({
+    policy: new PPolicyEngine([], ["members"], false),
+    makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+  });
+  expect(
+    await pipeline.call("discord_add_guild_member_role", {
+      guild_id: "123",
+      user_id: "456",
+      role_id: "789",
+    }),
+  ).toMatchObject({
+    ok: false,
+    error: {
+      category: "permission",
+      status: 403,
+      discord_code: 50013,
+      remediation: "Check the bot permissions; this tool needs ManageRoles",
+    },
+  });
+});
+
+it("handles 404 error", async () => {
+  const { pipeline } = await harness({
+    policy: new PPolicyEngine([], ["members"], false),
+    makeRequest: async () => json({ message: "Unknown Role", code: 10011 }, { status: 404 }),
+  });
+  expect(
+    await pipeline.call("discord_add_guild_member_role", {
+      guild_id: "123",
+      user_id: "456",
+      role_id: "789",
+    }),
+  ).toMatchObject({
+    ok: false,
+    error: {
+      category: "not_found",
+      status: 404,
+      discord_code: 10011,
+      remediation: "Check the IDs in the request",
+    },
+  });
+});
