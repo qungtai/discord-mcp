@@ -8,6 +8,8 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Live evidence file (`coverage/live-evidence.json`) recording real Discord actions
+  and outcomes, synced automatically into the coverage register.
 - CI workflow (`.github/workflows/ci.yml`) running lint, typecheck and tests.
 - Community documentation: README, client configurations, contributing guide,
   security policy, changelog and license.
@@ -26,6 +28,9 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Automatic synchronization between the tool manifest, live evidence, and coverage
+  register (`coverage/register.json`) so operation statuses and evidence stay up
+  to date and drift checks fail on any discrepancy.
 - Resource outputs are loose objects: every field Discord sends reaches the
   caller, so `discord_get_channel` now returns `permission_overwrites`, `nsfw`,
   `rate_limit_per_user` and future fields instead of dropping them. Input

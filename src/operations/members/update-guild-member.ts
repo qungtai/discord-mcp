@@ -6,7 +6,7 @@ import { member, reason, snowflake } from "../schemas.js";
 export const updateGuildMember = defineTool({
   name: "discord_update_guild_member",
   description:
-    "Update attributes of a guild member. channel_id moves the member to a voice channel; null disconnects them",
+    "Update attributes of a guild member. Discord refuses edits to the bot itself here; discord_update_my_guild_member changes the bot's own nickname. channel_id moves the member to a voice channel; null disconnects them",
   operationIds: ["update_guild_member"],
   toolset: "members",
   scope: { guild: "guild_id", channel: "channel_id" },
