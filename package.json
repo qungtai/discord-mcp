@@ -1,6 +1,7 @@
 {
   "name": "@qungtai/discord-mcp",
   "version": "0.1.0",
+  "mcpName": "io.github.qungtai/discord-mcp",
   "description": "A community MCP server for the Discord REST API with traceable coverage",
   "license": "MIT",
   "author": "Tai Q Le (Peter) <lequangtai1602@gmail.com>",
@@ -53,6 +54,10 @@
     "vitest": "^3.2.0"
   },
   "packageManager": "pnpm@11.24.0",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "files": [
     "dist"
   ]

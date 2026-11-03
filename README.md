@@ -17,7 +17,7 @@ A community Model Context Protocol (MCP) server for the Discord REST API.
 
 ## Status
 
-Pre-release, not yet published to npm. Until publication, use the from-source configuration in the [Install from source](#install-from-source) section below.
+Pre-release, not yet published to npm. Will be listed on the official MCP Registry as `io.github.qungtai/discord-mcp` once published. Until publication, use the from-source configuration in the [Install from source](#install-from-source) section below.
 
 ## Quick start
 
@@ -195,6 +195,35 @@ npx @modelcontextprotocol/inspector -- npx -y @qungtai/discord-mcp
 ```
 
 Set `DISCORD_TOKEN` in the inspector environment panel before connecting.
+
+</details>
+
+<details>
+<summary>Install with Docker</summary>
+
+Run the server with Docker:
+
+```sh
+docker run -i --rm -e DISCORD_TOKEN="your-bot-token" -v /path/to/downloads:/home/node/Downloads/discord-mcp ghcr.io/qungtai/discord-mcp:latest
+```
+
+When using file tools, mount host directories with `-v host_path:container_path` so uploads and downloads are accessible outside the container.
+
+Configure in your MCP client:
+
+```json
+{
+  "mcpServers": {
+    "discord": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "DISCORD_TOKEN", "ghcr.io/qungtai/discord-mcp:latest"],
+      "env": {
+        "DISCORD_TOKEN": "your-bot-token"
+      }
+    }
+  }
+}
+```
 
 </details>
 
