@@ -29,7 +29,7 @@ gated by `DISCORD_MCP_TOOLSETS` (default `core,messages`).
 - members / roles: read, search, add, update, remove, roles, prune, join requests
 - moderation: bans, AutoMod rules
 - events: scheduled events and subscribers
-- invites: create, get, delete, target users
+- invites: create, get, delete, list guild/channel invites, target users (get, set CSV, bulk add/delete, single user add/delete, job status)
 - expressions: emojis, stickers, soundboard
 - voice: regions, voice states, stage instances
 - commands: application commands and permissions
