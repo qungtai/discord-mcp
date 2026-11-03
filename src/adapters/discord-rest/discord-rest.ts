@@ -29,7 +29,8 @@ export class PDiscordRestAdapter implements DiscordTransport {
       retries: 0,
       // The per-request signal enforces the real deadline; this is only an upper bound.
       timeout: Math.ceil(this.timeoutMs + MAX_UPLOAD_BYTES / UPLOAD_BYTES_PER_MS),
-      rejectOnRateLimit: (data) => Math.max(data.retryAfter, data.timeToReset) > rateLimitWaitMs,
+      rejectOnRateLimit: (data) =>
+        data.retryAfter <= 0 || Math.max(data.retryAfter, data.timeToReset) > rateLimitWaitMs,
       ...options.rest,
     }).setToken(token);
   }
@@ -82,13 +83,20 @@ function toQuery(query: NonNullable<DiscordRequestInit["query"]>): URLSearchPara
   return params;
 }
 function toToolError(error: unknown, cancelled: boolean): PToolError {
-  if (error instanceof RateLimitError)
+  if (error instanceof RateLimitError) {
+    if (error.retryAfter === 0 && error.timeToReset === 0)
+      return new PToolError("Discord rate limit exceeded", {
+        category: "rate_limited",
+        retryable: true,
+        remediation: "Discord did not say when to retry; wait a few minutes before retrying",
+      });
     return new PToolError("Discord rate limit exceeded", {
       category: "rate_limited",
       retryable: true,
       remediation: "Retry after retry_after seconds",
       retryAfter: Math.ceil(Math.max(error.retryAfter, error.timeToReset) / 1000),
     });
+  }
   if (error instanceof DiscordAPIError || error instanceof HTTPError) {
     const { status } = error;
     const [category, remediation] = BY_STATUS[status] ?? [

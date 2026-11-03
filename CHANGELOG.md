@@ -68,6 +68,7 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- An unexpected HTTP 429 response without a `Retry-After` header is rejected immediately as a rate-limited error instead of looping requests until timeout.
 - Clearable channel fields accept `null` again on `discord_update_guild`,
   `discord_update_guild_widget_settings`, `discord_update_guild_member` and
   `discord_update_guild_scheduled_event`.
