@@ -4,7 +4,7 @@
   "mcpName": "io.github.qungtai/discord-mcp",
   "description": "A community MCP server for the Discord REST API with traceable coverage",
   "license": "MIT",
-  "author": "Tai Q Le (Peter) <lequangtai1602@gmail.com>",
+  "author": "Tai Q Le (Peter) (https://github.com/qungtai)",
   "repository": {
     "type": "git",
     "url": "https://github.com/qungtai/discord-mcp.git"
@@ -59,6 +59,7 @@
     "provenance": true
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/tools-manifest.js"
   ]
 }

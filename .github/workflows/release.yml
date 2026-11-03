@@ -17,13 +17,29 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+          fetch-depth: 0
 
-      - name: Verify release tag matches package.json version
+      - name: Verify tag is ancestor of origin/main
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor "${GITHUB_SHA}" origin/main
+
+      - name: Verify release tag matches package.json and server.json versions
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
           EXPECTED_TAG="v${PKG_VERSION}"
           if [ "${GITHUB_REF_NAME}" != "${EXPECTED_TAG}" ]; then
             echo "Tag ${GITHUB_REF_NAME} does not match expected tag ${EXPECTED_TAG} for version ${PKG_VERSION}"
+            exit 1
+          fi
+          SERVER_VERSION=$(node -p "require('./server.json').version")
+          if [ "${SERVER_VERSION}" != "${PKG_VERSION}" ]; then
+            echo "server.json version ${SERVER_VERSION} does not match package.json version ${PKG_VERSION}"
+            exit 1
+          fi
+          PACKAGE_PKG_VERSION=$(node -p "require('./server.json').packages[0].version")
+          if [ "${PACKAGE_PKG_VERSION}" != "${PKG_VERSION}" ]; then
+            echo "server.json packages[0].version ${PACKAGE_PKG_VERSION} does not match package.json version ${PKG_VERSION}"
             exit 1
           fi
 
@@ -65,8 +81,64 @@ jobs:
       - name: Coverage check
         run: pnpm coverage:check
 
-  docker:
+  npm:
     needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # actions/checkout@v4.4.0
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      # actions/setup-node@v4.4.0
+      # Node 24 bundles npm >= 11.5.1 required for OIDC trusted publishing.
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Derive version and publish tags
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "${VERSION}" == *-* ]]; then
+            echo "NPM_TAG_ARG=--tag next" >> "$GITHUB_ENV"
+          else
+            echo "NPM_TAG_ARG=" >> "$GITHUB_ENV"
+          fi
+
+      # Package bootstrap procedure before the first workflow run:
+      # 1. Ensure the npm user/org owning the scope exists with 2FA enabled.
+      # 2. Publish a placeholder version 0.0.0 from a minimal temporary directory:
+      #      npm publish --access public --provenance=false
+      # 3. In npmjs.com package Settings > Trusted publishing, add GitHub Actions:
+      #      owner: qungtai, repo: discord-mcp, workflow: release.yml, environment: (empty).
+      # 4. Mark placeholder deprecated:
+      #      npm deprecate @qungtai/discord-mcp@0.0.0 "placeholder"
+      # Following the npm release, server.json is submitted to the MCP Registry (e.g. via mcp-publisher publish).
+      - name: Publish to npm
+        run: |
+          if npm view "@qungtai/discord-mcp@${GITHUB_REF_NAME#v}" version >/dev/null 2>&1; then
+            echo "already published"
+            exit 0
+          fi
+          npm publish --provenance --access public $NPM_TAG_ARG
+
+  docker:
+    needs: [verify, npm]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -118,48 +190,3 @@ jobs:
           build-args: |
             VERSION=${{ env.VERSION }}
           tags: ${{ env.DOCKER_TAGS }}
-
-  npm:
-    needs: [verify, docker]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      # actions/checkout@v4.4.0
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          persist-credentials: false
-
-      # actions/setup-node@v4.4.0
-      # Node 24 bundles npm >= 11.5.1 required for OIDC trusted publishing.
-      - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: 24
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm build
-
-      - name: Derive version and publish tags
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          if [[ "${VERSION}" == *-* ]]; then
-            echo "NPM_TAG_ARG=--tag next" >> "$GITHUB_ENV"
-          else
-            echo "NPM_TAG_ARG=" >> "$GITHUB_ENV"
-          fi
-
-      # Note: npm trusted publishing must be configured once on npmjs.com for this workflow.
-      # The very first version can be published manually.
-      # Following the npm release, server.json is submitted to the MCP Registry (e.g. via mcp-publisher publish).
-      - name: Publish to npm
-        run: npm publish --provenance --access public $NPM_TAG_ARG

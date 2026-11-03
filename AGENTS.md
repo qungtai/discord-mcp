@@ -12,7 +12,7 @@
 src/
   core/         registry, pipeline, policy, errors, credentials
   adapters/
-    mcp/          stdio and Streamable HTTP server wiring
+    mcp/          stdio server wiring; Streamable HTTP wiring (planned)
     discord-rest/ REST client wrapper
     gateway/      Gateway client (planned)
     files/        sandboxed local file access
@@ -34,9 +34,9 @@ coverage/       pinned baseline and operation register (machine-readable)
 ## 4. Design patterns
 1. Operation registry: each Discord operation is a descriptor (id, method, path, zod input and output, credential profile, permissions, annotations, toolset). The registry is the single source for tool registration, the coverage report and generated test skeletons.
 2. Ports and adapters: core logic depends on interfaces, not on MCP or Discord libraries. Adapters implement MCP (stdio, HTTP), Discord REST, Gateway and file access.
-3. One pipeline for every tool call: validate, resolve credential profile, policy check (allowlists, read-only, toolsets), preview and approval for destructive operations, rate-limited execution, response mapping, audit, structured result. No tool bypasses it.
-4. Command objects for mutating operations with `preview()` and `execute()`; dry-run, approval binding and audit build on them.
-5. Strategy for credential profiles (bot, webhook, OAuth user, app owner) and transports (stdio, HTTP).
+3. One pipeline for every tool call: validate, resolve credential profile, policy check (allowlists, read-only, toolsets), preview and approval for destructive operations (preview planned), rate-limited execution, response mapping, audit, structured result. No tool bypasses it.
+4. Command objects for mutating operations with `preview()` (planned) and `execute()`; dry-run (planned), approval binding and audit build on them.
+5. Strategy for credential profiles (bot, webhook, OAuth user, app owner) and transports (stdio; HTTP planned).
 6. `defineTool()` factory builds every tool from its descriptor; no hand-rolled tool boilerplate.
 7. `PAttachmentService` facade owns uploads (multipart), keep/remove/replace, metadata edits, downloads with SHA-256 and path sandboxing.
 8. Structured errors: one error type with category, retryable flag, remediation, operation ID and resource IDs. The pipeline converts thrown errors into MCP error results.
@@ -50,7 +50,7 @@ Avoid: deep inheritance, god classes, a generic "call any endpoint" tool outside
 - In stdio mode nothing but protocol messages goes to stdout; logs go to stderr through MCP `notifications/message` where appropriate. Secrets are redacted in every log and error.
 
 ## 6. Testing
-- Every tool: schema tests, mocked REST contract tests and permission/error tests. Protocol tests run through a real MCP client over stdio and HTTP.
+- Every tool: schema tests, mocked REST contract tests and permission/error tests. Protocol tests run through a real MCP client over stdio (HTTP planned).
 - Live verification is performed by running the server with `DISCORD_TOKEN` set against the contributor's own test server. Create only run-owned resources, record their IDs, clean up only those IDs.
 - A schema rejection, dry-run preview or HTTP 2xx is not live verification; verification means reading the end state back.
 - Code coverage gates (vitest): at least 80% lines and branches overall, 90% for `src/core`. `pnpm test` fails below these (thresholds in `vitest.config.ts`). Verification sequence: `pnpm install --frozen-lockfile && pnpm biome check --write . && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm tools:manifest && pnpm docs:tools && pnpm coverage:sync && pnpm coverage:report && pnpm coverage:check`.

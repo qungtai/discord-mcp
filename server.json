@@ -67,8 +67,7 @@
           "name": "DISCORD_MCP_DOWNLOAD_DIR",
           "description": "Absolute directory path where attachment downloads are stored. Defaults to ~/Downloads/discord-mcp and is created recursively on first download.",
           "isRequired": false,
-          "isSecret": false,
-          "default": "~/Downloads/discord-mcp"
+          "isSecret": false
         }
       ]
     }
