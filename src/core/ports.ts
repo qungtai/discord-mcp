@@ -2,6 +2,7 @@ export interface RawFile {
   name: string;
   data: Buffer;
   contentType?: string;
+  key?: string;
 }
 export interface DiscordRequestInit {
   method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";

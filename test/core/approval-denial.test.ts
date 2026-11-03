@@ -87,6 +87,7 @@ describe("approval denial without elicitation", () => {
     expect(approvalTools.map((tool) => tool.name).filter((name) => !(name in ARGUMENTS))).toEqual(
       [],
     );
+    expect(Object.keys(ARGUMENTS).sort()).toEqual(approvalTools.map((tool) => tool.name).sort());
   });
 
   it.each(approvalTools.map((tool) => [tool.name, ARGUMENTS[tool.name]] as const))(

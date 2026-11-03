@@ -10,12 +10,14 @@ const LOOKUPS: Partial<Record<ScopeKind, (id: string) => `/${string}`>> = {
 interface Location {
   guild: string | null;
   channel?: string;
+  isDm?: boolean;
 }
 interface Found {
+  type?: number;
   guild_id?: string | null;
   channel_id?: string | null;
   guild?: { id: string };
-  channel?: { id: string };
+  channel?: { id: string; type?: number };
 }
 
 // Every channel, webhook and invite is resolved even when the input names a guild, so a guild ID
@@ -28,10 +30,19 @@ export function createScopeResolver(): ScopeResolver {
     if (!location) {
       const route = LOOKUPS[kind];
       if (!route) throw unchecked(kind);
-      location = discord<Found>({ method: "GET", route: route(id) }).then((found) => ({
-        guild: found.guild_id ?? found.guild?.id ?? null,
-        channel: kind === "channel" ? id : (found.channel_id ?? found.channel?.id ?? undefined),
-      }));
+      location = discord<Found>({ method: "GET", route: route(id) }).then((found) => {
+        const guild = found.guild_id ?? found.guild?.id ?? null;
+        const channel =
+          kind === "channel" ? id : (found.channel_id ?? found.channel?.id ?? undefined);
+        const isDm =
+          (kind === "channel" && (found.type === 1 || found.type === 3)) ||
+          (kind === "invite" && found.type === 1);
+        return {
+          guild,
+          channel,
+          isDm,
+        };
+      });
       location.catch(() => cache.delete(key));
       cache.set(key, location);
     }
@@ -40,7 +51,7 @@ export function createScopeResolver(): ScopeResolver {
   return async (ids, discord) => {
     // A message is checked by the channel in its route, so it needs a channel next to it.
     if (ids.message?.length && !ids.channel?.length) throw unchecked("message");
-    const userLocations: Location[] = (ids.user ?? []).map(() => ({ guild: null }));
+    const userLocations: Location[] = (ids.user ?? []).map(() => ({ guild: null, isDm: true }));
     const locations = (
       await Promise.all(
         (Object.entries(ids) as [ScopeKind, string[]][])
@@ -52,7 +63,7 @@ export function createScopeResolver(): ScopeResolver {
     return {
       guildIds: [...new Set([...(ids.guild ?? []), ...guilds.filter((g) => g !== null)])],
       channelIds: [...new Set(locations.flatMap((l) => (l.channel ? [l.channel] : [])))],
-      isDm: guilds.includes(null),
+      isDm: locations.some((l) => l.isDm),
     };
   };
 }

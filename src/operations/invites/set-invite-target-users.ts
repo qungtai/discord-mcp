@@ -26,9 +26,7 @@ export const setInviteTargetUsers = defineTool({
   execute: async ({ code, file }, { discord, files }) => {
     const prepared = await files.prepare([file]);
     const fileWithKey = prepared.files.map((f) => ({
-      name: f.name,
-      data: f.data,
-      contentType: f.contentType,
+      ...f,
       key: "target_users_file",
     }));
     await discord<void>({
