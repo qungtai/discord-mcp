@@ -30,7 +30,7 @@ const EVENT = {
   },
 };
 
-it("gets a scheduled event with query parameters and strips extra fields in lenient output", async () => {
+it("gets a scheduled event with query parameters and keeps every field Discord sends", async () => {
   const { client, request } = await harness({ policy, respond: () => EVENT });
   const result = await client.callTool({
     name: "discord_get_guild_scheduled_event",
@@ -49,11 +49,13 @@ it("gets a scheduled event with query parameters and strips extra fields in leni
       privacy_level: 2,
       status: 1,
       entity_type: 3,
-      entity_metadata: { location: null },
+      extra_field: "ignored",
+      entity_metadata: { location: null, extra_nested: 123 },
       recurrence_rule: {
         start: "2026-11-05T18:00:00.000Z",
         frequency: 2,
         by_month_day: [-5],
+        extra_field: "tolerated",
       },
     },
   });
@@ -77,11 +79,13 @@ it("passes allowlist check for allowed guild", async () => {
       privacy_level: 2,
       status: 1,
       entity_type: 3,
-      entity_metadata: { location: null },
+      extra_field: "ignored",
+      entity_metadata: { location: null, extra_nested: 123 },
       recurrence_rule: {
         start: "2026-11-05T18:00:00.000Z",
         frequency: 2,
         by_month_day: [-5],
+        extra_field: "tolerated",
       },
     },
   });

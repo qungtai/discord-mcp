@@ -152,9 +152,8 @@ export class PToolPipeline {
         const targets = Object.entries(resources)
           .map(([k, v]) => `${k}=${v}`)
           .join(", ");
-        const raw = `Approve ${name}?\nTargets: ${targets}\nArguments: ${JSON.stringify(parsed.data)}`;
-        const token = process.env.DISCORD_TOKEN;
-        const message = token ? raw.split(token).join("[redacted]") : raw;
+        const raw = `Approve ${name}?\nTargets: ${targets}\nArguments: ${JSON.stringify(parsed.data, truncate)}`;
+        const message = redact(raw);
         let approved: boolean;
         try {
           approved = await session.approve(message);
@@ -253,6 +252,13 @@ function mayHaveCommitted(error: unknown): boolean {
   if (!(error instanceof PToolError)) return true;
   if (error.category === "cancelled") return true;
   return error.category === "discord" && (error.status === undefined || error.status >= 500);
+}
+// Long values are usually base64 images; a human approving a change does not need the payload.
+// Redaction runs first so a token cut at the limit is not left half-masked.
+function truncate(_key: string, value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  const safe = redact(value);
+  return safe.length <= 200 ? safe : `${safe.slice(0, 200)}…(${safe.length} chars)`;
 }
 function nonceOf(body: unknown): string | undefined {
   return typeof body === "object" &&

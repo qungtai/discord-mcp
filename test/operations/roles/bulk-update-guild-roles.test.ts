@@ -19,23 +19,6 @@ const ROLES = [
   { id: "102", position: 2 },
 ];
 
-it("refuses bulk update without approval support", async () => {
-  const { client, makeRequest } = await harness({ policy });
-  const result = await client.callTool({
-    name: "discord_bulk_update_guild_roles",
-    arguments: {
-      guild_id: "123",
-      roles: [{ id: "101", position: 1 }],
-    },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool requires approval support",
-    remediation: "Wait for the approval flow",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("rejects invalid roles array structure", async () => {
   const { client, makeRequest } = await harness({ policy });
   const result = await client.callTool({
@@ -49,19 +32,16 @@ it("rejects invalid roles array structure", async () => {
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
-function unapprovedRegistry() {
+function toolRegistry() {
   const reg = new PToolRegistry();
-  reg.register({
-    ...bulkUpdateGuildRoles,
-    approval: false,
-  });
+  reg.register(bulkUpdateGuildRoles);
   return reg;
 }
 
-it("bulk updates guild role positions with reason when approval is satisfied", async () => {
+it("bulk updates guild role positions with reason after the client accepts approval", async () => {
   const { client, request } = await harness({
     policy,
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
     respond: () => ROLES,
   });
   const result = await client.callTool({
@@ -82,7 +62,7 @@ it("bulk updates guild role positions with reason when approval is satisfied", a
 it("rejects unknown nested properties in role position objects", async () => {
   const { client, makeRequest } = await harness({
     policy,
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
   });
   const result = await client.callTool({
     name: "discord_bulk_update_guild_roles",
@@ -98,7 +78,7 @@ it("rejects unknown nested properties in role position objects", async () => {
 it("allows guilds in the allowlist and sends expected request", async () => {
   const { client, request } = await harness({
     policy: new PPolicyEngine(["123"], ["core", "roles"], false),
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
     respond: () => ROLES,
   });
   const result = await client.callTool({
@@ -114,7 +94,7 @@ it("allows guilds in the allowlist and sends expected request", async () => {
 it("blocks guilds outside the allowlist", async () => {
   const { client, makeRequest } = await harness({
     policy: new PPolicyEngine(["999"], ["core", "roles"], false),
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
   });
   const result = await client.callTool({
     name: "discord_bulk_update_guild_roles",
@@ -130,7 +110,7 @@ it("blocks guilds outside the allowlist", async () => {
 it("maps 403 to permission error with exact message and remediation", async () => {
   const { client } = await harness({
     policy,
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -150,7 +130,7 @@ it("maps 403 to permission error with exact message and remediation", async () =
 it("maps 404 to not_found error with exact message and remediation", async () => {
   const { client } = await harness({
     policy,
-    registry: unapprovedRegistry(),
+    registry: toolRegistry(),
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
   const result = await client.callTool({

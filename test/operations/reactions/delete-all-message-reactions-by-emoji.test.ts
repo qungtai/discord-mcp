@@ -17,29 +17,25 @@ const channelId = "100";
 const messageId = "200";
 const emoji = "👍";
 
-it("has approval enabled by default and is blocked by policy until approval flow is supported", async () => {
-  const { pipeline } = await harness({
+it("refuses a dot segment in the emoji path segment", async () => {
+  const { client, makeRequest } = await harness({
     policy: new PPolicyEngine([], ["reactions"], false),
   });
-  expect(
-    await pipeline.call("discord_delete_all_message_reactions_by_emoji", {
-      channel_id: channelId,
-      message_id: messageId,
-      emoji,
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool requires approval support",
-      remediation: "Wait for the approval flow",
-    },
+  const result = await client.callTool({
+    name: "discord_delete_all_message_reactions_by_emoji",
+    arguments: { channel_id: channelId, message_id: messageId, emoji: "%2e%2e" },
   });
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+    retryable: false,
+    message: "Invalid route: a path segment is a dot segment",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
 });
 
-it("deletes all reactions for an emoji with ManageMessages when approval is satisfied", async () => {
+it("deletes all reactions for an emoji with ManageMessages after the client accepts approval", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -65,16 +61,17 @@ it("deletes all reactions for an emoji with ManageMessages when approval is sati
 it("supports custom emoji", async () => {
   const customEmoji = "party_blob:123456789";
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
     makeRequest: async () => new Response(null, { status: 204 }) as unknown as ResponseLike,
   });
-  await client.callTool({
+  const result = await client.callTool({
     name: "discord_delete_all_message_reactions_by_emoji",
     arguments: { channel_id: channelId, message_id: messageId, emoji: customEmoji },
   });
+  expect(result.isError).toBeFalsy();
   expect(request().url).toBe(
     "https://discord.com/api/v10/channels/100/messages/200/reactions/party_blob%3A123456789",
   );
@@ -86,7 +83,7 @@ it.each([
   ["unknown extra property", { channel_id: channelId, message_id: messageId, emoji, extra: 1 }],
 ])("validates input strictly: %s", async (_, args) => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -101,7 +98,7 @@ it.each([
 
 it("maps 403 to permission error with ManageMessages", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -121,7 +118,7 @@ it("maps 403 to permission error with ManageMessages", async () => {
 
 it("maps 404 to not_found", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const { client } = await harness({
     registry,
     policy: new PPolicyEngine([], ["reactions"], false),
@@ -139,7 +136,7 @@ it("maps 404 to not_found", async () => {
 
 it("allows access under an allowed guild and denies under disallowed guild", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteAllMessageReactionsByEmoji, approval: false });
+  registry.register(deleteAllMessageReactionsByEmoji);
   const allowed = await harness({
     registry,
     policy: new PPolicyEngine(["500"], ["reactions"], false),

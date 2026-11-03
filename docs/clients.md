@@ -91,6 +91,17 @@ npx @modelcontextprotocol/inspector node /absolute/path/dist/index.js
 
 Set `DISCORD_TOKEN` in the inspector's environment panel before connecting.
 
+## Approval support in each client
+
+Destructive tools ask for confirmation with MCP elicitation
+(`elicitation/create`). The client must advertise the `elicitation` capability,
+otherwise the tool is refused with a `policy` error.
+
+- Claude Code 2.1.309 was verified on 3 November 2026 to show the approval
+  dialog and accept it end to end.
+- Other clients: check your client. If it does not support elicitation, set
+  `DISCORD_MCP_APPROVAL=none` and rely on the client's own tool confirmation.
+
 ## Optional environment variables
 
 - `DISCORD_MCP_ALLOWED_GUILDS` - comma-separated guild IDs; empty means no
@@ -99,9 +110,11 @@ Set `DISCORD_TOKEN` in the inspector's environment panel before connecting.
 - `DISCORD_MCP_READ_ONLY` - `true` blocks mutating tools
 - `DISCORD_MCP_APPROVAL` - `elicitation` (default) or `none`. In `elicitation`
   mode, destructive operations ask the user for confirmation using MCP
-  elicitation (`elicitation/create`). In `none` mode, destructive operations run
-  without server elicitation, relying on the client's own tool confirmation.
-  Clients without MCP elicitation support need `DISCORD_MCP_APPROVAL=none`.
+  elicitation (`elicitation/create`). In `none` mode, server-side approval for
+  destructive tools is disabled: those tools run without elicitation and rely on
+  the client's own tool confirmation, which is not a security boundary. The
+  server prints a warning to stderr at startup in `none` mode. Clients without
+  MCP elicitation support need `DISCORD_MCP_APPROVAL=none`.
 - `DISCORD_MCP_FILE_ROOTS` - comma-separated absolute directories readable for
   uploads
 - `DISCORD_MCP_DOWNLOAD_DIR` - absolute directory for downloads

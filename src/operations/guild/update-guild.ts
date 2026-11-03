@@ -1,12 +1,8 @@
-import {
-  type RESTPatchAPIGuildJSONBody,
-  type RESTPatchAPIGuildResult,
-  Routes,
-} from "discord-api-types/v10";
+import { type RESTPatchAPIGuildResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { guild, guildIds } from "./guild-settings-schemas.js";
+import { guild, guildIds } from "./schemas.js";
 
 export const updateGuild = defineTool({
   name: "discord_update_guild",
@@ -33,31 +29,31 @@ export const updateGuild = defineTool({
     verification_level: z.number().int().nullish(),
     default_message_notifications: z.number().int().nullish(),
     explicit_content_filter: z.number().int().nullish(),
-    afk_channel_id: snowflake.optional().describe("ID of the AFK channel"),
+    afk_channel_id: snowflake.nullish().describe("ID of the AFK channel"),
     afk_timeout: z.number().int().nullish(),
     icon: z.string().nullish().describe("Base64 1024x1024 image data"),
     splash: z.string().nullish().describe("Base64 16:9 image data"),
     discovery_splash: z.string().nullish().describe("Base64 image data"),
     banner: z.string().nullish().describe("Base64 16:9 image data"),
     home_header: z.string().nullish().describe("Base64 image data"),
-    system_channel_id: snowflake.optional().describe("ID of system channel"),
+    system_channel_id: snowflake.nullish().describe("ID of system channel"),
     system_channel_flags: z.number().int().nullish(),
-    rules_channel_id: snowflake.optional().describe("ID of rules channel"),
-    public_updates_channel_id: snowflake.optional().describe("ID of public updates channel"),
+    rules_channel_id: snowflake.nullish().describe("ID of rules channel"),
+    public_updates_channel_id: snowflake.nullish().describe("ID of public updates channel"),
     preferred_locale: z.string().nullish(),
     features: z.array(z.string()).optional(),
     description: z.string().max(300).nullish(),
     premium_progress_bar_enabled: z.boolean().optional(),
-    safety_alerts_channel_id: snowflake.optional().describe("ID of safety alerts channel"),
+    safety_alerts_channel_id: snowflake.nullish().describe("ID of safety alerts channel"),
     reason,
   }),
   output: z.object({ guild }),
   execute: async ({ guild_id, reason, ...body }, { discord }) => ({
-    guild: (await discord<RESTPatchAPIGuildResult>({
+    guild: await discord<RESTPatchAPIGuildResult>({
       method: "PATCH",
       route: Routes.guild(guild_id),
-      body: body as RESTPatchAPIGuildJSONBody,
+      body,
       reason,
-    })) as unknown as { id: string },
+    }),
   }),
 });

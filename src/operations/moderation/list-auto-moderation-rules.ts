@@ -2,7 +2,7 @@ import { type RESTGetAPIAutoModerationRulesResult, Routes } from "discord-api-ty
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { autoModerationRule } from "./mem-moderation-schemas.js";
+import { autoModerationRule } from "./schemas.js";
 
 export const listAutoModerationRules = defineTool({
   name: "discord_list_auto_moderation_rules",

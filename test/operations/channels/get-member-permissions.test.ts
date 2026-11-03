@@ -61,7 +61,7 @@ it("rejects input with neither or both of guild_id and channel_id", async () => 
   });
   expect(errorOf(neither)).toMatchObject({
     category: "validation",
-    remediation: "pass exactly one of guild_id, channel_id",
+    remediation: "Fix the arguments to match the tool input schema",
   });
 
   const both = await client.callTool({
@@ -70,7 +70,7 @@ it("rejects input with neither or both of guild_id and channel_id", async () => 
   });
   expect(errorOf(both)).toMatchObject({
     category: "validation",
-    remediation: "pass exactly one of guild_id, channel_id",
+    remediation: "Fix the arguments to match the tool input schema",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });
@@ -85,7 +85,7 @@ it("rejects implicit flag with guild_id", async () => {
   });
   expect(errorOf(result)).toMatchObject({
     category: "validation",
-    remediation: "Remove implicit when querying guild member permissions",
+    remediation: "Fix the arguments to match the tool input schema",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });

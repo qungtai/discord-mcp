@@ -110,7 +110,8 @@ export function scopeIds(tool: ToolDescriptor, input: Record<string, unknown>) {
   for (const [kind, keys] of Object.entries(tool.scope) as [ScopeKind, string | string[]][])
     for (const key of typeof keys === "string" ? [keys] : keys) {
       const value = input[key];
-      if (value === undefined) continue;
+      // null clears the field, so there is no resource to check.
+      if (value === undefined || value === null) continue;
       const values = typeof value === "string" ? [value] : value;
       // Fail closed: a scope key that is not a string or string[] would escape the allowlist.
       if (!Array.isArray(values) || values.some((v) => typeof v !== "string"))

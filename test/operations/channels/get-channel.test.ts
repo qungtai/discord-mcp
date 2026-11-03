@@ -35,6 +35,28 @@ it("gets a channel by ID", async () => {
   expect(result.structuredContent).toEqual({ channel: CHANNEL });
 });
 
+it("returns every field Discord sends, including permission overwrites and unknown ones", async () => {
+  const CHANNEL_WITH_EXTRAS = {
+    ...CHANNEL,
+    nsfw: true,
+    rate_limit_per_user: 10,
+    permission_overwrites: [
+      { id: "200", type: 0, allow: "1024", deny: "2048" },
+      { id: "300", type: 1, allow: "0", deny: "0" },
+    ],
+    future_discord_field: { nested: [1, 2, 3] },
+  };
+  const { client } = await harness({
+    policy: new PPolicyEngine([], ["channels"], false),
+    respond: () => CHANNEL_WITH_EXTRAS,
+  });
+  const result = await client.callTool({
+    name: "discord_get_channel",
+    arguments: { channel_id: "100" },
+  });
+  expect(result.structuredContent).toEqual({ channel: CHANNEL_WITH_EXTRAS });
+});
+
 it("passes allowlist check when guild is allowed", async () => {
   const { client, request, makeRequest } = await harness({
     policy: new PPolicyEngine(["200"], ["channels"], false),

@@ -7,7 +7,7 @@ import {
   GuildScheduledEventStatus,
 } from "discord-api-types/v10";
 import { z } from "zod/v4";
-import { member, snowflake, user } from "../schemas.js";
+import { member, resource, snowflake, user } from "../schemas.js";
 
 // Enums for input schemas
 export const privacyLevelEnum = z.enum(GuildScheduledEventPrivacyLevel);
@@ -66,11 +66,13 @@ export const exceptionOverrideInput = {
 };
 
 // Lenient output schemas
-export const entityMetadataOutput = z.object({
-  location: z.string().nullish(),
-});
+export const entityMetadataOutput = resource(
+  z.looseObject({
+    location: z.string().nullish(),
+  }),
+);
 
-export const recurrenceRuleOutput = z.object({
+export const recurrenceRuleOutput = z.looseObject({
   start: z.string().optional(),
   end: z.string().nullish(),
   frequency: z.number().optional(),
@@ -78,7 +80,7 @@ export const recurrenceRuleOutput = z.object({
   by_weekday: z.array(z.number()).nullish(),
   by_n_weekday: z
     .array(
-      z.object({
+      z.looseObject({
         n: z.number().optional(),
         day: z.number().optional(),
       }),
@@ -90,7 +92,7 @@ export const recurrenceRuleOutput = z.object({
   count: z.number().nullish(),
 });
 
-export const guildScheduledEventException = z.object({
+export const guildScheduledEventException = z.looseObject({
   event_id: snowflake,
   event_exception_id: snowflake,
   scheduled_start_time: z.string().nullish(),
@@ -98,7 +100,7 @@ export const guildScheduledEventException = z.object({
   is_canceled: z.boolean().optional(),
 });
 
-export const guildScheduledEventUser = z.object({
+export const guildScheduledEventUser = z.looseObject({
   guild_scheduled_event_id: snowflake.optional(),
   user_id: snowflake.optional(),
   guild_scheduled_event_exception_id: snowflake.nullish(),
@@ -107,27 +109,29 @@ export const guildScheduledEventUser = z.object({
   member: member.optional(),
 });
 
-export const guildScheduledEvent = z.object({
-  id: snowflake,
-  guild_id: snowflake.optional(),
-  channel_id: snowflake.nullish(),
-  creator_id: snowflake.nullish(),
-  name: z.string().optional(),
-  description: z.string().nullish(),
-  scheduled_start_time: z.string().optional(),
-  scheduled_end_time: z.string().nullish(),
-  privacy_level: z.number().optional(),
-  status: z.number().optional(),
-  entity_type: z.number().optional(),
-  entity_id: snowflake.nullish(),
-  entity_metadata: entityMetadataOutput.nullish(),
-  creator: user.optional(),
-  user_count: z.number().optional(),
-  image: z.string().nullish(),
-  recurrence_rule: recurrenceRuleOutput.nullish(),
-  user_rsvp: guildScheduledEventUser.nullish(),
-  guild_scheduled_event_exceptions: z.array(guildScheduledEventException).optional(),
-});
+export const guildScheduledEvent = resource(
+  z.looseObject({
+    id: snowflake,
+    guild_id: snowflake.optional(),
+    channel_id: snowflake.nullish(),
+    creator_id: snowflake.nullish(),
+    name: z.string().optional(),
+    description: z.string().nullish(),
+    scheduled_start_time: z.string().optional(),
+    scheduled_end_time: z.string().nullish(),
+    privacy_level: z.number().optional(),
+    status: z.number().optional(),
+    entity_type: z.number().optional(),
+    entity_id: snowflake.nullish(),
+    entity_metadata: entityMetadataOutput.nullish(),
+    creator: user.optional(),
+    user_count: z.number().optional(),
+    image: z.string().nullish(),
+    recurrence_rule: recurrenceRuleOutput.nullish(),
+    user_rsvp: guildScheduledEventUser.nullish(),
+    guild_scheduled_event_exceptions: z.array(guildScheduledEventException).optional(),
+  }),
+);
 
 // Shared user list query parameters
 export const userListQuery = {

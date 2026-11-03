@@ -2,7 +2,7 @@ import { type RESTGetAPIGuildBanResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { ban } from "./mem-moderation-schemas.js";
+import { ban } from "./schemas.js";
 
 export const getGuildBan = defineTool({
   name: "discord_get_guild_ban",

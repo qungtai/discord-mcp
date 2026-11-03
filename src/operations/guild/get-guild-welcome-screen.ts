@@ -1,7 +1,7 @@
 import { type RESTGetAPIGuildWelcomeScreenResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { guildIds, welcomeScreen } from "./guild-settings-schemas.js";
+import { guildIds, welcomeScreen } from "./schemas.js";
 
 export const getGuildWelcomeScreen = defineTool({
   name: "discord_get_guild_welcome_screen",
@@ -15,9 +15,9 @@ export const getGuildWelcomeScreen = defineTool({
   input: z.object(guildIds),
   output: z.object({ welcome_screen: welcomeScreen }),
   execute: async ({ guild_id }, { discord }) => ({
-    welcome_screen: (await discord<RESTGetAPIGuildWelcomeScreenResult>({
+    welcome_screen: await discord<RESTGetAPIGuildWelcomeScreenResult>({
       method: "GET",
       route: Routes.guildWelcomeScreen(guild_id),
-    })) as unknown as { [x: string]: unknown },
+    }),
   }),
 });

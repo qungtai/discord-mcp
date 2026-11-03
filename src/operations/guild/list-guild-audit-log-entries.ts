@@ -2,7 +2,7 @@ import { type RESTGetAPIAuditLogResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { auditLog, guildIds } from "./guild-settings-schemas.js";
+import { auditLog, guildIds } from "./schemas.js";
 
 export const listGuildAuditLogEntries = defineTool({
   name: "discord_list_guild_audit_log_entries",
@@ -41,7 +41,7 @@ export const listGuildAuditLogEntries = defineTool({
     });
     const entries = res.audit_log_entries ?? [];
     return {
-      audit_log: res as unknown as { [x: string]: unknown },
+      audit_log: res,
       next_before: entries.at(-1)?.id ?? null,
       next_after: entries.at(0)?.id ?? null,
     };

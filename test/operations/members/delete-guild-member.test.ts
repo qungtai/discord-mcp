@@ -12,28 +12,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it("has approval enabled by default and is blocked by policy until approval flow is supported", async () => {
-  const { pipeline } = await harness({
-    policy: new PPolicyEngine([], ["members"], false),
-  });
-  expect(
-    await pipeline.call("discord_delete_guild_member", {
-      guild_id: "123",
-      user_id: "456",
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool requires approval support",
-      remediation: "Wait for the approval flow",
-    },
-  });
-});
-
-it("deletes (kicks) a guild member with reason when approval is satisfied", async () => {
+it("deletes (kicks) a guild member with reason after the client accepts approval", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteGuildMember, approval: false });
+  registry.register(deleteGuildMember);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
@@ -62,7 +43,7 @@ it("deletes (kicks) a guild member with reason when approval is satisfied", asyn
 
 it("passes allowlist check when guild is allowed", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteGuildMember, approval: false });
+  registry.register(deleteGuildMember);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine(["123"], ["members"], false),
@@ -85,7 +66,7 @@ it("passes allowlist check when guild is allowed", async () => {
 
 it("denies access when guild is not allowed", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteGuildMember, approval: false });
+  registry.register(deleteGuildMember);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine(["999"], ["members"], false),
@@ -103,7 +84,7 @@ it("denies access when guild is not allowed", async () => {
 
 it("blocks execution in read-only mode", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteGuildMember, approval: false });
+  registry.register(deleteGuildMember);
   const { pipeline, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], true),
@@ -123,7 +104,7 @@ it.each([
   ["invalid user_id", { guild_id: "123", user_id: "bad" }],
 ])("validates input strictly: %s", async (_, args) => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteGuildMember, approval: false });
+  registry.register(deleteGuildMember);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
@@ -138,48 +119,46 @@ it.each([
 
 it("handles 403 missing permissions error", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteGuildMember, approval: false });
-  const { pipeline } = await harness({
+  registry.register(deleteGuildMember);
+  const { client } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
-  expect(
-    await pipeline.call("discord_delete_guild_member", {
+  const result = await client.callTool({
+    name: "discord_delete_guild_member",
+    arguments: {
       guild_id: "123",
       user_id: "456",
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "permission",
-      status: 403,
-      discord_code: 50013,
-      remediation: "Check the bot permissions; this tool needs KickMembers",
     },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    discord_code: 50013,
+    remediation: "Check the bot permissions; this tool needs KickMembers",
   });
 });
 
 it("handles 404 error", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteGuildMember, approval: false });
-  const { pipeline } = await harness({
+  registry.register(deleteGuildMember);
+  const { client } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
     makeRequest: async () => json({ message: "Unknown Member", code: 10007 }, { status: 404 }),
   });
-  expect(
-    await pipeline.call("discord_delete_guild_member", {
+  const result = await client.callTool({
+    name: "discord_delete_guild_member",
+    arguments: {
       guild_id: "123",
       user_id: "456",
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "not_found",
-      status: 404,
-      discord_code: 10007,
-      remediation: "Check the IDs in the request",
     },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10007,
+    remediation: "Check the IDs in the request",
   });
 });

@@ -32,7 +32,7 @@ it("counts event users with query parameters", async () => {
   });
   expect(request().method).toBe("GET");
   expect(request().url).toBe(
-    "https://discord.com/api/v10/guilds/10/scheduled-events/100/users/counts?guild_scheduled_event_exception_ids=201%2C202",
+    "https://discord.com/api/v10/guilds/10/scheduled-events/100/users/counts?guild_scheduled_event_exception_ids=201&guild_scheduled_event_exception_ids=202",
   );
   expect(result.structuredContent).toEqual(COUNTS);
 });

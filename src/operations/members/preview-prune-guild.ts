@@ -17,7 +17,7 @@ export const previewPruneGuild = defineTool({
   input: z.object({
     guild_id: snowflake,
     days: z.number().int().min(1).max(30).optional(),
-    include_roles: z.string().optional(),
+    include_roles: z.array(snowflake).max(100).optional(),
   }),
   execute: async ({ guild_id, ...query }, { discord }) =>
     discord<RESTGetAPIGuildPruneCountResult>({

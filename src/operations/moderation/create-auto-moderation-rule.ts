@@ -8,7 +8,7 @@ import {
   autoModerationRuleEventTypeSchema,
   autoModerationRuleTriggerTypeSchema,
   autoModerationTriggerMetadata,
-} from "./mem-moderation-schemas.js";
+} from "./schemas.js";
 
 export const createAutoModerationRule = defineTool({
   name: "discord_create_auto_moderation_rule",

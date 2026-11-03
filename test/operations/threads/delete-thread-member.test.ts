@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { PToolRegistry } from "../../../src/core/tool-registry.js";
 import { errorOf, json } from "../../support/harness.js";
-import { bypassApproval, empty204, setupTestLifecycle, threadHarness } from "./support.js";
+import { empty204, setupTestLifecycle, singleToolRegistry, threadHarness } from "./support.js";
 
 beforeEach(setupTestLifecycle);
 afterEach(() => {
@@ -12,26 +11,8 @@ afterEach(() => {
 
 const args = { channel_id: "101", user_id: "501" };
 
-it("is gated pending approval support by default", async () => {
-  const tool = (await PToolRegistry.load()).get("discord_delete_thread_member");
-  expect(tool?.effect).toBe("destructive");
-  expect(tool?.approval).toBe(true);
-
-  const { client, makeRequest } = await threadHarness();
-  const result = await client.callTool({
-    name: "discord_delete_thread_member",
-    arguments: args,
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool requires approval support",
-    remediation: "Wait for the approval flow",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
-it("deletes a thread member and returns deleted status when approval is bypassed", async () => {
-  const registry = await bypassApproval("discord_delete_thread_member");
+it("deletes a thread member and returns deleted status after the client accepts approval", async () => {
+  const registry = await singleToolRegistry("discord_delete_thread_member");
   const { client, request } = await threadHarness({
     registry,
     makeRequest: async () => empty204(),
@@ -59,12 +40,14 @@ it("validates channel_id and user_id format", async () => {
 });
 
 it("handles 403 error with literal message", async () => {
-  const registry = await bypassApproval("discord_delete_thread_member");
+  const registry = await singleToolRegistry("discord_delete_thread_member");
   const { pipeline } = await threadHarness({
     registry,
     makeRequest: async () => json({ message: "Missing Access", code: 50001 }, { status: 403 }),
   });
-  const result = await pipeline.call("discord_delete_thread_member", args);
+  const result = await pipeline.call("discord_delete_thread_member", args, {
+    approve: async () => true,
+  });
   expect(result).toMatchObject({
     ok: false,
     error: {
@@ -77,28 +60,28 @@ it("handles 403 error with literal message", async () => {
 });
 
 it("handles 404 error with literal message", async () => {
-  const registry = await bypassApproval("discord_delete_thread_member");
-  const { pipeline } = await threadHarness({
+  const registry = await singleToolRegistry("discord_delete_thread_member");
+  const { client } = await threadHarness({
     registry,
     makeRequest: async () => json({ message: "Unknown Channel", code: 10003 }, { status: 404 }),
   });
-  const result = await pipeline.call("discord_delete_thread_member", {
-    channel_id: "999",
-    user_id: "501",
-  });
-  expect(result).toMatchObject({
-    ok: false,
-    error: {
-      category: "not_found",
-      status: 404,
-      discord_code: 10003,
-      message: "Discord rejected the request (HTTP 404): Unknown Channel",
+  const result = await client.callTool({
+    name: "discord_delete_thread_member",
+    arguments: {
+      channel_id: "999",
+      user_id: "501",
     },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10003,
+    message: "Discord rejected the request (HTTP 404): Unknown Channel",
   });
 });
 
 it("succeeds under an allowlist containing the guild with literal routes", async () => {
-  const registry = await bypassApproval("discord_delete_thread_member");
+  const registry = await singleToolRegistry("discord_delete_thread_member");
   const { client, request } = await threadHarness({
     registry,
     policy: new PPolicyEngine(["200"], ["threads"], false),
@@ -125,7 +108,7 @@ it("succeeds under an allowlist containing the guild with literal routes", async
 });
 
 it("denies channel in a guild outside the allowlist before sending delete", async () => {
-  const registry = await bypassApproval("discord_delete_thread_member");
+  const registry = await singleToolRegistry("discord_delete_thread_member");
   const { client, request, makeRequest } = await threadHarness({
     registry,
     policy: new PPolicyEngine(["200"], ["threads"], false),

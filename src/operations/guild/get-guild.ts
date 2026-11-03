@@ -1,7 +1,7 @@
 import { type RESTGetAPIGuildResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { guild, guildIds } from "./guild-settings-schemas.js";
+import { guild, guildIds } from "./schemas.js";
 
 export const getGuild = defineTool({
   name: "discord_get_guild",
@@ -18,10 +18,10 @@ export const getGuild = defineTool({
   }),
   output: z.object({ guild }),
   execute: async ({ guild_id, with_counts }, { discord }) => ({
-    guild: (await discord<RESTGetAPIGuildResult>({
+    guild: await discord<RESTGetAPIGuildResult>({
       method: "GET",
       route: Routes.guild(guild_id),
       query: { with_counts },
-    })) as unknown as { id: string },
+    }),
   }),
 });

@@ -12,28 +12,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it("has approval enabled by default and is blocked by policy until approval flow is supported", async () => {
-  const { pipeline } = await harness({
-    policy: new PPolicyEngine([], ["members"], false),
-  });
-  expect(
-    await pipeline.call("discord_prune_guild", {
-      guild_id: "123",
-      days: 7,
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool requires approval support",
-      remediation: "Wait for the approval flow",
-    },
-  });
-});
-
-it("prunes members with body parameters and reason when approval is satisfied", async () => {
+it("prunes members with body parameters and reason after the client accepts approval", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...pruneGuild, approval: false });
+  registry.register(pruneGuild);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
@@ -67,7 +48,7 @@ it("prunes members with body parameters and reason when approval is satisfied", 
 
 it("passes allowlist check when guild is allowed", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...pruneGuild, approval: false });
+  registry.register(pruneGuild);
   const { client, request } = await harness({
     registry,
     policy: new PPolicyEngine(["123"], ["members"], false),
@@ -86,7 +67,7 @@ it("passes allowlist check when guild is allowed", async () => {
 
 it("denies access when guild is not allowed", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...pruneGuild, approval: false });
+  registry.register(pruneGuild);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine(["999"], ["members"], false),
@@ -104,7 +85,7 @@ it("denies access when guild is not allowed", async () => {
 
 it("blocks execution in read-only mode", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...pruneGuild, approval: false });
+  registry.register(pruneGuild);
   const { pipeline, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], true),
@@ -127,7 +108,7 @@ it.each([
   ],
 ])("validates input strictly: %s", async (_, args) => {
   const registry = new PToolRegistry();
-  registry.register({ ...pruneGuild, approval: false });
+  registry.register(pruneGuild);
   const { client, makeRequest } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
@@ -142,13 +123,15 @@ it.each([
 
 it("handles 403 missing permissions error", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...pruneGuild, approval: false });
+  registry.register(pruneGuild);
   const { pipeline } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
-  expect(await pipeline.call("discord_prune_guild", { guild_id: "123" })).toMatchObject({
+  expect(
+    await pipeline.call("discord_prune_guild", { guild_id: "123" }, { approve: async () => true }),
+  ).toMatchObject({
     ok: false,
     error: {
       category: "permission",
@@ -161,13 +144,15 @@ it("handles 403 missing permissions error", async () => {
 
 it("handles 404 error", async () => {
   const registry = new PToolRegistry();
-  registry.register({ ...pruneGuild, approval: false });
+  registry.register(pruneGuild);
   const { pipeline } = await harness({
     registry,
     policy: new PPolicyEngine([], ["members"], false),
     makeRequest: async () => json({ message: "Unknown Guild", code: 10004 }, { status: 404 }),
   });
-  expect(await pipeline.call("discord_prune_guild", { guild_id: "123" })).toMatchObject({
+  expect(
+    await pipeline.call("discord_prune_guild", { guild_id: "123" }, { approve: async () => true }),
+  ).toMatchObject({
     ok: false,
     error: {
       category: "not_found",

@@ -1,7 +1,7 @@
 import { type RESTGetAPIGuildVanityUrlResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { guildIds, vanityUrl } from "./guild-settings-schemas.js";
+import { guildIds, vanityUrl } from "./schemas.js";
 
 export const getGuildVanityUrl = defineTool({
   name: "discord_get_guild_vanity_url",
@@ -15,9 +15,9 @@ export const getGuildVanityUrl = defineTool({
   input: z.object(guildIds),
   output: z.object({ vanity_url: vanityUrl }),
   execute: async ({ guild_id }, { discord }) => ({
-    vanity_url: (await discord<RESTGetAPIGuildVanityUrlResult>({
+    vanity_url: await discord<RESTGetAPIGuildVanityUrlResult>({
       method: "GET",
       route: Routes.guildVanityUrl(guild_id),
-    })) as unknown as { [x: string]: unknown },
+    }),
   }),
 });

@@ -2,7 +2,7 @@ import { type RESTDeleteAPIGuildIntegrationResult, Routes } from "discord-api-ty
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
-import { guildIds } from "./guild-settings-schemas.js";
+import { guildIds } from "./schemas.js";
 
 export const deleteGuildIntegration = defineTool({
   name: "discord_delete_guild_integration",

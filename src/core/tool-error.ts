@@ -39,9 +39,11 @@ export class PToolError extends Error {
     this.retryAfter = options.retryAfter;
   }
 }
+// A bot or bearer credential is at least 20 characters of [\w.-]; shorter words stay readable.
+const TOKEN = /(Bot|Bearer) [\w.-]{20,}/g;
 export function redact(text: string, secrets = [process.env.DISCORD_TOKEN]): string {
   let out = text
-    .replace(/(Bot|Bearer) [\w.-]+/g, "$1 [redacted]")
+    .replace(TOKEN, "$1 [redacted]")
     .replace(/(webhooks\/\d+\/)[\w-]+/g, "$1[redacted]");
   for (const secret of secrets) if (secret) out = out.split(secret).join("[redacted]");
   return out;

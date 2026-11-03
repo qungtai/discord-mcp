@@ -14,10 +14,7 @@ afterEach(() => {
 
 function optedOutRegistry() {
   const reg = new PToolRegistry();
-  reg.register({
-    ...updateAutoModerationRule,
-    approval: false,
-  });
+  reg.register(updateAutoModerationRule);
   return reg;
 }
 
@@ -184,22 +181,6 @@ it("denies execution when guild is not in allowlist", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "policy",
     message: "Guild is not allowed",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
-it("denies execution under default approval policy", async () => {
-  const { client, makeRequest } = await harness({
-    policy: new PPolicyEngine([], ["core", "moderation"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_update_auto_moderation_rule",
-    arguments: { guild_id: "123", rule_id: "201", enabled: false },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool requires approval support",
-    remediation: "Wait for the approval flow",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });

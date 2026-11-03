@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { z } from "zod/v4";
 import { PAttachmentService } from "../../src/adapters/files/attachment-service.js";
 import { PToolPipeline } from "../../src/core/pipeline.js";
-import { PPolicyEngine } from "../../src/core/policy.js";
+import { approvalNotice, PPolicyEngine } from "../../src/core/policy.js";
 import type { DiscordRequest } from "../../src/core/ports.js";
 import { createScopeResolver } from "../../src/core/scope.js";
 import { redact } from "../../src/core/tool-error.js";
@@ -25,8 +25,8 @@ const probe = defineTool({
   output: z.object({ correlation_id: z.string().min(1) }),
   execute: async ({ fail }, { progress, log, correlationId }) => {
     await progress(1, 2);
-    await log("info", "using Bot abc.def");
-    if (fail === "plain") throw new Error("boom Bot secret.token");
+    await log("info", "using Bot abc.defghijklmnopqrstuvwx");
+    if (fail === "plain") throw new Error("boom Bot secret.token.0123456789abcdef");
     if (fail === "string") throw "raw";
     return { correlation_id: fail === "output" ? "" : correlationId };
   },
@@ -129,6 +129,12 @@ describe("policy configuration", () => {
     expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_APPROVAL: "invalid" })).toThrow(
       "DISCORD_MCP_APPROVAL must be elicitation or none",
     );
+  });
+  it("warns once at startup when DISCORD_MCP_APPROVAL=none", () => {
+    expect(approvalNotice("none")).toBe(
+      "DISCORD_MCP_APPROVAL=none: server-side approval for destructive tools is disabled\n",
+    );
+    expect(approvalNotice("elicitation")).toBeUndefined();
   });
   it.each(["1", "TRUE", "yes"])("fails closed on DISCORD_MCP_READ_ONLY=%s", (value) => {
     expect(() => PPolicyEngine.fromEnv({ DISCORD_MCP_READ_ONLY: value })).toThrow(
@@ -686,10 +692,15 @@ describe("guild allowlist", () => {
 });
 
 describe("redact", () => {
-  it("removes tokens, webhook secrets and configured secrets", () => {
+  it("removes token-shaped values, webhook secrets and configured secrets", () => {
     expect(
-      redact("Bot a.b https://discord.com/api/webhooks/1/abc-DEF x-secret-x", ["x-secret-x"]),
+      redact("Bot abcdefghijklmnopqrst.uvw https://discord.com/api/webhooks/1/abc-DEF x-secret-x", [
+        "x-secret-x",
+      ]),
     ).toBe("Bot [redacted] https://discord.com/api/webhooks/1/[redacted] [redacted]");
+  });
+  it("keeps prose like 'Bot cleanup' and short words readable", () => {
+    expect(redact("Bot cleanup after Bot a.b finished")).toBe("Bot cleanup after Bot a.b finished");
   });
 });
 
@@ -762,6 +773,45 @@ describe("approval flow over MCP", () => {
     expect(capturedMessage).toContain("Bot cleanup token [redacted]");
     expect(capturedMessage).not.toContain("super-secret-token");
     vi.unstubAllEnvs();
+  });
+
+  it("redacts token-shaped values in the approval message", async () => {
+    let capturedMessage: string | undefined;
+    const { client } = await harness({
+      registry: registryOf(approvalTool),
+      onElicit: async (req) => {
+        capturedMessage = req.params.message;
+        return { action: "accept", content: { approve: true } };
+      },
+      respond: () => ({}),
+    });
+    await client.callTool({
+      name: "discord_delete_probe",
+      arguments: {
+        channel_id: "123",
+        reason: "cleanup Bot abcdefghijklmnopqrst.uvwxyz with Bearer abcdefghijklmnopqrstuvwx",
+      },
+    });
+    expect(capturedMessage).toContain("cleanup Bot [redacted] with Bearer [redacted]");
+  });
+
+  it("truncates a long string argument in the approval message", async () => {
+    let capturedMessage: string | undefined;
+    const { client } = await harness({
+      registry: registryOf(approvalTool),
+      onElicit: async (req) => {
+        capturedMessage = req.params.message;
+        return { action: "accept", content: { approve: true } };
+      },
+      respond: () => ({}),
+    });
+    const image = "A".repeat(600);
+    await client.callTool({
+      name: "discord_delete_probe",
+      arguments: { channel_id: "123", reason: image },
+    });
+    expect(capturedMessage).toContain(`${"A".repeat(200)}…(600 chars)`);
+    expect(capturedMessage).not.toContain("A".repeat(201));
   });
 
   it.each([
@@ -840,7 +890,7 @@ describe("approval flow over MCP", () => {
   });
 
   it("fails with category policy and zero REST calls when client lacks elicitation capability or only supports URL", async () => {
-    const noCap = await harness({ registry: registryOf(approvalTool) });
+    const noCap = await harness({ registry: registryOf(approvalTool), clientCapabilities: {} });
     const resNoCap = await noCap.client.callTool({
       name: "discord_delete_probe",
       arguments: { channel_id: "123" },

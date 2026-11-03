@@ -2,7 +2,7 @@ import { type RESTGetAPIChannelResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { channelResult } from "./ch-channels-schemas.js";
+import { channelResult } from "./schemas.js";
 
 export const getChannel = defineTool({
   name: "discord_get_channel",

@@ -12,9 +12,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-const approvalFreeRegistry = () => {
+const toolRegistry = () => {
   const registry = new PToolRegistry();
-  registry.register({ ...updateGuildScheduledEventException, approval: false });
+  registry.register(updateGuildScheduledEventException);
   return registry;
 };
 
@@ -33,22 +33,9 @@ const EXCEPTION = {
   is_canceled: true,
 };
 
-it("denies call when approval is required but unconfigured", async () => {
-  const { pipeline } = await harness({
-    policy: new PPolicyEngine([], ["events"], false),
-  });
-  expect(await pipeline.call("discord_update_guild_scheduled_event_exception", get)).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool requires approval support",
-    },
-  });
-});
-
 it("updates an event exception with exact literals", async () => {
   const { client, request } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
     respond: () => EXCEPTION,
   });
@@ -68,7 +55,7 @@ it("updates an event exception with exact literals", async () => {
 
 it("passes allowlist check for allowed guild", async () => {
   const { client } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["10"], ["events"], false),
     respond: () => EXCEPTION,
   });
@@ -81,7 +68,7 @@ it("passes allowlist check for allowed guild", async () => {
 
 it("denies allowlist check when guild is not allowed", async () => {
   const { client, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["999"], ["events"], false),
   });
   const result = await client.callTool({
@@ -97,7 +84,7 @@ it("denies allowlist check when guild is not allowed", async () => {
 
 it("maps a 403 to permission with required ManageEvents", async () => {
   const { client } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
@@ -114,7 +101,7 @@ it("maps a 403 to permission with required ManageEvents", async () => {
 
 it("maps a 404 to not_found", async () => {
   const { client } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["events"], false),
     makeRequest: async () => json({ message: "Unknown Exception", code: 10071 }, { status: 404 }),
   });

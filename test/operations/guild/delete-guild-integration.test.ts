@@ -14,30 +14,11 @@ afterEach(() => {
 
 const empty204 = () => new Response(null, { status: 204 }) as unknown as ResponseLike;
 
-it("is gated pending approval support by default", async () => {
-  const tool = (await PToolRegistry.load()).get("discord_delete_guild_integration");
-  expect(tool?.effect).toBe("destructive");
-  expect(tool?.approval).toBe(true);
-
-  const { client, makeRequest } = await harness({
-    policy: new PPolicyEngine([], ["guild"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_delete_guild_integration",
-    arguments: { guild_id: "123", integration_id: "456" },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool requires approval support",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
-it("deletes an integration with reason when approval is bypassed", async () => {
+it("deletes an integration with reason after the client accepts approval", async () => {
   const base = (await PToolRegistry.load()).get("discord_delete_guild_integration");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client, request } = await harness({
     registry,
@@ -69,7 +50,7 @@ it("validates integration_id", async () => {
   const base = (await PToolRegistry.load()).get("discord_delete_guild_integration");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client, makeRequest } = await harness({
     registry,
@@ -87,7 +68,7 @@ it("maps a 403 error to permission with ManageGuild", async () => {
   const base = (await PToolRegistry.load()).get("discord_delete_guild_integration");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client } = await harness({
     registry,
@@ -109,7 +90,7 @@ it("maps a 404 error to not_found", async () => {
   const base = (await PToolRegistry.load()).get("discord_delete_guild_integration");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client } = await harness({
     registry,
@@ -127,7 +108,7 @@ it("allows deletion when guild is in allowlist", async () => {
   const base = (await PToolRegistry.load()).get("discord_delete_guild_integration");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client, request } = await harness({
     registry,
@@ -150,7 +131,7 @@ it("denies deletion when guild is not in allowlist", async () => {
   const base = (await PToolRegistry.load()).get("discord_delete_guild_integration");
   if (!base) throw new Error("Missing tool");
   const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
+  registry.register(base);
 
   const { client, makeRequest } = await harness({
     registry,

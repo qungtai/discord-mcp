@@ -6,7 +6,7 @@ import { member, reason, snowflake } from "../schemas.js";
 export const updateGuildMember = defineTool({
   name: "discord_update_guild_member",
   description:
-    "Update attributes of a guild member. Note: moving to a voice channel requires channel_id (null/voice disconnect is unsupported until scope allowlist supports null values)",
+    "Update attributes of a guild member. channel_id moves the member to a voice channel; null disconnects them",
   operationIds: ["update_guild_member"],
   toolset: "members",
   scope: { guild: "guild_id", channel: "channel_id" },
@@ -30,7 +30,7 @@ export const updateGuildMember = defineTool({
     roles: z.array(snowflake).max(350).nullable().optional(),
     mute: z.boolean().nullable().optional(),
     deaf: z.boolean().nullable().optional(),
-    channel_id: snowflake.optional(),
+    channel_id: snowflake.nullish(),
     communication_disabled_until: z.iso.datetime().nullable().optional(),
     flags: z.number().int().nullable().optional(),
     reason,

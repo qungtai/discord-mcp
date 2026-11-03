@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { guildIds, incidentActions } from "./guild-settings-schemas.js";
+import { guildIds, incidentActions } from "./schemas.js";
 
 export const updateGuildIncidentActions = defineTool({
   name: "discord_update_guild_incident_actions",
@@ -24,10 +24,10 @@ export const updateGuildIncidentActions = defineTool({
   }),
   output: z.object({ incident_actions: incidentActions }),
   execute: async ({ guild_id, ...body }, { discord }) => ({
-    incident_actions: (await discord({
+    incident_actions: await discord({
       method: "PUT",
       route: `/guilds/${guild_id}/incident-actions`,
       body,
-    })) as unknown as { [x: string]: unknown },
+    }),
   }),
 });

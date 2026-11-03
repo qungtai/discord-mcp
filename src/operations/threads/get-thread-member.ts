@@ -2,7 +2,7 @@ import { type RESTGetAPIChannelThreadMemberResult, Routes } from "discord-api-ty
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { threadMember } from "./msg-threads-schemas.js";
+import { threadMember } from "./schemas.js";
 
 export const getThreadMember = defineTool({
   name: "discord_get_thread_member",

@@ -11,29 +11,15 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const approvalFreeRegistry = () => {
+const toolRegistry = () => {
   const registry = new PToolRegistry();
-  registry.register({ ...deleteChannel, approval: false });
+  registry.register(deleteChannel);
   return registry;
 };
 
-it("has approval enabled by default and is blocked by policy until approval flow is supported", async () => {
-  const { pipeline } = await harness({
-    policy: new PPolicyEngine([], ["channels"], false),
-  });
-  expect(await pipeline.call("discord_delete_channel", { channel_id: "100" })).toMatchObject({
-    ok: false,
-    error: {
-      category: "policy",
-      message: "This tool requires approval support",
-      remediation: "Wait for the approval flow",
-    },
-  });
-});
-
-it("deletes a channel with audit log reason when approval is satisfied", async () => {
+it("deletes a channel with audit log reason after the client accepts approval", async () => {
   const { client, request } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["channels"], false),
     respond: () => ({ id: "100" }),
   });
@@ -56,7 +42,7 @@ it("deletes a channel with audit log reason when approval is satisfied", async (
 
 it("passes allowlist check when guild is allowed", async () => {
   const { client, request, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["200"], ["channels"], false),
     respond: () => ({ id: "100", guild_id: "200" }),
   });
@@ -74,7 +60,7 @@ it("passes allowlist check when guild is allowed", async () => {
 
 it("denies access when channel is in an unallowed guild", async () => {
   const { client, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine(["999"], ["channels"], false),
     respond: () => ({ id: "100", guild_id: "200" }),
   });
@@ -93,7 +79,7 @@ it("denies access when channel is in an unallowed guild", async () => {
 
 it("blocks execution in read-only mode", async () => {
   const { pipeline, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["channels"], true),
   });
   const result = await pipeline.call("discord_delete_channel", {
@@ -110,7 +96,7 @@ it.each([
   { input: { channel_id: "100", extra: "extra" }, desc: "unknown key" },
 ])("validates input: $desc", async ({ input }) => {
   const { client, makeRequest } = await harness({
-    registry: approvalFreeRegistry(),
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["channels"], false),
   });
   const result = await client.callTool({
@@ -130,22 +116,21 @@ it.each([
   ],
   [404, 10003, "not_found", "Check the IDs in the request"],
 ])("handles HTTP %i error", async (status, code, category, remediation) => {
-  const { pipeline } = await harness({
-    registry: approvalFreeRegistry(),
+  const { client } = await harness({
+    registry: toolRegistry(),
     policy: new PPolicyEngine([], ["channels"], false),
     makeRequest: async () => json({ message: "Discord error", code }, { status }),
   });
-  expect(
-    await pipeline.call("discord_delete_channel", {
+  const result = await client.callTool({
+    name: "discord_delete_channel",
+    arguments: {
       channel_id: "100",
-    }),
-  ).toMatchObject({
-    ok: false,
-    error: {
-      category,
-      status,
-      discord_code: code,
-      remediation,
     },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category,
+    status,
+    discord_code: code,
+    remediation,
   });
 });

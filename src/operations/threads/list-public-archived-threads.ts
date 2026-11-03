@@ -1,12 +1,8 @@
-import {
-  type APIThreadChannel,
-  type RESTGetAPIChannelThreadsArchivedPublicResult,
-  Routes,
-} from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { threadList } from "./msg-threads-schemas.js";
+import { threadList } from "./schemas.js";
 
 export const listPublicArchivedThreads = defineTool({
   name: "discord_list_public_archived_threads",
@@ -24,13 +20,12 @@ export const listPublicArchivedThreads = defineTool({
   }),
   output: threadList,
   execute: async ({ channel_id, ...query }, { discord }) => {
-    const res = await discord<RESTGetAPIChannelThreadsArchivedPublicResult>({
+    const res = await discord<z.infer<typeof threadList>>({
       method: "GET",
       route: Routes.channelThreads(channel_id, "public"),
       query,
     });
-    const lastThread = res.threads.at(-1) as APIThreadChannel | undefined;
-    const lastArchive = lastThread?.thread_metadata?.archive_timestamp;
+    const lastArchive = res.threads.at(-1)?.thread_metadata?.archive_timestamp;
     return {
       ...res,
       next_before: res.has_more && lastArchive ? lastArchive : null,

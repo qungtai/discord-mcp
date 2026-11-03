@@ -66,10 +66,11 @@ it("supports custom emoji", async () => {
     policy: new PPolicyEngine([], ["reactions"], false),
     respond: () => users,
   });
-  await client.callTool({
+  const result = await client.callTool({
     name: "discord_list_message_reactions_by_emoji",
     arguments: { channel_id: channelId, message_id: messageId, emoji: customEmoji },
   });
+  expect(result.isError).toBeFalsy();
   expect(request().url).toBe(
     "https://discord.com/api/v10/channels/100/messages/200/reactions/party_blob%3A123456789",
   );

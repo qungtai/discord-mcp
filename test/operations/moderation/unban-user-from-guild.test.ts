@@ -15,10 +15,7 @@ afterEach(() => {
 
 function optedOutRegistry() {
   const reg = new PToolRegistry();
-  reg.register({
-    ...unbanUserFromGuild,
-    approval: false,
-  });
+  reg.register(unbanUserFromGuild);
   return reg;
 }
 
@@ -134,22 +131,6 @@ it("denies execution when guild is not in allowlist", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "policy",
     message: "Guild is not allowed",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
-it("denies execution under default approval policy", async () => {
-  const { client, makeRequest } = await harness({
-    policy: new PPolicyEngine([], ["core", "moderation"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_unban_user_from_guild",
-    arguments: { guild_id: "123", user_id: "456" },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool requires approval support",
-    remediation: "Wait for the approval flow",
   });
   expect(makeRequest).not.toHaveBeenCalled();
 });

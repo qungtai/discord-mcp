@@ -74,7 +74,7 @@ it("searches guild messages with query parameters and parses structured output w
   });
 });
 
-it("computes next_offset when more results remain", async () => {
+it("computes next_offset from the results returned when more remain", async () => {
   const { client } = await harness({
     respond: () => ({ ...SEARCH_RESPONSE, total_results: 25 }),
   });
@@ -84,13 +84,13 @@ it("computes next_offset when more results remain", async () => {
   });
   expect(result.structuredContent).toMatchObject({
     total_results: 25,
-    next_offset: 10,
+    next_offset: 1,
   });
 });
 
 it("asserts remaining query parameters in URL", async () => {
   const { client, request } = await harness({ respond: () => SEARCH_RESPONSE });
-  await client.callTool({
+  const result = await client.callTool({
     name: "discord_search_guild_messages",
     arguments: {
       guild_id: "123",
@@ -115,6 +115,7 @@ it("asserts remaining query parameters in URL", async () => {
       "min_id=405&max_id=406&link_hostname=example.com&embed_provider=YouTube&" +
       "attachment_extension=png&attachment_filename=image.png",
   );
+  expect(result.isError).toBeFalsy();
 });
 
 it("handles 202 response when search index is not ready", async () => {
@@ -136,8 +137,9 @@ it("handles 202 response when search index is not ready", async () => {
     category: "rate_limited",
     retryable: true,
     retry_after: 5,
-    message: "Search index is not ready",
-    remediation: "The search index is still being built; retry after retry_after seconds",
+    message: "Index not ready",
+    remediation: "The search index is still being built; retry after 5 seconds",
+    discord_code: 110000,
   });
 });
 

@@ -2,7 +2,7 @@ import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { snowflake } from "../schemas.js";
-import { reactionIds } from "./msg-reactions-schemas.js";
+import { reactionIds } from "./schemas.js";
 
 const userReactionIds = {
   ...reactionIds,
@@ -19,12 +19,12 @@ export const deleteUserMessageReaction = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object(userReactionIds),
-  output: z.object({ deleted: z.boolean(), ...userReactionIds }),
+  output: z.object({ deleted: z.literal(true), ...userReactionIds }),
   execute: async (p, { discord }) => {
     await discord({
       method: "DELETE",
       route: Routes.channelMessageUserReaction(p.channel_id, p.message_id, p.emoji, p.user_id),
     });
-    return { deleted: true, ...p };
+    return { deleted: true as const, ...p };
   },
 });

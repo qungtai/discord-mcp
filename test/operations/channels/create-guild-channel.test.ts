@@ -160,7 +160,12 @@ it.each([
 });
 
 it.each([
-  [403, 50013, "permission", "Check the bot permissions; this tool needs ManageChannels"],
+  [
+    403,
+    50013,
+    "permission",
+    "Check the bot permissions; this tool needs ManageChannels, ManageRoles",
+  ],
   [404, 10004, "not_found", "Check the IDs in the request"],
 ])("handles HTTP %i error", async (status, code, category, remediation) => {
   const { pipeline } = await harness({
@@ -168,10 +173,11 @@ it.each([
     makeRequest: async () => json({ message: "Discord error", code }, { status }),
   });
   expect(
-    await pipeline.call("discord_create_guild_channel", {
-      guild_id: "200",
-      name: "new-channel",
-    }),
+    await pipeline.call(
+      "discord_create_guild_channel",
+      { guild_id: "200", name: "new-channel" },
+      { approve: async () => true },
+    ),
   ).toMatchObject({
     ok: false,
     error: {

@@ -1,7 +1,6 @@
 import type { ResponseLike } from "@discordjs/rest";
 import { vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { PToolRegistry } from "../../../src/core/tool-registry.js";
 import { harness } from "../../support/harness.js";
 
 export const SAMPLE_THREAD = {
@@ -34,13 +33,7 @@ export function threadHarness(options: Parameters<typeof harness>[0] = {}) {
   });
 }
 
-export async function bypassApproval(toolName: string) {
-  const base = (await PToolRegistry.load()).get(toolName);
-  if (!base) throw new Error(`Missing tool: ${toolName}`);
-  const registry = new PToolRegistry();
-  registry.register({ ...base, approval: false });
-  return registry;
-}
+export { singleToolRegistry } from "../../support/harness.js";
 
 export function setupTestLifecycle() {
   vi.spyOn(process.stderr, "write").mockReturnValue(true);

@@ -11,6 +11,8 @@ export const addGuildMemberRole = defineTool({
   scope: { guild: "guild_id" },
   permissions: ["ManageRoles"],
   effect: "write",
+  // Assigning a role grants its permissions and needs a prompt.
+  approval: true,
   idempotent: true,
   output: z.object({
     added: z.literal(true),

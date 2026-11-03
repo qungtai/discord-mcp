@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { PPolicyEngine } from "../../../src/core/policy.js";
-import { PToolRegistry } from "../../../src/core/tool-registry.js";
-import { errorOf, harness, json } from "../../support/harness.js";
+import { errorOf, json, toolHarness } from "../../support/harness.js";
 
 beforeEach(() => {
   vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -11,40 +10,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-async function bypassApprovalHarness(options: Parameters<typeof harness>[0] = {}) {
-  const all = (await PToolRegistry.load()).list();
-  const reg = new PToolRegistry();
-  for (const t of all) {
-    reg.register(t.name === "discord_update_voice_channel_status" ? { ...t, approval: false } : t);
-  }
-  return harness({
-    ...options,
-    registry: reg,
-    policy: options.policy ?? new PPolicyEngine([], ["channels"], false),
-  });
-}
-
-it("refuses call through default approval gate without sending any request", async () => {
-  const { client, makeRequest } = await harness({
-    policy: new PPolicyEngine([], ["channels"], false),
-  });
-  const result = await client.callTool({
-    name: "discord_update_voice_channel_status",
-    arguments: {
-      channel_id: "100",
-      status: "Coding session",
-    },
-  });
-  expect(errorOf(result)).toMatchObject({
-    category: "policy",
-    message: "This tool requires approval support",
-    remediation: "Wait for the approval flow",
-  });
-  expect(makeRequest).not.toHaveBeenCalled();
-});
-
 it("updates voice channel status with literal method, route and body", async () => {
-  const { client, request } = await bypassApprovalHarness({
+  const { client, request } = await toolHarness("discord_update_voice_channel_status", {
     respond: () => ({}),
   });
   const result = await client.callTool({
@@ -70,7 +37,7 @@ it("updates voice channel status with literal method, route and body", async () 
 });
 
 it("clears voice channel status with null", async () => {
-  const { client, request } = await bypassApprovalHarness({
+  const { client, request } = await toolHarness("discord_update_voice_channel_status", {
     respond: () => ({}),
   });
   const result = await client.callTool({
@@ -91,7 +58,7 @@ it("clears voice channel status with null", async () => {
 });
 
 it("rejects status exceeding 500 characters", async () => {
-  const { client, makeRequest } = await bypassApprovalHarness();
+  const { client, makeRequest } = await toolHarness("discord_update_voice_channel_status");
   const result = await client.callTool({
     name: "discord_update_voice_channel_status",
     arguments: {
@@ -104,7 +71,7 @@ it("rejects status exceeding 500 characters", async () => {
 });
 
 it("maps 403 to permission with SetVoiceChannelStatus and Connect requirements", async () => {
-  const { client } = await bypassApprovalHarness({
+  const { client } = await toolHarness("discord_update_voice_channel_status", {
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
   });
   const result = await client.callTool({
@@ -120,7 +87,7 @@ it("maps 403 to permission with SetVoiceChannelStatus and Connect requirements",
 });
 
 it("maps 404 to not_found", async () => {
-  const { client } = await bypassApprovalHarness({
+  const { client } = await toolHarness("discord_update_voice_channel_status", {
     makeRequest: async () => json({ message: "Unknown Channel", code: 10003 }, { status: 404 }),
   });
   const result = await client.callTool({
@@ -134,7 +101,7 @@ it("maps 404 to not_found", async () => {
 });
 
 it("succeeds when channel is in allowlist and denies when it is not", async () => {
-  const allowed = await bypassApprovalHarness({
+  const allowed = await toolHarness("discord_update_voice_channel_status", {
     policy: new PPolicyEngine(["500"], ["channels"], false),
     makeRequest: async (url) => {
       const u = String(url);
@@ -161,7 +128,7 @@ it("succeeds when channel is in allowlist and denies when it is not", async () =
     url: "https://discord.com/api/v10/channels/100/voice-status",
   });
 
-  const denied = await bypassApprovalHarness({
+  const denied = await toolHarness("discord_update_voice_channel_status", {
     policy: new PPolicyEngine(["500"], ["channels"], false),
     respond: () => ({ id: "100", guild_id: "999" }),
   });

@@ -1,7 +1,7 @@
 import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { reactionIds } from "./msg-reactions-schemas.js";
+import { reactionIds } from "./schemas.js";
 
 export const deleteAllMessageReactionsByEmoji = defineTool({
   name: "discord_delete_all_message_reactions_by_emoji",
@@ -13,12 +13,12 @@ export const deleteAllMessageReactionsByEmoji = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object(reactionIds),
-  output: z.object({ deleted: z.boolean(), ...reactionIds }),
+  output: z.object({ deleted: z.literal(true), ...reactionIds }),
   execute: async (p, { discord }) => {
     await discord({
       method: "DELETE",
       route: Routes.channelMessageReaction(p.channel_id, p.message_id, p.emoji),
     });
-    return { deleted: true, ...p };
+    return { deleted: true as const, ...p };
   },
 });
