@@ -152,8 +152,8 @@ it("fails startup when DISCORD_MCP_TOOLSETS includes a toolset without tools", a
     child.on("exit", (code) => resolve(code));
   });
 
-  expect(exitCode).not.toBe(0);
-  expect(stderrChunks.join("")).toContain("Toolset voice has no tools yet");
+  expect(exitCode).toBe(1);
+  expect(stderrChunks.join("")).toBe("Toolset voice has no tools yet\n");
 });
 
 it("fails startup when DISCORD_MCP_MAX_DOWNLOAD_BYTES is invalid", async () => {

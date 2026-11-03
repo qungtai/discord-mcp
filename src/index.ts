@@ -25,32 +25,39 @@ const positiveInt = (name: string) => {
     throw new Error(`${name} must be a positive integer`);
   return parsed;
 };
-const bot = new PDiscordRestAdapter(token, {
-  timeoutMs: positiveInt("DISCORD_MCP_REQUEST_TIMEOUT_MS"),
-  rateLimitWaitMs: positiveInt("DISCORD_MCP_RATE_LIMIT_WAIT_MS"),
-});
-const registry = await PToolRegistry.load();
-const registeredToolsets = new Set(registry.list().map((t) => t.toolset));
-const policy = PPolicyEngine.fromEnv(process.env, registeredToolsets);
-const notice = approvalNotice(policy.approval);
-if (notice) process.stderr.write(notice);
-const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
-  .split(",")
-  .map((s) => s.trim())
-  .filter(Boolean)
-  .map(expandHome);
-const rawDownloadDir = process.env.DISCORD_MCP_DOWNLOAD_DIR;
-const downloadDir = rawDownloadDir ? expandHome(rawDownloadDir) : defaultDownloadDir();
-const files = new PAttachmentService(
-  roots,
-  downloadDir,
-  positiveInt("DISCORD_MCP_MAX_UPLOAD_BYTES"),
-  token,
-  positiveInt("DISCORD_MCP_MAX_DOWNLOAD_BYTES"),
-);
-const pipeline = new PToolPipeline(registry, policy, {
-  credentials: { bot },
-  files,
-  resolveScope: createScopeResolver(),
-});
-await createServer(pipeline).connect(new StdioServerTransport());
+
+try {
+  const bot = new PDiscordRestAdapter(token, {
+    timeoutMs: positiveInt("DISCORD_MCP_REQUEST_TIMEOUT_MS"),
+    rateLimitWaitMs: positiveInt("DISCORD_MCP_RATE_LIMIT_WAIT_MS"),
+  });
+  const registry = await PToolRegistry.load();
+  const registeredToolsets = new Set(registry.list().map((t) => t.toolset));
+  const policy = PPolicyEngine.fromEnv(process.env, registeredToolsets);
+  const notice = approvalNotice(policy.approval);
+  if (notice) process.stderr.write(notice);
+  const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map(expandHome);
+  const rawDownloadDir = process.env.DISCORD_MCP_DOWNLOAD_DIR;
+  const downloadDir = rawDownloadDir ? expandHome(rawDownloadDir) : defaultDownloadDir();
+  const files = new PAttachmentService(
+    roots,
+    downloadDir,
+    positiveInt("DISCORD_MCP_MAX_UPLOAD_BYTES"),
+    token,
+    positiveInt("DISCORD_MCP_MAX_DOWNLOAD_BYTES"),
+  );
+  const pipeline = new PToolPipeline(registry, policy, {
+    credentials: { bot },
+    files,
+    resolveScope: createScopeResolver(),
+  });
+  await createServer(pipeline).connect(new StdioServerTransport());
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  process.stderr.write(`${message}\n`);
+  process.exit(1);
+}
