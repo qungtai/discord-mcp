@@ -8,7 +8,7 @@ A community Model Context Protocol (MCP) server for the Discord REST API.
 
 <!-- summary:start -->
 - 137 tools across core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites.
-- 141 of the 250 stable Discord API operations are implemented (see [docs/coverage.md](docs/coverage.md)); 39 are verified against a live server and 102 against mocked contracts.
+- 141 of the 250 stable Discord API operations are implemented (see [docs/coverage.md](docs/coverage.md)); 123 are verified against a live server and 18 against mocked contracts.
 <!-- summary:end -->
 - File uploads and downloads with sandboxed directory boundaries and SHA-256 integrity checks.
 - Approval before destructive actions through MCP elicitation.
@@ -567,3 +567,5 @@ For contribution guidelines and security disclosure policies, see [CONTRIBUTING.
 ## License
 
 [MIT](LICENSE)
+
+Not affiliated with or endorsed by Discord Inc.

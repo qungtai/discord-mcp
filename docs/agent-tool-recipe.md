@@ -1,11 +1,11 @@
 # Adding a tool
 
-Rules every toolset agent follows, on top of `AGENTS.md`. Requirements: `docs/planning/prd.md`.
+Rules every toolset contributor follows, on top of `AGENTS.md`.
 
 ## Where the code goes
 - One file per tool: `src/operations/<toolset>/<verb>-<noun>.ts` exporting one `defineTool`, for example `src/operations/messages/send-message.ts`. Schemas shared inside a toolset go in `src/operations/<toolset>/schemas.ts`.
 - Tests mirror the source path: `test/operations/<toolset>/<verb>-<noun>.test.ts`.
-- `src/operations/schemas.ts` holds cross-toolset schemas (`snowflake`, `user`, `message`, `channel`, `role`, `member`, `attachment`, `allowedMentions`, `fileUpload`, `attachmentUpdate`, `reason`). Add to it only after the lead agrees.
+- `src/operations/schemas.ts` holds cross-toolset schemas (`snowflake`, `user`, `message`, `channel`, `role`, `member`, `attachment`, `allowedMentions`, `fileUpload`, `attachmentUpdate`, `reason`).
 - Every exported `defineTool` is registered automatically. Do not edit `src/core`, `TOOLSETS` or any registration list.
 
 ## The shape
