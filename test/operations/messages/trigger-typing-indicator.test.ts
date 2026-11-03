@@ -74,7 +74,8 @@ it("maps a 403 to permission error", async () => {
     status: 403,
     discord_code: 50013,
     message: "Discord rejected the request (HTTP 403): Missing Permissions",
-    remediation: "Check the bot permissions; this tool needs ViewChannel, SendMessages",
+    remediation:
+      "Check the bot permissions; this tool needs ViewChannel, SendMessages, SendMessagesInThreads",
     tool: "discord_trigger_typing_indicator",
     correlation_id: expect.any(String),
     resource_ids: { channel_id: "1" },

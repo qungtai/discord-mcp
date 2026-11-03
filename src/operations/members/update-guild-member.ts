@@ -10,6 +10,7 @@ export const updateGuildMember = defineTool({
   operationIds: ["update_guild_member"],
   toolset: "members",
   scope: { guild: "guild_id", channel: "channel_id" },
+  // Connect is required when moving a member with channel_id to a voice channel.
   permissions: [
     "ManageNicknames",
     "ManageRoles",
@@ -17,6 +18,7 @@ export const updateGuildMember = defineTool({
     "DeafenMembers",
     "MoveMembers",
     "ModerateMembers",
+    "Connect",
   ],
   effect: "destructive",
   idempotent: true,

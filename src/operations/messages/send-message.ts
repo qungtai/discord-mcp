@@ -11,7 +11,21 @@ export const sendMessage = defineTool({
   operationIds: ["create_message"],
   toolset: "messages",
   scope: { channel: "channel_id" },
-  permissions: ["ViewChannel", "SendMessages"],
+  // AttachFiles: files; EmbedLinks: embeds; SendPolls: polls; SendTTSMessages: tts;
+  // ReadMessageHistory: reply; SendMessagesInThreads: thread; UseExternalStickers: sticker_ids;
+  // MentionEveryone: @everyone or @here mentions.
+  permissions: [
+    "ViewChannel",
+    "SendMessages",
+    "AttachFiles",
+    "EmbedLinks",
+    "SendPolls",
+    "SendTTSMessages",
+    "ReadMessageHistory",
+    "SendMessagesInThreads",
+    "UseExternalStickers",
+    "MentionEveryone",
+  ],
   effect: "write",
   idempotent: false,
   output: messageResult,

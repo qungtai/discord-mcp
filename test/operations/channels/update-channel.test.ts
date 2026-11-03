@@ -193,7 +193,7 @@ it.each([
     403,
     50013,
     "permission",
-    "Check the bot permissions; this tool needs ManageChannels, ManageThreads",
+    "Check the bot permissions; this tool needs ManageChannels, ManageThreads, ManageRoles",
   ],
   [404, 10003, "not_found", "Check the IDs in the request"],
 ])("handles HTTP %i error", async (status, code, category, remediation) => {

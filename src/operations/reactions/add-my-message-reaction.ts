@@ -9,7 +9,8 @@ export const addMyMessageReaction = defineTool({
   operationIds: ["add_my_message_reaction"],
   toolset: "reactions",
   scope: { channel: "channel_id", message: "message_id" },
-  permissions: ["ViewChannel", "ReadMessageHistory", "AddReactions"],
+  // UseExternalEmojis is required when reacting with custom emoji from other guilds.
+  permissions: ["ViewChannel", "ReadMessageHistory", "AddReactions", "UseExternalEmojis"],
   effect: "write",
   idempotent: true,
   input: z.object(reactionIds),

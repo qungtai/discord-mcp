@@ -10,7 +10,8 @@ export const createThreadFromMessage = defineTool({
   operationIds: ["create_thread_from_message"],
   toolset: "threads",
   scope: { channel: "channel_id", message: "message_id" },
-  permissions: ["CreatePublicThreads"],
+  // ViewChannel and ReadMessageHistory are required to access the parent message.
+  permissions: ["CreatePublicThreads", "ViewChannel", "ReadMessageHistory"],
   effect: "write",
   idempotent: false,
   input: z.object({

@@ -15,7 +15,8 @@ export const updateAutoModerationRule = defineTool({
   operationIds: ["update_auto_moderation_rule"],
   toolset: "moderation",
   scope: { guild: "guild_id" },
-  permissions: ["ManageGuild"],
+  // ModerateMembers is required when an action has type 3 (TIMEOUT).
+  permissions: ["ManageGuild", "ModerateMembers"],
   effect: "destructive",
   idempotent: true,
   output: z.object({

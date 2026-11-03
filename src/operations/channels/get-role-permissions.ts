@@ -14,6 +14,7 @@ export const getRolePermissions = defineTool({
   operationIds: ["get_channel_role_permissions", "get_guild_role_permissions"],
   toolset: "channels",
   scope: { guild: "guild_id", channel: "channel_id" },
+  // ViewChannel is required only for channel-scoped permissions lookup with channel_id.
   permissions: ["ViewChannel"],
   effect: "read",
   idempotent: true,
