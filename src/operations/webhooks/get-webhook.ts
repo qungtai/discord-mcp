@@ -25,7 +25,7 @@ export const getWebhook = defineTool({
       route: Routes.webhook(webhook_id),
     });
     return {
-      webhook: sanitizeWebhook(raw as unknown as Record<string, unknown>),
+      webhook: sanitizeWebhook(raw),
     };
   },
 });

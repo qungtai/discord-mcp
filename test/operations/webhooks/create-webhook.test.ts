@@ -73,6 +73,7 @@ it("passes allowlist check when channel's guild is allowed", async () => {
   expect(makeRequest).toHaveBeenCalledTimes(2);
   expect(request(0).method).toBe("GET");
   expect(request(1).method).toBe("POST");
+  expect(request(1).url).toBe("https://discord.com/api/v10/channels/301/webhooks");
 });
 
 it("denies access when channel's guild is not allowed", async () => {
@@ -117,6 +118,23 @@ it("maps 403 to permission error with ManageWebhooks remediation", async () => {
     status: 403,
     discord_code: 50013,
     remediation: "Check the bot permissions; this tool needs ManageWebhooks",
+  });
+});
+
+it("maps 404 to not_found error", async () => {
+  const { client } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+    makeRequest: async () => json({ message: "Unknown Channel", code: 10003 }, { status: 404 }),
+  });
+  const result = await client.callTool({
+    name: "discord_create_webhook",
+    arguments: { channel_id: "301", name: "New Webhook" },
+  });
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10003,
+    remediation: "Check the IDs in the request",
   });
 });
 

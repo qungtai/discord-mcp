@@ -1,4 +1,6 @@
+import { Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
+import type { DiscordRequest } from "../../core/ports.js";
 import { PToolError } from "../../core/tool-error.js";
 import { resource, snowflake, user } from "../schemas.js";
 
@@ -17,30 +19,25 @@ export const webhook = resource(
   }),
 );
 
-export const sanitizeWebhook = <T extends Record<string, unknown>>(
-  raw: T,
-): Omit<T, "token" | "url"> => {
-  const { token: _token, url: _url, ...rest } = raw;
+export const sanitizeWebhook = <T extends object>(raw: T): Omit<T, "token" | "url"> => {
+  const { token: _token, url: _url, ...rest } = raw as Record<string, unknown>;
   return rest as Omit<T, "token" | "url">;
 };
 
 export const resolveWebhookToken = async (
   webhookId: string,
-  discord: <R = unknown>(req: { method: "GET"; route: `/${string}` }) => Promise<R>,
+  discord: DiscordRequest,
 ): Promise<string> => {
   const data = await discord<{ token?: string | null }>({
     method: "GET",
-    route: `/webhooks/${webhookId}`,
+    route: Routes.webhook(webhookId),
   });
   if (!data.token) {
-    throw new PToolError(
-      "Only incoming webhooks can post; create one with discord_create_webhook",
-      {
-        category: "validation",
-        retryable: false,
-        remediation: "Only incoming webhooks can post; create one with discord_create_webhook",
-      },
-    );
+    throw new PToolError("Webhook has no token", {
+      category: "validation",
+      retryable: false,
+      remediation: "Only incoming webhooks can post; create one with discord_create_webhook",
+    });
   }
   return data.token;
 };

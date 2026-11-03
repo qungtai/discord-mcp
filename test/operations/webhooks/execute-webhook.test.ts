@@ -78,6 +78,101 @@ it("executes a webhook, fetching token first and sending wait=true without auth 
   });
 });
 
+it("sends all supported message fields (embeds, poll, flags, thread_name, applied_tags)", async () => {
+  const { client, request, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+    makeRequest: async (url) => {
+      if (String(url).endsWith("/webhooks/101")) {
+        return json(WEBHOOK);
+      }
+      return json(MESSAGE);
+    },
+  });
+
+  const samplePoll = {
+    question: { text: "Favorite color?" },
+    answers: [{ poll_media: { text: "Blue" } }, { poll_media: { text: "Red" } }],
+  };
+
+  const result = await client.callTool({
+    name: "discord_execute_webhook",
+    arguments: {
+      webhook_id: "101",
+      content: "All fields test",
+      username: "Special Bot",
+      avatar_url: "https://example.com/avatar2.png",
+      tts: true,
+      flags: 4,
+      thread_name: "New Forum Post",
+      applied_tags: ["501", "502"],
+      embeds: [{ title: "Embed 1" }],
+      poll: samplePoll,
+    },
+  });
+
+  expect(result.structuredContent).toEqual({ message: MESSAGE });
+  expect(makeRequest).toHaveBeenCalledTimes(2);
+
+  const req = request(1);
+  expect(req.method).toBe("POST");
+  expect(req.url).toBe(
+    "https://discord.com/api/v10/webhooks/101/my-secret-webhook-token?wait=true",
+  );
+  expect(JSON.parse(String(req.body))).toEqual({
+    content: "All fields test",
+    username: "Special Bot",
+    avatar_url: "https://example.com/avatar2.png",
+    tts: true,
+    flags: 4,
+    thread_name: "New Forum Post",
+    applied_tags: ["501", "502"],
+    embeds: [{ title: "Embed 1" }],
+    poll: samplePoll,
+    allowed_mentions: { parse: [] },
+    attachments: [],
+  });
+});
+
+it("rejects invalid flags bitfield", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+  });
+
+  const result = await client.callTool({
+    name: "discord_execute_webhook",
+    arguments: {
+      webhook_id: "101",
+      content: "Bad flags",
+      flags: 2,
+    },
+  });
+
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
+it("rejects more than 5 applied_tags", async () => {
+  const { client, makeRequest } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+  });
+
+  const result = await client.callTool({
+    name: "discord_execute_webhook",
+    arguments: {
+      webhook_id: "101",
+      content: "Too many tags",
+      applied_tags: ["1", "2", "3", "4", "5", "6"],
+    },
+  });
+
+  expect(errorOf(result)).toMatchObject({
+    category: "validation",
+  });
+  expect(makeRequest).not.toHaveBeenCalled();
+});
+
 it("uploads attachments using multipart form-data without auth header", async () => {
   const dir = await tempDir();
   const { client, request } = await harness({
@@ -134,7 +229,7 @@ it("fails with validation error when webhook has no token", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "validation",
     retryable: false,
-    message: "Only incoming webhooks can post; create one with discord_create_webhook",
+    message: "Webhook has no token",
     remediation: "Only incoming webhooks can post; create one with discord_create_webhook",
   });
 });
@@ -168,8 +263,52 @@ it("masks token in error message when execute webhook fails", async () => {
   expect(errorText).toContain("/webhooks/101/[redacted]");
 });
 
-it("passes allowlist check when webhook guild is allowed", async () => {
+it("maps 403 to permission error with ManageWebhooks remediation", async () => {
   const { client } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+    makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+  });
+
+  const result = await client.callTool({
+    name: "discord_execute_webhook",
+    arguments: {
+      webhook_id: "101",
+      content: "Hello",
+    },
+  });
+
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    discord_code: 50013,
+    remediation: "Check the bot permissions; this tool needs ManageWebhooks",
+  });
+});
+
+it("maps 404 to not_found error", async () => {
+  const { client } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+    makeRequest: async () => json({ message: "Unknown Webhook", code: 10015 }, { status: 404 }),
+  });
+
+  const result = await client.callTool({
+    name: "discord_execute_webhook",
+    arguments: {
+      webhook_id: "101",
+      content: "Hello",
+    },
+  });
+
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10015,
+    remediation: "Check the IDs in the request",
+  });
+});
+
+it("passes allowlist check when webhook guild is allowed", async () => {
+  const { client, request, makeRequest } = await harness({
     policy: new PPolicyEngine(["201"], ["webhooks"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/webhooks/101")) {
@@ -188,6 +327,12 @@ it("passes allowlist check when webhook guild is allowed", async () => {
   });
 
   expect(result.isError).toBeFalsy();
+  expect(makeRequest).toHaveBeenCalledTimes(3);
+  const finalReq = request(2);
+  expect(finalReq.method).toBe("POST");
+  expect(finalReq.url).toBe(
+    "https://discord.com/api/v10/webhooks/101/my-secret-webhook-token?wait=true",
+  );
 });
 
 it("denies access when webhook guild is not allowed", async () => {

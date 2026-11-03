@@ -12,10 +12,11 @@ import { resolveWebhookToken } from "./schemas.js";
 export const editWebhookMessage = defineTool({
   name: "discord_edit_webhook_message",
   description: "Edit a message previously sent by a webhook",
-  operationIds: ["update_webhook_message"],
+  operationIds: ["get_webhook_message", "update_webhook_message"],
   toolset: "webhooks",
   scope: { webhook: "webhook_id", channel: "thread_id" },
   permissions: ["ManageWebhooks"],
+  // Replacing content is not additive, but editing the webhook's own message needs no approval.
   effect: "destructive",
   approval: false,
   idempotent: false,

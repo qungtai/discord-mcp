@@ -57,7 +57,7 @@ it("updates a webhook and drops token and url", async () => {
 });
 
 it("passes allowlist check when both webhook and target channel guilds are allowed", async () => {
-  const { client, makeRequest } = await toolHarness("discord_update_webhook", {
+  const { client, request, makeRequest } = await toolHarness("discord_update_webhook", {
     policy: new PPolicyEngine(["201"], ["webhooks"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/webhooks/101")) {
@@ -75,10 +75,13 @@ it("passes allowlist check when both webhook and target channel guilds are allow
   });
   expect(result.isError).toBeFalsy();
   expect(makeRequest).toHaveBeenCalledTimes(3);
+  const finalReq = request(2);
+  expect(finalReq.method).toBe("PATCH");
+  expect(finalReq.url).toBe("https://discord.com/api/v10/webhooks/101");
 });
 
 it("denies access when target channel belongs to a different disallowed guild", async () => {
-  const { client } = await toolHarness("discord_update_webhook", {
+  const { client, makeRequest } = await toolHarness("discord_update_webhook", {
     policy: new PPolicyEngine(["201"], ["webhooks"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/webhooks/101")) {
@@ -98,6 +101,7 @@ it("denies access when target channel belongs to a different disallowed guild", 
     category: "policy",
     message: "Guild is not allowed",
   });
+  expect(makeRequest).toHaveBeenCalledTimes(2);
 });
 
 it("blocks mutating call in read-only mode", async () => {

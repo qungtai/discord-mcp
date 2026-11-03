@@ -25,7 +25,7 @@ export const listGuildWebhooks = defineTool({
       route: Routes.guildWebhooks(guild_id),
     });
     return {
-      webhooks: raw.map((item) => sanitizeWebhook(item as unknown as Record<string, unknown>)),
+      webhooks: raw.map((item) => sanitizeWebhook(item)),
     };
   },
 });

@@ -60,7 +60,7 @@ it("deletes a webhook message after approval without auth header", async () => {
 });
 
 it("passes allowlist check when both webhook and thread guilds are allowed", async () => {
-  const { client, makeRequest } = await toolHarness("discord_delete_webhook_message", {
+  const { client, request, makeRequest } = await toolHarness("discord_delete_webhook_message", {
     policy: new PPolicyEngine(["201"], ["webhooks"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/webhooks/101")) {
@@ -84,10 +84,15 @@ it("passes allowlist check when both webhook and thread guilds are allowed", asy
 
   expect(result.isError).toBeFalsy();
   expect(makeRequest).toHaveBeenCalledTimes(4);
+  const finalReq = request(3);
+  expect(finalReq.method).toBe("DELETE");
+  expect(finalReq.url).toBe(
+    "https://discord.com/api/v10/webhooks/101/my-secret-webhook-token/messages/501?thread_id=401",
+  );
 });
 
 it("denies access when thread belongs to a disallowed guild", async () => {
-  const { client } = await toolHarness("discord_delete_webhook_message", {
+  const { client, makeRequest } = await toolHarness("discord_delete_webhook_message", {
     policy: new PPolicyEngine(["201"], ["webhooks"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/webhooks/101")) {
@@ -112,6 +117,49 @@ it("denies access when thread belongs to a disallowed guild", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "policy",
     message: "Guild is not allowed",
+  });
+  expect(makeRequest).toHaveBeenCalledTimes(2);
+});
+
+it("maps 403 to permission error with ManageWebhooks remediation", async () => {
+  const { client } = await toolHarness("discord_delete_webhook_message", {
+    makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+  });
+
+  const result = await client.callTool({
+    name: "discord_delete_webhook_message",
+    arguments: {
+      webhook_id: "101",
+      message_id: "501",
+    },
+  });
+
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    discord_code: 50013,
+    remediation: "Check the bot permissions; this tool needs ManageWebhooks",
+  });
+});
+
+it("maps 404 to not_found error", async () => {
+  const { client } = await toolHarness("discord_delete_webhook_message", {
+    makeRequest: async () => json({ message: "Unknown Message", code: 10008 }, { status: 404 }),
+  });
+
+  const result = await client.callTool({
+    name: "discord_delete_webhook_message",
+    arguments: {
+      webhook_id: "101",
+      message_id: "501",
+    },
+  });
+
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10008,
+    remediation: "Check the IDs in the request",
   });
 });
 

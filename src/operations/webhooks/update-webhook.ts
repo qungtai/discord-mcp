@@ -31,7 +31,7 @@ export const updateWebhook = defineTool({
       reason: auditReason,
     });
     return {
-      webhook: sanitizeWebhook(raw as unknown as Record<string, unknown>),
+      webhook: sanitizeWebhook(raw),
     };
   },
 });

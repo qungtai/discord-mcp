@@ -69,7 +69,7 @@ it("edits webhook message content and embeds without approval and without auth h
   });
 });
 
-it("merges attachments when add_files is provided", async () => {
+it("merges attachments and updates attachment metadata", async () => {
   const dir = await tempDir();
   const { client, request } = await harness({
     policy: new PPolicyEngine([], ["webhooks"], false),
@@ -91,27 +91,40 @@ it("merges attachments when add_files is provided", async () => {
       webhook_id: "101",
       message_id: "501",
       add_files: [{ path: join(dir, "root", "new.txt") }],
+      update_attachments: [{ id: "11", description: "updated description", is_spoiler: true }],
       thread_id: "401",
     },
   });
 
   // Request 0 is token lookup (GET)
-  // Request 1 is existing message lookup (GET)
+  expect(request(0).method).toBe("GET");
+  expect(request(0).url).toBe("https://discord.com/api/v10/webhooks/101");
+
+  // Request 1 is existing message lookup (GET) with thread_id
+  expect(request(1).method).toBe("GET");
+  expect(request(1).url).toBe(
+    "https://discord.com/api/v10/webhooks/101/my-secret-webhook-token/messages/501?thread_id=401",
+  );
+  expect(new Headers(request(1).headers as HeadersInit).has("authorization")).toBe(false);
+
   // Request 2 is PATCH with multipart
   const req = request(2);
   expect(req.method).toBe("PATCH");
+  expect(req.url).toBe(
+    "https://discord.com/api/v10/webhooks/101/my-secret-webhook-token/messages/501?thread_id=401",
+  );
   expect(new Headers(req.headers as HeadersInit).has("authorization")).toBe(false);
   const form = req.body as FormData;
   const payload = JSON.parse(String(form.get("payload_json")));
   expect(payload.attachments).toEqual([
-    { id: "11", description: "old" },
+    { id: "11", description: "updated description", is_spoiler: true },
     { id: "12" },
     { id: "0", filename: "new.txt" },
   ]);
 });
 
 it("passes allowlist check when both webhook and thread guilds are allowed", async () => {
-  const { client } = await harness({
+  const { client, request, makeRequest } = await harness({
     policy: new PPolicyEngine(["201"], ["webhooks"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/webhooks/101")) {
@@ -135,10 +148,16 @@ it("passes allowlist check when both webhook and thread guilds are allowed", asy
   });
 
   expect(result.isError).toBeFalsy();
+  expect(makeRequest).toHaveBeenCalledTimes(4);
+  const finalReq = request(3);
+  expect(finalReq.method).toBe("PATCH");
+  expect(finalReq.url).toBe(
+    "https://discord.com/api/v10/webhooks/101/my-secret-webhook-token/messages/501?thread_id=401",
+  );
 });
 
 it("denies access when thread belongs to a disallowed guild", async () => {
-  const { client } = await harness({
+  const { client, makeRequest } = await harness({
     policy: new PPolicyEngine(["201"], ["webhooks"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/webhooks/101")) {
@@ -164,6 +183,58 @@ it("denies access when thread belongs to a disallowed guild", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "policy",
     message: "Guild is not allowed",
+  });
+  expect(makeRequest).toHaveBeenCalledTimes(2);
+});
+
+it("maps 403 to permission error with ManageWebhooks remediation", async () => {
+  const { client } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+    makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+  });
+
+  const result = await client.callTool({
+    name: "discord_edit_webhook_message",
+    arguments: {
+      webhook_id: "101",
+      message_id: "501",
+      content: "Edited",
+    },
+  });
+
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    discord_code: 50013,
+    remediation: "Check the bot permissions; this tool needs ManageWebhooks",
+  });
+});
+
+it("maps 404 to not_found error", async () => {
+  const { client } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+    makeRequest: async (url) => {
+      if (String(url).endsWith("/webhooks/101")) {
+        return json(WEBHOOK);
+      }
+      return json({ message: "Unknown Message", code: 10008 }, { status: 404 });
+    },
+  });
+
+  const result = await client.callTool({
+    name: "discord_edit_webhook_message",
+    arguments: {
+      webhook_id: "101",
+      message_id: "501",
+      content: "Edited",
+    },
+  });
+
+  expect(errorOf(result)).toMatchObject({
+    category: "not_found",
+    status: 404,
+    discord_code: 10008,
+    remediation: "Check the IDs in the request",
   });
 });
 

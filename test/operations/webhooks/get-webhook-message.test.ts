@@ -57,7 +57,7 @@ it("gets a webhook message by ID, fetching token first and without auth header",
 });
 
 it("passes allowlist check when both webhook and thread guilds are allowed", async () => {
-  const { client } = await harness({
+  const { client, request, makeRequest } = await harness({
     policy: new PPolicyEngine(["201"], ["webhooks"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/webhooks/101")) {
@@ -80,10 +80,16 @@ it("passes allowlist check when both webhook and thread guilds are allowed", asy
   });
 
   expect(result.isError).toBeFalsy();
+  expect(makeRequest).toHaveBeenCalledTimes(4);
+  const finalReq = request(3);
+  expect(finalReq.method).toBe("GET");
+  expect(finalReq.url).toBe(
+    "https://discord.com/api/v10/webhooks/101/my-secret-webhook-token/messages/501?thread_id=401",
+  );
 });
 
 it("denies access when thread belongs to a disallowed guild", async () => {
-  const { client } = await harness({
+  const { client, makeRequest } = await harness({
     policy: new PPolicyEngine(["201"], ["webhooks"], false),
     makeRequest: async (url) => {
       if (String(url).endsWith("/webhooks/101")) {
@@ -109,6 +115,7 @@ it("denies access when thread belongs to a disallowed guild", async () => {
     category: "policy",
     message: "Guild is not allowed",
   });
+  expect(makeRequest).toHaveBeenCalledTimes(2);
 });
 
 it("fails with validation error when webhook has no token", async () => {
@@ -133,8 +140,30 @@ it("fails with validation error when webhook has no token", async () => {
   expect(errorOf(result)).toMatchObject({
     category: "validation",
     retryable: false,
-    message: "Only incoming webhooks can post; create one with discord_create_webhook",
+    message: "Webhook has no token",
     remediation: "Only incoming webhooks can post; create one with discord_create_webhook",
+  });
+});
+
+it("maps 403 to permission error with ManageWebhooks remediation", async () => {
+  const { client } = await harness({
+    policy: new PPolicyEngine([], ["webhooks"], false),
+    makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),
+  });
+
+  const result = await client.callTool({
+    name: "discord_get_webhook_message",
+    arguments: {
+      webhook_id: "101",
+      message_id: "501",
+    },
+  });
+
+  expect(errorOf(result)).toMatchObject({
+    category: "permission",
+    status: 403,
+    discord_code: 50013,
+    remediation: "Check the bot permissions; this tool needs ManageWebhooks",
   });
 });
 
