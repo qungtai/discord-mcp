@@ -62,32 +62,12 @@ export class PPolicyEngine {
   }
   checkResource(scope: ResolvedScope): void {
     if (!this.allowedGuilds.length) return;
-    if (scope.noGuild) {
-      throw new PToolError("Guild is not allowed", {
-        category: "policy",
-        retryable: false,
-        remediation: "Choose an allowed guild",
-      });
-    }
     const hasGuild = scope.guildIds.length > 0;
     const allGuildsAllowed = hasGuild && scope.guildIds.every((id) => this.allowsGuild(id));
-    if (scope.isDm) {
-      if (!this.allowDms || (hasGuild && !allGuildsAllowed)) {
-        throw new PToolError("Guild is not allowed", {
-          category: "policy",
-          retryable: false,
-          remediation: "Choose an allowed guild",
-        });
-      }
-      return;
-    }
-    if (!allGuildsAllowed) {
-      throw new PToolError("Guild is not allowed", {
-        category: "policy",
-        retryable: false,
-        remediation: "Choose an allowed guild",
-      });
-    }
+    const refused =
+      scope.noGuild ||
+      (scope.isDm ? !this.allowDms || (hasGuild && !allGuildsAllowed) : !allGuildsAllowed);
+    if (refused) throw notAllowed();
   }
   private denial(tool: ToolDescriptor): [string, string] | undefined {
     if (!this.toolsets.includes(tool.toolset)) return ["Toolset disabled", "Enable the toolset"];
@@ -98,4 +78,12 @@ export class PPolicyEngine {
 }
 function isToolset(value: string): value is Toolset {
   return (TOOLSETS as readonly string[]).includes(value);
+}
+
+function notAllowed(): PToolError {
+  return new PToolError("Guild is not allowed", {
+    category: "policy",
+    retryable: false,
+    remediation: "Choose an allowed guild",
+  });
 }
