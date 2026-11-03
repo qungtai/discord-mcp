@@ -1520,10 +1520,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_channel_webhooks",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -1835,10 +1835,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -2595,10 +2595,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_invites",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -3265,10 +3265,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_guild_webhooks",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4201,10 +4201,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_invite",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4222,10 +4222,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_invite_target_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4246,10 +4246,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_invite",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4267,10 +4267,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_invite_target_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4288,10 +4288,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_invite_target_users_job_status",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4309,10 +4309,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_bulk_add_invite_target_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4330,10 +4330,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_bulk_delete_invite_target_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4351,10 +4351,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_set_invite_target_users",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -4372,10 +4372,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_add_invite_target_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5290,10 +5290,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_leave_guild",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5311,10 +5311,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5338,10 +5338,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_my_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5446,10 +5446,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_my_connections",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5473,10 +5473,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_list_my_guilds",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5518,10 +5518,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_my_user",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5539,10 +5539,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_create_dm",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5605,10 +5605,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5653,10 +5653,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_delete_webhook_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5698,10 +5698,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_get_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5746,10 +5746,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_edit_webhook_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5791,10 +5791,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_update_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5839,10 +5839,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_edit_webhook_message",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },
@@ -5887,10 +5887,10 @@
         }
       ],
       "permissions": null,
-      "mcp_tool": null,
-      "implementation": "unmapped",
+      "mcp_tool": "discord_execute_webhook",
+      "implementation": "implemented",
       "availability": "unknown",
-      "verification": "not_tested",
+      "verification": "mocked contract tested",
       "evidence": [],
       "notes": null
     },

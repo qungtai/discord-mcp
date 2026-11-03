@@ -37,8 +37,8 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 
 | Implementation | Count |
 | --- | ---: |
-| implemented | 114 |
-| unmapped | 136 |
+| implemented | 141 |
+| unmapped | 109 |
 
 ## Availability status
 
@@ -51,19 +51,19 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | Verification | Count |
 | --- | ---: |
 | live action verified | 39 |
-| mocked contract tested | 75 |
-| not_tested | 136 |
+| mocked contract tested | 102 |
+| not_tested | 109 |
 
 ## Per-group status dimensions
 
 | Group | Ops | Implementation | Availability | Verification |
 | --- | ---: | --- | --- | --- |
 | applications | 33 | unmapped=33 | unknown=33 | not_tested=33 |
-| channels | 50 | implemented=45, unmapped=5 | unknown=50 | live action verified=20, mocked contract tested=25, not_tested=5 |
+| channels | 50 | implemented=47, unmapped=3 | unknown=50 | live action verified=20, mocked contract tested=27, not_tested=3 |
 | gateway | 2 | unmapped=2 | unknown=2 | not_tested=2 |
-| guilds | 93 | implemented=69, unmapped=24 | unknown=93 | live action verified=19, mocked contract tested=50, not_tested=24 |
+| guilds | 93 | implemented=71, unmapped=22 | unknown=93 | live action verified=19, mocked contract tested=52, not_tested=22 |
 | interactions | 1 | unmapped=1 | unknown=1 | not_tested=1 |
-| invites | 9 | unmapped=9 | unknown=9 | not_tested=9 |
+| invites | 9 | implemented=9 | unknown=9 | mocked contract tested=9 |
 | lobbies | 15 | unmapped=15 | unknown=15 | not_tested=15 |
 | oauth2 | 4 | unmapped=4 | unknown=4 | not_tested=4 |
 | partner-sdk | 5 | unmapped=5 | unknown=5 | not_tested=5 |
@@ -72,25 +72,27 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | stage-instances | 4 | unmapped=4 | unknown=4 | not_tested=4 |
 | sticker-packs | 2 | unmapped=2 | unknown=2 | not_tested=2 |
 | stickers | 1 | unmapped=1 | unknown=1 | not_tested=1 |
-| users | 12 | unmapped=12 | unknown=12 | not_tested=12 |
+| users | 12 | unmapped=5, implemented=7 | unknown=12 | not_tested=5, mocked contract tested=7 |
 | voice | 1 | unmapped=1 | unknown=1 | not_tested=1 |
-| webhooks | 15 | unmapped=15 | unknown=15 | not_tested=15 |
+| webhooks | 15 | implemented=7, unmapped=8 | unknown=15 | mocked contract tested=7, not_tested=8 |
 
 ## Operations by toolset (from coverage/tools.json)
 
 | Toolset | Count |
 | --- | ---: |
-| channels | 14 |
+| channels | 15 |
+| core | 6 |
 | events | 11 |
 | guild | 22 |
-| invites | 2 |
+| invites | 12 |
 | members | 12 |
 | messages | 17 |
 | moderation | 10 |
 | reactions | 6 |
 | roles | 7 |
 | threads | 13 |
-| unmapped | 136 |
+| unmapped | 109 |
+| webhooks | 10 |
 
 ## MCP tool mapping
 
@@ -123,6 +125,7 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | list_public_archived_threads | discord_list_public_archived_threads |
 | thread_search | discord_search_threads |
 | list_my_private_archived_threads | discord_list_my_private_archived_threads |
+| list_channel_webhooks | discord_list_channel_webhooks |
 | update_channel | discord_update_channel |
 | update_message | discord_edit_message |
 | follow_channel | discord_follow_channel |
@@ -134,6 +137,7 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | poll_expire | discord_end_poll |
 | create_thread | discord_create_thread |
 | trigger_typing_indicator | discord_trigger_typing_indicator |
+| create_webhook | discord_create_webhook |
 | add_my_message_reaction | discord_add_my_message_reaction |
 | create_pin | discord_create_pin |
 | set_channel_permission_overwrite | discord_set_channel_permission_overwrite |
@@ -158,6 +162,7 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | get_guild_ban | discord_get_guild_ban |
 | list_guild_channels | discord_list_guild_channels |
 | list_guild_integrations | discord_list_guild_integrations |
+| list_guild_invites | discord_list_guild_invites |
 | list_guild_members | discord_list_guild_members |
 | get_guild_member | discord_get_guild_member |
 | search_guild_members | discord_search_guild_members |
@@ -180,6 +185,7 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | list_guild_templates | discord_list_guild_templates |
 | get_active_guild_threads | discord_list_active_guild_threads |
 | get_guild_vanity_url | discord_get_guild_vanity_url |
+| get_guild_webhooks | discord_list_guild_webhooks |
 | get_guild_welcome_screen | discord_get_guild_welcome_screen |
 | get_guild_widget_settings | discord_get_guild_widget_settings |
 | get_guild_widget | discord_get_guild_widget |
@@ -210,6 +216,29 @@ Generated from pinned baseline. Counts are raw inventory totals; they are **not*
 | add_guild_member_role | discord_add_guild_member_role |
 | put_guilds_onboarding | discord_update_guild_onboarding |
 | sync_guild_template | discord_sync_guild_template |
+| invite_revoke | discord_delete_invite |
+| remove_invite_target_user | discord_delete_invite_target_user |
+| invite_resolve | discord_get_invite |
+| get_invite_target_users | discord_list_invite_target_users |
+| get_invite_target_users_job_status | discord_get_invite_target_users_job_status |
+| bulk_add_invite_target_users | discord_bulk_add_invite_target_users |
+| bulk_remove_invite_target_users | discord_bulk_delete_invite_target_users |
+| update_invite_target_users | discord_set_invite_target_users |
+| add_invite_target_user | discord_add_invite_target_user |
+| leave_guild | discord_leave_guild |
+| get_user | discord_get_user |
+| get_my_user | discord_get_my_user |
+| list_my_connections | discord_list_my_connections |
+| list_my_guilds | discord_list_my_guilds |
+| update_my_user | discord_update_my_user |
+| create_dm | discord_create_dm |
+| delete_webhook | discord_delete_webhook |
+| delete_webhook_message | discord_delete_webhook_message |
+| get_webhook | discord_get_webhook |
+| get_webhook_message | discord_edit_webhook_message, discord_get_webhook_message |
+| update_webhook | discord_update_webhook |
+| update_webhook_message | discord_edit_webhook_message |
+| execute_webhook | discord_execute_webhook |
 
 ## Operations by credential profile
 
