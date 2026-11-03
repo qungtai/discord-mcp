@@ -15,7 +15,7 @@ export const deleteUserMessageReaction = defineTool({
   operationIds: ["delete_user_message_reaction"],
   toolset: "reactions",
   scope: { channel: "channel_id", message: "message_id" },
-  permissions: ["ManageMessages"],
+  permissions: ["ViewChannel", "ReadMessageHistory", "ManageMessages"],
   effect: "destructive",
   idempotent: true,
   input: z.object(userReactionIds),

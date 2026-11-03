@@ -9,7 +9,7 @@ export const deleteAllMessageReactionsByEmoji = defineTool({
   operationIds: ["delete_all_message_reactions_by_emoji"],
   toolset: "reactions",
   scope: { channel: "channel_id", message: "message_id" },
-  permissions: ["ManageMessages"],
+  permissions: ["ViewChannel", "ReadMessageHistory", "ManageMessages"],
   effect: "destructive",
   idempotent: true,
   input: z.object(reactionIds),

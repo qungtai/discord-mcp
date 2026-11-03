@@ -14,7 +14,8 @@ export const editMessage = defineTool({
   operationIds: ["get_message", "update_message"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },
-  permissions: ["ViewChannel", "ReadMessageHistory"],
+  // AttachFiles is required when adding files; EmbedLinks when adding embeds.
+  permissions: ["ViewChannel", "ReadMessageHistory", "AttachFiles", "EmbedLinks"],
   // Replacing content is not additive, but editing the bot's own message needs no approval.
   effect: "destructive",
   approval: false,

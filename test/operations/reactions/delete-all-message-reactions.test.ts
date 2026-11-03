@@ -75,7 +75,8 @@ it("maps 403 to permission error with ManageMessages", async () => {
     category: "permission",
     status: 403,
     discord_code: 50013,
-    remediation: "Check the bot permissions; this tool needs ManageMessages",
+    remediation:
+      "Check the bot permissions; this tool needs ViewChannel, ReadMessageHistory, ManageMessages",
   });
 });
 

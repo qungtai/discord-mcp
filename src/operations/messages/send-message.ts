@@ -11,7 +11,17 @@ export const sendMessage = defineTool({
   operationIds: ["create_message"],
   toolset: "messages",
   scope: { channel: "channel_id" },
-  permissions: ["ViewChannel", "SendMessages"],
+  // AttachFiles is required for files; EmbedLinks for embeds; SendPolls for polls; SendTTSMessages for tts; ReadMessageHistory for replies; SendMessagesInThreads for thread posts.
+  permissions: [
+    "ViewChannel",
+    "SendMessages",
+    "AttachFiles",
+    "EmbedLinks",
+    "SendPolls",
+    "SendTTSMessages",
+    "ReadMessageHistory",
+    "SendMessagesInThreads",
+  ],
   effect: "write",
   idempotent: false,
   output: messageResult,

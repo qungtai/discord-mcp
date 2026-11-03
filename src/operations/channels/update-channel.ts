@@ -25,7 +25,8 @@ export const updateChannel = defineTool({
   operationIds: ["update_channel"],
   toolset: "channels",
   scope: { channel: "channel_id" },
-  permissions: ["ManageChannels", "ManageThreads"],
+  // ManageChannels is required for channels; ManageThreads for threads; ManageRoles when editing permission_overwrites.
+  permissions: ["ManageChannels", "ManageThreads", "ManageRoles"],
   effect: "destructive",
   idempotent: true,
   input: z.object({

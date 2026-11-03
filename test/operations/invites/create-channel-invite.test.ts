@@ -129,7 +129,8 @@ it("maps 403 to permission with CreateInstantInvite requirement", async () => {
     category: "permission",
     status: 403,
     discord_code: 50013,
-    remediation: "Check the bot permissions; this tool needs CreateInstantInvite, ManageRoles",
+    remediation:
+      "Check the bot permissions; this tool needs CreateInstantInvite, ManageRoles, ManageGuild",
   });
 });
 

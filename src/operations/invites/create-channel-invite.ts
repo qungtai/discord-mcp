@@ -10,7 +10,8 @@ export const createChannelInvite = defineTool({
   operationIds: ["create_channel_invite"],
   toolset: "invites",
   scope: { channel: "channel_id" },
-  permissions: ["CreateInstantInvite", "ManageRoles"],
+  // ManageRoles is required when role_ids is supplied; ManageGuild when target_user_ids is supplied.
+  permissions: ["CreateInstantInvite", "ManageRoles", "ManageGuild"],
   effect: "write",
   // role_ids grants roles to everyone who accepts the invite.
   approval: true,

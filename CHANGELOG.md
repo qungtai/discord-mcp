@@ -69,6 +69,13 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Complete required bot permissions declared across operations so 403 error
+  remediation and README invitation bitfields include all permissions needed by
+  optional tool inputs (`AttachFiles`, `EmbedLinks`, `SendPolls`, `SendTTSMessages`,
+  `ReadMessageHistory`, `SendMessagesInThreads` on `discord_send_message`;
+  `AttachFiles`, `EmbedLinks` on `discord_edit_message`; `ViewChannel`,
+  `ReadMessageHistory` on reaction deletion tools; `ManageRoles` on
+  `discord_update_channel`; `ManageGuild` on `discord_create_channel_invite`).
 - An unexpected HTTP 429 response without a `Retry-After` header is rejected
   immediately as a rate-limited error instead of looping requests until timeout.
 - Clearable channel fields accept `null` again on `discord_update_guild`,
