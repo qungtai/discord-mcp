@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest an idea or new Discord operation
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Suggest additions or improvements to @qungtai/discord-mcp.
+  - type: input
+    id: operation
+    attributes:
+      label: Discord operation or documentation link
+      description: Link to the Discord developer documentation or describe the operation.
+      placeholder: https://discord.com/developers/docs/resources/...
+    validations:
+      required: true
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: Describe how you would use this capability and why it is useful.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed solution or tool interface
+      description: Describe your proposed tool name, input parameters, or behavior if known.

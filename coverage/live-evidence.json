@@ -1,6 +1,6 @@
 {
   "date": "2026-11-03",
-  "server": "test guild 1381945630808604713 through a stdio MCP client",
+  "server": "a dedicated test guild through a stdio MCP client",
   "tools": {
     "discord_send_message": "sent with two uploads, read back with discord_get_message",
     "discord_get_message": "returned the sent content and attachments",

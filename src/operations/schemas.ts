@@ -106,7 +106,7 @@ export const member = resource(
   }),
 );
 
-// No pings unless the caller opts in (FR-AUTH-07). A constant default is safe to advertise.
+// Outgoing mentions default to no pings unless requested. A constant default is safe to advertise.
 export const allowedMentions = z
   .strictObject({
     parse: z.array(z.enum(AllowedMentionsTypes)).optional(),

@@ -1,11 +1,9 @@
 # qungtai/discord-mcp: coding rules
 
-Status: agreed with the owner on 3 November 2026. Becomes the repo's `AGENTS.md` (`CLAUDE.md` points to it). Every agent brief references this file. Product requirements live in `docs/planning/prd.md`.
-
 ## 1. Stack
-- TypeScript with `strict: true`, ESM only, current Node LTS pinned in `.nvmrc` and `engines`.
+- TypeScript with `strict: true`, ESM only, current Node LTS pinned in `engines` in `package.json`.
 - Package manager: pnpm. End users still install through the standard `npx -y <package>@<version>` client config.
-- Discord access: `@discordjs/rest` for HTTP (rate limits, multipart uploads); `@discordjs/ws` for the Gateway when phase 5 starts. No full `discord.js`.
+- Discord access: `@discordjs/rest` for HTTP (rate limits, multipart uploads); `@discordjs/ws` for the Gateway (planned). No full `discord.js`.
 - Schemas: zod. One schema per tool drives input validation and the MCP `outputSchema`.
 - Tests: vitest. Lint and format: Biome.
 
@@ -16,7 +14,7 @@ src/
   adapters/
     mcp/          stdio and Streamable HTTP server wiring
     discord-rest/ REST client wrapper
-    gateway/      Gateway client (phase 5)
+    gateway/      Gateway client (planned)
     files/        sandboxed local file access
   operations/<toolset>/   one file per tool descriptor, e.g. operations/messages/send-message.ts
 test/           mirrors src/; unit, contract, protocol and opt-in live suites
@@ -53,22 +51,17 @@ Avoid: deep inheritance, god classes, a generic "call any endpoint" tool outside
 
 ## 6. Testing
 - Every tool: schema tests, mocked REST contract tests and permission/error tests. Protocol tests run through a real MCP client over stdio and HTTP.
-- Live tests are opt-in via env vars and run only against the test server: lequangtai's server (`1381945630808604713`) with `lequangtaibot`. Create only run-owned resources, record their IDs, clean up only those IDs.
+- Live verification is performed by running the server with `DISCORD_TOKEN` set against the contributor's own test server. Create only run-owned resources, record their IDs, clean up only those IDs.
 - A schema rejection, dry-run preview or HTTP 2xx is not live verification; verification means reading the end state back.
 - Code coverage gates (vitest): at least 80% lines and branches overall, 90% for `src/core`. `pnpm test` fails below these (thresholds in `vitest.config.ts`). Verification sequence: `pnpm install --frozen-lockfile && pnpm biome check --write . && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm tools:manifest && pnpm docs:tools && pnpm coverage:sync && pnpm coverage:report && pnpm coverage:check`.
 
 ## 7. Git workflow
-- Author: `Tai Q Le (Peter) <lequangtai1602@gmail.com>`, set per repo with `git config user.name` / `user.email`.
 - One branch per task: `feat/<toolset>-<task>`, `fix/<scope>-<task>`, `chore/<scope>-<task>`.
 - Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `chore:`, `refactor:`). No AI co-author or attribution lines.
-- One PR per task. The lead reviews and tests; the owner approves before merge to `main`. No force pushes to `main`. Nothing is published to npm, Docker or the MCP Registry without the owner's approval.
+- One PR per task. Never force push to `main`.
+- Contributors never print or commit credentials and never modify production Discord resources.
 
-## 8. Agents and worktrees
-- All implementation is done by team agents through herdr; the lead briefs, reviews, integrates and verifies but does not write implementation code.
-- Each agent works in its own herdr worktree and branch. The lead removes the worktree, branch and agent process after merge or abandonment; nothing is left behind.
-- Agents never print or commit credentials and never change `~/.agents`, production Discord resources or bot permissions.
-
-## 9. Documentation
+## 8. Documentation
 - English for code, comments, docs and commit messages.
 - README covers install per client, toolsets, required intents and permissions, safety settings.
 - Changelog follows Keep a Changelog with semantic versioning.
