@@ -112,6 +112,8 @@ otherwise the tool is refused with a `policy` error.
 
 - `DISCORD_MCP_ALLOWED_GUILDS` - comma-separated guild IDs; empty means no
   restriction
+- `DISCORD_MCP_ALLOW_DMS` - `true` or `false` (default `false`); controls whether
+  direct messages and user-scoped tools are permitted when a guild allowlist is configured
 - `DISCORD_MCP_TOOLSETS` - comma-separated toolsets; default `core,messages`
 - `DISCORD_MCP_READ_ONLY` - `true` blocks mutating tools
 - `DISCORD_MCP_APPROVAL` - `elicitation` (default) or `none`. In `elicitation`
