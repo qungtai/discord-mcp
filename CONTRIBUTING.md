@@ -4,9 +4,9 @@ Thank you for contributing to `@qungtai/discord-mcp`.
 
 ## Prerequisites
 
-- Node.js >= 22 (pinned in `.nvmrc` and `package.json` engines)
+- Node.js >= 22 (pinned in `engines` in `package.json`)
 - Corepack enabled (`corepack enable`)
-- pnpm (`corepack prepare pnpm@latest --activate` or through your package manager)
+- pnpm (managed by corepack via `packageManager` in `package.json`)
 
 ## Getting started
 
@@ -15,6 +15,8 @@ Clone the repository and install dependencies:
 ```sh
 pnpm install
 ```
+
+When checking out exact dependencies as committed in the lockfile, use `pnpm install --frozen-lockfile`.
 
 ## Adding a tool
 
@@ -32,15 +34,15 @@ pnpm test
 
 Coverage thresholds require at least 80% lines and branches overall, and 90% for `src/core`.
 
-### Live tests
+### Live verification
 
-Live tests hit the real Discord API and are opt-in. They require your own bot token and test server (guild). Configure them via environment variables:
+Live verification hits the real Discord API. It is conducted with your own test bot token and test server (guild):
 
-- `DISCORD_TOKEN`: your test bot token
-- `DISCORD_TEST_GUILD_ID`: your test guild ID
-- `DISCORD_LIVE_TESTS=1`
+1. Set `DISCORD_TOKEN` to your test bot token.
+2. Run the built server (`pnpm build && node dist/index.js` or via your MCP client).
+3. Execute actions against your test guild and read the end state back using retrieval tools (such as `discord_get_message` or `discord_get_guild`) to confirm modifications.
 
-Never run live tests against production servers or guilds with real user data. Live tests create only run-owned resources and clean them up upon completion. Never commit tokens, credentials, or test guild IDs.
+Never run live tests against production servers or guilds with real user data. Create only run-owned resources and clean them up upon completion. Never commit tokens, credentials, or private guild IDs.
 
 ## Verification checklist
 

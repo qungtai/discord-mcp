@@ -5,7 +5,6 @@
 | Version      | Supported          |
 | ------------ | ------------------ |
 | 0.x (latest) | :white_check_mark: |
-| < 0.1.0      | :x:                |
 
 Only the latest `0.x` release and current `main` branch receive security updates.
 
