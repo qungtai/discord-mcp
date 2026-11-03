@@ -13,7 +13,7 @@ export const executeWebhook = defineTool({
   scope: { webhook: "webhook_id", channel: "thread_id" },
   permissions: ["ManageWebhooks"],
   effect: "write",
-  // Webhooks can post under any name and avatar through webhooks other integrations own.
+  // It can post under any name and avatar through webhooks other integrations own.
   approval: true,
   idempotent: false,
   output: messageResult,

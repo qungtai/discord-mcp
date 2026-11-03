@@ -1,7 +1,5 @@
 import { z } from "zod/v4";
-import { dataUri, resource, snowflake } from "../schemas.js";
-
-export { dataUri };
+import { resource, snowflake } from "../schemas.js";
 
 export const partialGuild = resource(
   z.looseObject({

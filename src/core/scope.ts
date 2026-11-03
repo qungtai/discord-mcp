@@ -17,7 +17,7 @@ interface Found {
   guild_id?: string | null;
   channel_id?: string | null;
   guild?: { id: string };
-  channel?: { id: string; type?: number };
+  channel?: { id: string };
 }
 
 // Every channel, webhook and invite is resolved even when the input names a guild, so a guild ID
