@@ -3,12 +3,14 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { checkRegisterDrift } from "./sync.mjs";
 
 const root = process.cwd();
 const coverageDir = join(root, "coverage");
 const baselinePath = join(coverageDir, "baseline.json");
 const registerPath = join(coverageDir, "register.json");
 const toolsPath = join(coverageDir, "tools.json");
+const evidencePath = join(coverageDir, "live-evidence.json");
 const specDir = join(coverageDir, "specs");
 
 const ALLOWED = {
@@ -116,6 +118,13 @@ function main() {
         }
       }
     }
+
+    // Check register drift against tools.json and live-evidence.json.
+    const evidence = existsSync(evidencePath) ? readJson(evidencePath) : null;
+    const driftResult = checkRegisterDrift(register, tools, evidence);
+    if (!driftResult.ok) {
+      fail(driftResult.error);
+    }
   }
 
   if (process.exitCode) {
@@ -125,6 +134,8 @@ function main() {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main();
 }
+
+export { checkRegisterDrift, main };
