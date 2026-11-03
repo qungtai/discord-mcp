@@ -45,6 +45,12 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Hardened launch configuration, startup validation, and file safety:
+  - Open-mode uploads refuse paths under `~/Library` (macOS), `%APPDATA%`, and `%LOCALAPPDATA%` (Windows) to defend against credential leakage from prompt injection.
+  - Tilde expansion with `homedir()` for leading `~/` in `DISCORD_MCP_DOWNLOAD_DIR` and `DISCORD_MCP_FILE_ROOTS`.
+  - Rejection of unregistered toolsets in `DISCORD_MCP_TOOLSETS` with a descriptive message naming the toolset.
+  - Attachment download size limit configured via `DISCORD_MCP_MAX_DOWNLOAD_BYTES` (default 100 MiB), checking both reported size and streaming chunks.
+  - Missing `DISCORD_TOKEN` outputs a single stderr message and exits with status 1 without a stack trace.
 - Local file access is open by default: uploads allow any absolute path except hidden files and directories and system paths (`/proc`, `/sys`, `/dev`) unless restricted by `DISCORD_MCP_FILE_ROOTS`, uploads containing the bot token are refused, and `DISCORD_MCP_DOWNLOAD_DIR` defaults to `~/Downloads/discord-mcp` with automatic directory creation on first download.
 - Tool manifest generation writes `coverage/tools.json`; explicit `coverage:sync`
   updates the committed register (`coverage/register.json`) from tools and live

@@ -233,8 +233,8 @@ Destructive tools ask for confirmation with MCP elicitation (`elicitation/create
 
 Local file access is open by default:
 
-- Uploads: Any absolute path is accessible by default, except hidden files and directories (paths containing a segment starting with `.`) and paths under `/proc`, `/sys`, or `/dev`. Uploads whose bytes contain the bot token are refused. To restrict access, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories.
-- Downloads: Attachments downloaded with `discord_download_attachment` save to `~/Downloads/discord-mcp` by default. You can change this path by setting `DISCORD_MCP_DOWNLOAD_DIR`. The directory is created automatically on first download.
+- Uploads: Any absolute path is accessible by default, except hidden files and directories (paths containing a segment starting with `.`), system paths under `/proc`, `/sys`, or `/dev`, and application configuration directories (`~/Library` on macOS, `%APPDATA%` and `%LOCALAPPDATA%` on Windows). Uploads whose bytes contain the bot token are refused. To restrict access, set `DISCORD_MCP_FILE_ROOTS` to a comma-separated list of allowed directories. Leading `~/` paths are expanded with the user home directory.
+- Downloads: Attachments downloaded with `discord_download_attachment` save to `~/Downloads/discord-mcp` by default. You can change this path by setting `DISCORD_MCP_DOWNLOAD_DIR` (leading `~/` is expanded). The directory is created automatically on first download. Attachments larger than `DISCORD_MCP_MAX_DOWNLOAD_BYTES` (default 100 MiB) are refused.
 
 ## Environment variables
 

@@ -258,6 +258,87 @@ describe("uploads", () => {
     }
     expect(err1).not.toBe(err2);
   });
+  it("refuses paths and symlinks under ~/Library in open mode when homedir points to a temp dir", async () => {
+    const fakeHome = join(dir, "user-home");
+    const libraryDir = join(fakeHome, "Library");
+    await mkdir(join(libraryDir, "Application Support", "Claude"), { recursive: true });
+    const secretFile = join(
+      libraryDir,
+      "Application Support",
+      "Claude",
+      "claude_desktop_config.json",
+    );
+    await writeFile(secretFile, "apiKey=supersecret");
+
+    const origHome = process.env.HOME;
+    const origUserProfile = process.env.USERPROFILE;
+    try {
+      process.env.HOME = fakeHome;
+      process.env.USERPROFILE = fakeHome;
+
+      const service = new PAttachmentService([], "");
+
+      // Direct path refusal
+      await rejects(
+        service.upload(secretFile),
+        "policy",
+        "Application configuration directories are not uploaded by default",
+      );
+
+      // Symlink refusal (symlink outside Library pointing into Library)
+      const symlinkIntoLibrary = join(root, "link-to-library-config");
+      await symlink(secretFile, symlinkIntoLibrary);
+      await rejects(
+        service.upload(symlinkIntoLibrary),
+        "policy",
+        "Application configuration directories are not uploaded by default",
+      );
+
+      // Explicit root allows it
+      const allowedService = new PAttachmentService([libraryDir], "");
+      const uploaded = await allowedService.upload(secretFile);
+      expect(uploaded.data.toString()).toBe("apiKey=supersecret");
+    } finally {
+      if (origHome !== undefined) process.env.HOME = origHome;
+      else delete process.env.HOME;
+      if (origUserProfile !== undefined) process.env.USERPROFILE = origUserProfile;
+      else delete process.env.USERPROFILE;
+    }
+  });
+  it("refuses paths under APPDATA and LOCALAPPDATA in open mode", async () => {
+    const fakeAppData = join(dir, "AppData", "Roaming");
+    const fakeLocalAppData = join(dir, "AppData", "Local");
+    await mkdir(fakeAppData, { recursive: true });
+    await mkdir(fakeLocalAppData, { recursive: true });
+    const appConfigFile = join(fakeAppData, "mcp.json");
+    const localConfigFile = join(fakeLocalAppData, "token.json");
+    await writeFile(appConfigFile, "token1");
+    await writeFile(localConfigFile, "token2");
+
+    const origAppData = process.env.APPDATA;
+    const origLocalAppData = process.env.LOCALAPPDATA;
+    try {
+      process.env.APPDATA = fakeAppData;
+      process.env.LOCALAPPDATA = fakeLocalAppData;
+
+      const service = new PAttachmentService([], "");
+      await rejects(
+        service.upload(appConfigFile),
+        "policy",
+        "Application configuration directories are not uploaded by default",
+      );
+      await rejects(
+        service.upload(localConfigFile),
+        "policy",
+        "Application configuration directories are not uploaded by default",
+      );
+    } finally {
+      if (origAppData !== undefined) process.env.APPDATA = origAppData;
+      else delete process.env.APPDATA;
+      if (origLocalAppData !== undefined) process.env.LOCALAPPDATA = origLocalAppData;
+      else delete process.env.LOCALAPPDATA;
+    }
+  });
 });
 
 describe("downloads", () => {
@@ -363,5 +444,36 @@ describe("downloads", () => {
     await expect(
       service.download("https://cdn.discordapp.com/a", "z", controller.signal),
     ).rejects.toMatchObject({ category: "cancelled", message: "Download cancelled" });
+  });
+  it("refuses downloads larger than maxDownloadBytes based on Content-Length", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("short", { headers: { "content-length": "200" } })),
+    );
+    const service = new PAttachmentService([], dir, undefined, undefined, 100);
+    await rejects(
+      service.download("https://cdn.discordapp.com/a", "big.png"),
+      "validation",
+      "Attachment exceeds maximum download size of 100 bytes",
+    );
+  });
+  it("stops streaming downloads past maxDownloadBytes", async () => {
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(Buffer.alloc(60, "a"));
+        controller.enqueue(Buffer.alloc(60, "b"));
+        controller.close();
+      },
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(stream)),
+    );
+    const service = new PAttachmentService([], dir, undefined, undefined, 100);
+    await rejects(
+      service.download("https://cdn.discordapp.com/a", "stream-big.png"),
+      "validation",
+      "Attachment exceeds maximum download size of 100 bytes",
+    );
   });
 });

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { homedir } from "node:os";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { PDiscordRestAdapter } from "./adapters/discord-rest/discord-rest.js";
 import { defaultDownloadDir, PAttachmentService } from "./adapters/files/attachment-service.js";
@@ -9,7 +10,10 @@ import { createScopeResolver } from "./core/scope.js";
 import { PToolRegistry } from "./core/tool-registry.js";
 
 const token = process.env.DISCORD_TOKEN;
-if (!token) throw new Error("DISCORD_TOKEN is required");
+if (!token) {
+  process.stderr.write("DISCORD_TOKEN is required\n");
+  process.exit(1);
+}
 const positiveInt = (name: string) => {
   const value = process.env[name];
   if (value === undefined) return undefined;
@@ -22,20 +26,26 @@ const bot = new PDiscordRestAdapter(token, {
   timeoutMs: positiveInt("DISCORD_MCP_REQUEST_TIMEOUT_MS"),
   rateLimitWaitMs: positiveInt("DISCORD_MCP_RATE_LIMIT_WAIT_MS"),
 });
-const policy = PPolicyEngine.fromEnv(process.env);
+const registry = await PToolRegistry.load();
+const registeredToolsets = new Set(registry.list().map((t) => t.toolset));
+const policy = PPolicyEngine.fromEnv(process.env, registeredToolsets);
 const notice = approvalNotice(policy.approval);
 if (notice) process.stderr.write(notice);
-const registry = await PToolRegistry.load();
+const expandHome = (path: string) =>
+  path === "~" ? homedir() : path.startsWith("~/") ? `${homedir()}${path.slice(1)}` : path;
 const roots = (process.env.DISCORD_MCP_FILE_ROOTS ?? "")
   .split(",")
   .map((s) => s.trim())
-  .filter(Boolean);
-const downloadDir = process.env.DISCORD_MCP_DOWNLOAD_DIR || defaultDownloadDir();
+  .filter(Boolean)
+  .map(expandHome);
+const rawDownloadDir = process.env.DISCORD_MCP_DOWNLOAD_DIR;
+const downloadDir = rawDownloadDir ? expandHome(rawDownloadDir) : defaultDownloadDir();
 const files = new PAttachmentService(
   roots,
   downloadDir,
   positiveInt("DISCORD_MCP_MAX_UPLOAD_BYTES"),
   token,
+  positiveInt("DISCORD_MCP_MAX_DOWNLOAD_BYTES"),
 );
 const pipeline = new PToolPipeline(registry, policy, {
   credentials: { bot },

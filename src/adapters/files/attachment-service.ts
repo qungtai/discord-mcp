@@ -27,8 +27,33 @@ function isProhibitedSystemPath(path: string): boolean {
   );
 }
 
-function hiddenFileError(): PToolError {
-  return new PToolError("Hidden files and folders are not uploaded by default", {
+async function isProhibitedConfigPath(target: string): Promise<boolean> {
+  const checkRoots: string[] = [];
+  if (process.platform === "darwin") {
+    const libraryDir = join(homedir(), "Library");
+    checkRoots.push(libraryDir);
+    const realLibrary = await realpath(libraryDir).catch(() => undefined);
+    if (realLibrary) checkRoots.push(realLibrary);
+  }
+  const appData = process.env.APPDATA;
+  if (appData) {
+    checkRoots.push(appData);
+    const realAppData = await realpath(appData).catch(() => undefined);
+    if (realAppData) checkRoots.push(realAppData);
+  }
+  const localAppData = process.env.LOCALAPPDATA;
+  if (localAppData) {
+    checkRoots.push(localAppData);
+    const realLocal = await realpath(localAppData).catch(() => undefined);
+    if (realLocal) checkRoots.push(realLocal);
+  }
+  return within(checkRoots, target);
+}
+
+function hiddenFileError(
+  message = "Hidden files and folders are not uploaded by default",
+): PToolError {
+  return new PToolError(message, {
     category: "policy",
     retryable: false,
     remediation: "Set DISCORD_MCP_FILE_ROOTS to a folder that contains the file to allow it",
@@ -41,6 +66,7 @@ export class PAttachmentService implements AttachmentPort {
     private readonly downloadDir: string,
     private readonly maxUploadBytes = 20 * 1024 * 1024,
     private readonly botToken?: string,
+    private readonly maxDownloadBytes = 104857600,
   ) {}
   async prepare(uploads: readonly FileUpload[]): Promise<Multipart> {
     const files = await Promise.all(
@@ -99,6 +125,8 @@ export class PAttachmentService implements AttachmentPort {
       });
     if (this.roots.length === 0) {
       if (hasHiddenComponent(path) || isProhibitedSystemPath(path)) throw hiddenFileError();
+      if (await isProhibitedConfigPath(path))
+        throw hiddenFileError("Application configuration directories are not uploaded by default");
       const target = await realpath(path).catch((error: unknown) => {
         throw code(error) === "ENOENT"
           ? new PToolError("Upload file not found", {
@@ -110,6 +138,8 @@ export class PAttachmentService implements AttachmentPort {
           : error;
       });
       if (hasHiddenComponent(target) || isProhibitedSystemPath(target)) throw hiddenFileError();
+      if (await isProhibitedConfigPath(target))
+        throw hiddenFileError("Application configuration directories are not uploaded by default");
       return this.readRegular(target, filename);
     }
     if (this.roots.some((root) => !isAbsolute(root)))
@@ -217,7 +247,7 @@ export class PAttachmentService implements AttachmentPort {
     });
     let data: Buffer;
     try {
-      data = await fetchAttachment(parsed, signal);
+      data = await fetchAttachment(parsed, this.maxDownloadBytes, signal);
       await handle.writeFile(data);
     } catch (error) {
       await handle.close();
@@ -228,7 +258,11 @@ export class PAttachmentService implements AttachmentPort {
     return { path, size: data.length, sha256: createHash("sha256").update(data).digest("hex") };
   }
 }
-async function fetchAttachment(url: URL, signal?: AbortSignal): Promise<Buffer> {
+async function fetchAttachment(
+  url: URL,
+  maxDownloadBytes: number,
+  signal?: AbortSignal,
+): Promise<Buffer> {
   try {
     const response = await fetch(url, { redirect: "error", signal });
     if (!response.ok)
@@ -238,7 +272,43 @@ async function fetchAttachment(url: URL, signal?: AbortSignal): Promise<Buffer> 
         remediation: "Retry the download",
         status: response.status,
       });
-    return Buffer.from(await response.arrayBuffer());
+    const contentLength = response.headers.get("content-length");
+    if (contentLength !== null) {
+      const parsedLength = Number(contentLength);
+      if (Number.isFinite(parsedLength) && parsedLength > maxDownloadBytes) {
+        throw new PToolError(
+          `Attachment exceeds maximum download size of ${maxDownloadBytes} bytes`,
+          {
+            category: "validation",
+            retryable: false,
+            remediation: "Configure DISCORD_MCP_MAX_DOWNLOAD_BYTES to allow larger downloads",
+          },
+        );
+      }
+    }
+    if (!response.body) return Buffer.alloc(0);
+    const reader = response.body.getReader();
+    const chunks: Buffer[] = [];
+    let total = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = Buffer.isBuffer(value) ? value : Buffer.from(value);
+      total += chunk.length;
+      if (total > maxDownloadBytes) {
+        await reader.cancel();
+        throw new PToolError(
+          `Attachment exceeds maximum download size of ${maxDownloadBytes} bytes`,
+          {
+            category: "validation",
+            retryable: false,
+            remediation: "Configure DISCORD_MCP_MAX_DOWNLOAD_BYTES to allow larger downloads",
+          },
+        );
+      }
+      chunks.push(chunk);
+    }
+    return Buffer.concat(chunks);
   } catch (error) {
     if (error instanceof PToolError) throw error;
     throw signal?.aborted

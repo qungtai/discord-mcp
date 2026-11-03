@@ -19,7 +19,7 @@ export class PPolicyEngine {
     readonly approval: ApprovalMode = "elicitation",
     readonly allowDms: boolean = false,
   ) {}
-  static fromEnv(env: NodeJS.ProcessEnv): PPolicyEngine {
+  static fromEnv(env: NodeJS.ProcessEnv, registeredToolsets?: ReadonlySet<Toolset>): PPolicyEngine {
     const split = (s: string) =>
       s
         .split(",")
@@ -37,6 +37,13 @@ export class PPolicyEngine {
     const toolsets = split(env.DISCORD_MCP_TOOLSETS ?? DEFAULT_TOOLSETS.join(","));
     if (!toolsets.length || !toolsets.every(isToolset))
       throw new Error("Invalid DISCORD_MCP_TOOLSETS");
+    if (registeredToolsets) {
+      for (const ts of toolsets) {
+        if (!registeredToolsets.has(ts)) {
+          throw new Error(`Toolset ${ts} has no tools yet`);
+        }
+      }
+    }
     return new PPolicyEngine(
       split(env.DISCORD_MCP_ALLOWED_GUILDS ?? ""),
       toolsets,
