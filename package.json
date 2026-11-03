@@ -1,6 +1,25 @@
 {
   "name": "@qungtai/discord-mcp",
   "version": "0.1.0",
+  "description": "A community MCP server for the Discord REST API with traceable coverage",
+  "license": "MIT",
+  "author": "Tai Q Le (Peter) <lequangtai1602@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qungtai/discord-mcp.git"
+  },
+  "homepage": "https://github.com/qungtai/discord-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/qungtai/discord-mcp/issues"
+  },
+  "keywords": [
+    "discord",
+    "mcp",
+    "model-context-protocol",
+    "discord-bot",
+    "ai",
+    "llm"
+  ],
   "type": "module",
   "bin": {
     "discord-mcp": "dist/index.js"
@@ -17,7 +36,8 @@
     "coverage:sync": "node scripts/coverage/sync.mjs",
     "coverage:report": "node scripts/coverage/report.mjs",
     "coverage:check": "node scripts/coverage/check.mjs",
-    "tools:manifest": "node dist/tools-manifest.js"
+    "tools:manifest": "node dist/tools-manifest.js",
+    "docs:tools": "node scripts/docs/generate-tools.mjs"
   },
   "dependencies": {
     "@discordjs/rest": "^2.6.0",

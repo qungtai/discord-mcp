@@ -8,6 +8,9 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- README rewrite focused on open-source user onboarding, quick start guide, client configurations, toolsets reference, configuration parameters, and security policies.
+- Automated tool reference generator `scripts/docs/generate-tools.mjs` and `docs:tools` script.
+- Test verifying README tool reference matches registered operations and permissions without drift.
 - Live evidence file (`coverage/live-evidence.json`) recording real Discord actions
   and outcomes, synced into the register by `pnpm coverage:sync`.
 - Community documentation: README, client configurations, contributing guide,

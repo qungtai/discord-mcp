@@ -1,13 +1,41 @@
 # Client configuration (stdio)
 
-All examples run the built server with Node over stdio. Replace
-`/absolute/path` with the absolute path to your checkout's `dist/index.js`.
-Pass the bot token through the environment; never put it in a tool argument.
+All examples run the server over stdio. The primary installation method is `npx -y @qungtai/discord-mcp`. For local development from a repository checkout, use the from-source command pointing to `dist/index.js`.
 
-The standard `npx -y @qungtai/discord-mcp@<version>` install path will be available
-after the first release.
+Pass the bot token through the environment. Never put it in a tool argument.
 
 ## Claude Code
+
+Primary (`npx`):
+
+```sh
+claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+```
+
+From source:
+
+```sh
+claude mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- node /absolute/path/dist/index.js
+```
+
+Or configure manually in `~/.claude.json`:
+
+```json
+{
+  "mcpServers": {
+    "discord": {
+      "command": "npx",
+      "args": ["-y", "@qungtai/discord-mcp"],
+      "env": {
+        "DISCORD_TOKEN": "your-bot-token",
+        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+      }
+    }
+  }
+}
+```
+
+From-source alternative:
 
 ```json
 {
@@ -16,7 +44,8 @@ after the first release.
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token"
+        "DISCORD_TOKEN": "your-bot-token",
+        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
       }
     }
   }
@@ -25,6 +54,30 @@ after the first release.
 
 ## Claude Desktop
 
+Config file path:
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%/Claude/claude_desktop_config.json`
+- Linux: `~/.config/Claude/claude_desktop_config.json`
+
+Primary (`npx`):
+
+```json
+{
+  "mcpServers": {
+    "discord": {
+      "command": "npx",
+      "args": ["-y", "@qungtai/discord-mcp"],
+      "env": {
+        "DISCORD_TOKEN": "your-bot-token",
+        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+      }
+    }
+  }
+}
+```
+
+From-source alternative:
+
 ```json
 {
   "mcpServers": {
@@ -32,14 +85,35 @@ after the first release.
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token"
+        "DISCORD_TOKEN": "your-bot-token",
+        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
       }
     }
   }
 }
 ```
 
-## Codex (config.toml)
+## Codex
+
+Add with the CLI:
+
+```sh
+codex mcp add discord -e DISCORD_TOKEN="your-bot-token" -e DISCORD_MCP_ALLOWED_GUILDS="123456789012345678" -- npx -y @qungtai/discord-mcp
+```
+
+Or configure in `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.discord]
+command = "npx"
+args = ["-y", "@qungtai/discord-mcp"]
+
+[mcp_servers.discord.env]
+DISCORD_TOKEN = "your-bot-token"
+DISCORD_MCP_ALLOWED_GUILDS = "123456789012345678"
+```
+
+From-source alternative:
 
 ```toml
 [mcp_servers.discord]
@@ -48,9 +122,29 @@ args = ["/absolute/path/dist/index.js"]
 
 [mcp_servers.discord.env]
 DISCORD_TOKEN = "your-bot-token"
+DISCORD_MCP_ALLOWED_GUILDS = "123456789012345678"
 ```
 
 ## Cursor
+
+Configure in `.cursor/mcp.json` or Cursor Settings > MCP:
+
+```json
+{
+  "mcpServers": {
+    "discord": {
+      "command": "npx",
+      "args": ["-y", "@qungtai/discord-mcp"],
+      "env": {
+        "DISCORD_TOKEN": "your-bot-token",
+        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+      }
+    }
+  }
+}
+```
+
+From-source alternative:
 
 ```json
 {
@@ -59,7 +153,8 @@ DISCORD_TOKEN = "your-bot-token"
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token"
+        "DISCORD_TOKEN": "your-bot-token",
+        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
       }
     }
   }
@@ -67,6 +162,34 @@ DISCORD_TOKEN = "your-bot-token"
 ```
 
 ## VS Code
+
+Configure in `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "discord": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@qungtai/discord-mcp"],
+      "env": {
+        "DISCORD_TOKEN": "${input:discordToken}",
+        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "id": "discordToken",
+      "type": "promptString",
+      "description": "Discord Bot Token",
+      "password": true
+    }
+  ]
+}
+```
+
+From-source alternative:
 
 ```json
 {
@@ -76,56 +199,58 @@ DISCORD_TOKEN = "your-bot-token"
       "command": "node",
       "args": ["/absolute/path/dist/index.js"],
       "env": {
-        "DISCORD_TOKEN": "your-bot-token"
+        "DISCORD_TOKEN": "${input:discordToken}",
+        "DISCORD_MCP_ALLOWED_GUILDS": "123456789012345678"
       }
     }
-  }
+  },
+  "inputs": [
+    {
+      "id": "discordToken",
+      "type": "promptString",
+      "description": "Discord Bot Token",
+      "password": true
+    }
+  ]
 }
 ```
 
 ## MCP Inspector
 
+Primary (`npx`):
+
+```sh
+npx @modelcontextprotocol/inspector npx -y @qungtai/discord-mcp
+```
+
+From source:
+
 ```sh
 npx @modelcontextprotocol/inspector node /absolute/path/dist/index.js
 ```
 
-Set `DISCORD_TOKEN` in the inspector's environment panel before connecting.
+Set `DISCORD_TOKEN` and `DISCORD_MCP_ALLOWED_GUILDS` in the inspector environment panel before connecting.
 
 ## Approval support in each client
 
-Destructive tools ask for confirmation with MCP elicitation
-(`elicitation/create`). The client must advertise the `elicitation` capability,
-otherwise the tool is refused with a `policy` error.
+Destructive tools ask for confirmation with MCP elicitation (`elicitation/create`). The client must advertise the `elicitation` capability, otherwise the tool is refused with a `policy` error.
 
-- Claude Code 2.1.309 was verified on 3 November 2026 to show the approval
-  dialog and accept it end to end.
-- Codex 0.166.0 was verified on 3 November 2026: with approval mode on-request
-  (`codex -a on-request`) it first asks to allow the MCP tool call and then
-  shows the server's approval prompt, and accepting runs the tool end to end; in
-  full-access mode Codex declines the elicitation without asking, so destructive
-  tools return "Approval declined". Use on-request for destructive tools, or set
-  `DISCORD_MCP_APPROVAL=none` if you rely on Codex's own approvals.
-- Other clients: check your client. If it does not support elicitation, set
-  `DISCORD_MCP_APPROVAL=none` and rely on the client's own tool confirmation.
+- Claude Code 2.1.309 was verified on 3 November 2026 to show the approval dialog and accept it end to end.
+- Codex 0.166.0 was verified on 3 November 2026: with approval mode on-request (`codex -a on-request`) it first asks to allow the MCP tool call and then shows the server approval prompt, and accepting runs the tool end to end; in full-access mode Codex declines the elicitation without asking, so destructive tools return "Approval declined". Use on-request for destructive tools, or set `DISCORD_MCP_APPROVAL=none` if you rely on Codex's own approvals.
+- Other clients: check your client. If it does not support elicitation, set `DISCORD_MCP_APPROVAL=none` and rely on the client tool confirmation.
 
-## Optional environment variables
+## Environment variables
 
-- `DISCORD_MCP_ALLOWED_GUILDS` - comma-separated guild IDs; empty means no
-  restriction. With an allowlist, resources outside any guild that are not DMs
-  (application webhooks, friend invites) are refused whatever
-  DISCORD_MCP_ALLOW_DMS says; `discord_list_my_guilds` returns every allowed
-  guild in one call and refuses before, after and limit.
-- `DISCORD_MCP_ALLOW_DMS` - `true` or `false` (default `false`); controls whether
-  direct messages and user-scoped tools are permitted when a guild allowlist is configured
-- `DISCORD_MCP_TOOLSETS` - comma-separated toolsets; default `core,messages`
-- `DISCORD_MCP_READ_ONLY` - `true` blocks mutating tools
-- `DISCORD_MCP_APPROVAL` - `elicitation` (default) or `none`. In `elicitation`
-  mode, destructive operations ask the user for confirmation using MCP
-  elicitation (`elicitation/create`). In `none` mode, server-side approval for
-  destructive tools is disabled: those tools run without elicitation and rely on
-  the client's own tool confirmation, which is not a security boundary. The
-  server prints a warning to stderr at startup in `none` mode. Clients without
-  MCP elicitation support need `DISCORD_MCP_APPROVAL=none`.
-- `DISCORD_MCP_FILE_ROOTS` - comma-separated absolute directories readable for
-  uploads
-- `DISCORD_MCP_DOWNLOAD_DIR` - absolute directory for downloads
+| Variable | Default | Description |
+| --- | --- | --- |
+| `DISCORD_TOKEN` | *required* | Discord bot authentication token |
+| `DISCORD_MCP_ALLOWED_GUILDS` | *(empty)* | Comma-separated list of allowed guild (server) IDs. When set, only operations on these guilds are permitted. Non-guild resources that are not DMs are refused. |
+| `DISCORD_MCP_ALLOW_DMS` | `false` | Set to `true` to allow direct messages and user-scoped operations when a guild allowlist is configured. |
+| `DISCORD_MCP_TOOLSETS` | `core,messages` | Comma-separated list of enabled toolsets. Available: core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites. |
+| `DISCORD_MCP_READ_ONLY` | `false` | Set to `true` to block all mutating operations and allow read-only tools only. |
+| `DISCORD_MCP_APPROVAL` | `elicitation` | Approval mechanism for destructive actions. `elicitation` prompts via MCP elicitation; `none` bypasses server-side prompting. |
+| `DISCORD_MCP_FILE_ROOTS` | *(empty)* | Comma-separated absolute filesystem directory paths permitted for file attachments and uploads. |
+| `DISCORD_MCP_DOWNLOAD_DIR` | *(empty)* | Absolute directory path where downloaded attachments are saved. |
+| `DISCORD_MCP_REQUEST_TIMEOUT_MS` | `15000` | HTTP request timeout in milliseconds for Discord API calls. |
+| `DISCORD_MCP_RATE_LIMIT_WAIT_MS` | `5000` | Maximum wait time in milliseconds for Discord rate limits before aborting. |
+| `DISCORD_MCP_MAX_UPLOAD_BYTES` | `20971520` | Maximum upload size in bytes (defaults to 20 MiB). |
