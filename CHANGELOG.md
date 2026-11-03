@@ -9,7 +9,9 @@ follows [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Live evidence file (`coverage/live-evidence.json`) recording real Discord actions
-  and outcomes, synced automatically into the coverage register.
+  and outcomes, synced into the register by `pnpm coverage:sync`.
+- Community documentation: README, client configurations, contributing guide,
+  security policy, changelog and license.
 - Webhooks toolset (10 tools): channel/guild webhook listing, creation, retrieval,
   modification, deletion, webhook execution with multipart attachment support,
   and webhook message retrieval, editing, and deletion.

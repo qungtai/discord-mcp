@@ -8,7 +8,7 @@ This project follows the rules in `AGENTS.md`. Summary:
 - Type check: `pnpm typecheck`.
 - Tests: vitest (`pnpm test` runs `vitest run --coverage`).
 - Coverage gates: at least 80% lines and branches overall, 90% for `src/core`.
-  CI fails below these.
+  `pnpm test` fails below these (thresholds in `vitest.config.ts`).
 - Live tests are opt-in via env vars and run only against the test server
   (`1381945630808604713` with `lequangtaibot`). Never use project secrets on
   untrusted pull requests.
