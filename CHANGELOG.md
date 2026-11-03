@@ -14,6 +14,13 @@ follows [Semantic Versioning](https://semver.org/).
 - 110 Discord tools across ten toolsets: channels (12), events (11), guild (22),
   invites (2), members (12), messages (15), moderation (10), reactions (6),
   roles (7) and threads (13), registered from one operation descriptor each.
+- 10 invite operations in the invites toolset: resolve invite (`discord_get_invite`),
+  revoke invite (`discord_delete_invite`), list guild invites (`discord_list_guild_invites`),
+  target users CSV retrieval (`discord_list_invite_target_users`), target users CSV
+  upload (`discord_set_invite_target_users`), target users job status
+  (`discord_get_invite_target_users_job_status`), bulk add/delete target users
+  (`discord_bulk_add_invite_target_users`, `discord_bulk_delete_invite_target_users`),
+  and single target user add/delete (`discord_add_invite_target_user`, `discord_delete_invite_target_user`).
 - Approval through MCP elicitation: destructive tools ask the user before they
   run, and `DISCORD_MCP_APPROVAL` selects `elicitation` or `none`. In `none` mode
   the server prints a warning at startup because server-side approval is off.
