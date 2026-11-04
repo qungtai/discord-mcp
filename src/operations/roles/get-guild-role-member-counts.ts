@@ -7,7 +7,7 @@ import { roleMemberCountsResult } from "./schemas.js";
 export const getGuildRoleMemberCounts = defineTool({
   name: "discord_get_guild_role_member_counts",
   description:
-    "Retrieve the count of members assigned to each role in a guild. Useful for analyzing role usage and auditing membership across tiers without fetching all member records. To list the full metadata of each role use discord_list_guild_roles. Returns a mapping of role ID snowflakes to integer member counts.",
+    "Count the members that hold each role in a guild, without fetching every member. To list the full metadata of each role use discord_list_guild_roles. Returns a mapping of role ID snowflakes to integer member counts.",
   operationIds: ["guild_role_member_counts"],
   toolset: "roles",
   scope: { guild: "guild_id" },

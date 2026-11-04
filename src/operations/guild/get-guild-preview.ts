@@ -6,7 +6,7 @@ import { guildIds, guildPreview } from "./schemas.js";
 export const getGuildPreview = defineTool({
   name: "discord_get_guild_preview",
   description:
-    "Fetch public preview data for a guild even if the bot is not a member. The target guild must be discoverable or public (have DISCOVERABLE feature or invite splash enabled). To fetch complete details for a guild the bot belongs to use discord_get_guild. Returns guild preview data including approximate presence and member counts.",
+    "Fetch the public preview of a guild: name, icon, splash, emoji, stickers, features and approximate member and presence counts. If the bot is not a member, the guild must have the DISCOVERABLE feature. For full details of a guild the bot is in use discord_get_guild.",
   operationIds: ["get_guild_preview"],
   toolset: "guild",
   scope: { guild: "guild_id" },

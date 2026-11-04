@@ -7,7 +7,7 @@ import { rolesResult } from "./schemas.js";
 export const listGuildRoles = defineTool({
   name: "discord_list_guild_roles",
   description:
-    "List every role configured in a guild, including @everyone, bot integration roles, and booster roles. To fetch member counts across roles use discord_get_guild_role_member_counts, or to create a new role use discord_create_guild_role. Returns an array of all role objects ordered by hierarchy position.",
+    "List every role configured in a guild, including @everyone, bot integration roles, and booster roles. To fetch member counts across roles use discord_get_guild_role_member_counts, or to create a new role use discord_create_guild_role. Returns every role object, each with its position.",
   operationIds: ["list_guild_roles"],
   toolset: "roles",
   scope: { guild: "guild_id" },

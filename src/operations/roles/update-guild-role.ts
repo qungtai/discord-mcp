@@ -48,7 +48,7 @@ export const updateGuildRole = defineTool({
       .string()
       .nullish()
       .describe(
-        "Base64 128x128 image data URI for the role icon, or null to clear (requires ROLE_ICONS feature)",
+        "Base64 image data URI for the role icon, or null to clear (needs the ROLE_ICONS feature)",
       ),
     unicode_emoji: z
       .string()

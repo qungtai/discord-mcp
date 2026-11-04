@@ -4,21 +4,23 @@ import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
 import { rolesResult } from "./schemas.js";
 
-const rolePosition = z.strictObject({
-  id: snowflake.describe("Role snowflake ID to position"),
-  position: z
-    .number()
-    .int()
-    .nullish()
-    .describe(
-      "Target zero-indexed position for this role (must be strictly lower than the bot highest role)",
-    ),
-});
+const rolePosition = z
+  .strictObject({
+    id: snowflake.describe("Role snowflake ID to position"),
+    position: z
+      .number()
+      .int()
+      .nullish()
+      .describe(
+        "Position to move the role to (an integer above 0 and below the bot's highest role)",
+      ),
+  })
+  .describe("One role and the position to move it to");
 
 export const bulkUpdateGuildRoles = defineTool({
   name: "discord_bulk_update_guild_roles",
   description:
-    "Batch update sorting positions for multiple guild roles. Discord reorders positions from 0 upwards; swapping or moving positions shifts intervening roles. Under Discord role hierarchy rules, the bot can only modify positions of roles strictly below its highest role. To inspect current role order use discord_list_guild_roles. Returns the updated list of all guild roles.",
+    "Change the position of several roles in one call. Send only the roles to move; Discord shifts the others to make room. A higher position ranks higher in the hierarchy, and @everyone stays at position 0. The bot can only reorder roles below its own highest role. To see the current order use discord_list_guild_roles. Returns every role in the guild.",
   operationIds: ["bulk_update_guild_roles"],
   toolset: "roles",
   scope: { guild: "guild_id" },

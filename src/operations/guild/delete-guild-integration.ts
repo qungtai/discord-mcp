@@ -7,7 +7,7 @@ import { guildIds } from "./schemas.js";
 export const deleteGuildIntegration = defineTool({
   name: "discord_delete_guild_integration",
   description:
-    "Delete an attached integration from a guild by integration ID. Deleting an integration removes any linked synchronization or webhook access. To inspect active integrations first use discord_list_guild_integrations. Returns confirmation with deleted IDs.",
+    "Delete an integration from a guild. Discord also deletes the webhooks tied to it and kicks the associated bot, if there is one. This cannot be undone. Find integration IDs with discord_list_guild_integrations. Returns the guild and integration IDs.",
   operationIds: ["delete_guild_integration"],
   toolset: "guild",
   scope: { guild: "guild_id" },

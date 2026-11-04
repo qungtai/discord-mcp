@@ -29,7 +29,7 @@ export const createGuildRole = defineTool({
     permissions: permissionBits
       .optional()
       .describe(
-        "Permission bitfield decimal string granted to this role (cannot exceed bot own permissions)",
+        "Permission bitfield decimal string granted to this role (cannot exceed bot own permissions). Defaults to the @everyone permissions",
       ),
     color: z
       .number()
@@ -50,7 +50,7 @@ export const createGuildRole = defineTool({
     icon: z
       .string()
       .optional()
-      .describe("Base64 128x128 image data URI for the role icon (requires ROLE_ICONS feature)"),
+      .describe("Base64 image data URI for the role icon (needs the ROLE_ICONS feature)"),
     unicode_emoji: z
       .string()
       .max(100)

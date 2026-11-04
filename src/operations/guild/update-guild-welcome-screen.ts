@@ -4,23 +4,25 @@ import { defineTool } from "../../core/tool-registry.js";
 import { reason, snowflake } from "../schemas.js";
 import { guildIds, welcomeScreen } from "./schemas.js";
 
-const welcomeScreenChannelInput = z.strictObject({
-  channel_id: snowflake.describe(
-    "Channel ID to feature on the welcome screen (numeric snowflake string)",
-  ),
-  description: z
-    .string()
-    .min(1)
-    .max(50)
-    .describe("Short description of why new members should visit this channel (1-50 characters)"),
-  emoji_id: snowflake
-    .nullish()
-    .describe("Custom emoji ID to display next to the channel item if using a custom emoji"),
-  emoji_name: z
-    .string()
-    .nullish()
-    .describe("Unicode character or custom emoji name to display next to the channel item"),
-});
+const welcomeScreenChannelInput = z
+  .strictObject({
+    channel_id: snowflake.describe(
+      "Channel ID to feature on the welcome screen (numeric snowflake string)",
+    ),
+    description: z
+      .string()
+      .min(1)
+      .max(50)
+      .describe("Short description of why new members should visit this channel (1-50 characters)"),
+    emoji_id: snowflake
+      .nullish()
+      .describe("Custom emoji ID to display next to the channel item if using a custom emoji"),
+    emoji_name: z
+      .string()
+      .nullish()
+      .describe("Unicode character or custom emoji name to display next to the channel item"),
+  })
+  .describe("One channel featured on the welcome screen");
 
 export const updateGuildWelcomeScreen = defineTool({
   name: "discord_update_guild_welcome_screen",

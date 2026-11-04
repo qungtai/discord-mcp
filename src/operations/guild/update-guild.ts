@@ -7,7 +7,7 @@ import { guild, guildIds } from "./schemas.js";
 export const updateGuild = defineTool({
   name: "discord_update_guild",
   description:
-    "Update configuration, channels, images, and community settings for a guild. Settings such as rules_channel_id, public_updates_channel_id, and discovery_splash require the COMMUNITY feature to be enabled. To inspect current guild configuration before updating use discord_get_guild. Returns the updated guild object.",
+    "Change settings of a guild: name, icon and banner images, verification and notification levels, AFK and system channels, rules and updates channels, locale, description and feature list. Only fields you send change. rules_channel_id and public_updates_channel_id apply to Community servers, and each image needs its guild feature (see the field). To read current values first use discord_get_guild. Returns the updated guild object.",
   operationIds: ["update_guild"],
   toolset: "guild",
   scope: {
@@ -69,7 +69,7 @@ export const updateGuild = defineTool({
       .string()
       .nullish()
       .describe(
-        "Base64 image data URI for Discovery splash background, or null to remove (requires DISCOVERABLE feature)",
+        "Base64 16:9 image data URI for Discovery splash background, or null to remove (requires DISCOVERABLE feature)",
       ),
     banner: z
       .string()
@@ -93,7 +93,7 @@ export const updateGuild = defineTool({
       .int()
       .nullish()
       .describe(
-        "System channel flags bitfield suppressing specific system notifications (1=suppress member join, 2=suppress boost, 4=suppress setup tips, 8=suppress reply subscription)",
+        "Bitfield of system channel notifications to suppress, summed: 1 member join, 2 server boost, 4 server setup tips, 8 member join sticker reply buttons, 16 role subscription purchases, 32 role subscription sticker reply buttons",
       ),
     rules_channel_id: snowflake
       .nullish()
@@ -113,7 +113,7 @@ export const updateGuild = defineTool({
       .array(z.string())
       .optional()
       .describe(
-        "Array of enabled guild feature strings (e.g. 'COMMUNITY', 'DISCOVERABLE'); note some features cannot be toggled via API",
+        "Complete list of guild feature strings to set (for example COMMUNITY, DISCOVERABLE). Replaces the current list; Discord only lets a bot change a few features",
       ),
     description: z
       .string()

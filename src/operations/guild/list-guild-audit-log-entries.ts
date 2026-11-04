@@ -7,7 +7,7 @@ import { auditLog, guildIds } from "./schemas.js";
 export const listGuildAuditLogEntries = defineTool({
   name: "discord_list_guild_audit_log_entries",
   description:
-    "List and filter audit log entries for moderation, settings, and role changes in a guild. Supports filtering by user_id, target_id, or action_type, with chronological pagination using before and after cursors. Use next_before to page backwards to older entries and next_after for newer entries. Returns audit log entries, users, integrations, and webhooks.",
+    "List audit log entries for a guild, newest first. Filter by user_id (who acted), target_id (what was changed) or action_type, and return 1 to 100 entries per call (default 50). Page to older entries with before=next_before; next_after is the newest entry ID on the page. Returns audit_log_entries plus the related users, integrations, webhooks, threads and scheduled events.",
   operationIds: ["list_guild_audit_log_entries"],
   toolset: "guild",
   scope: { guild: "guild_id" },
@@ -27,14 +27,18 @@ export const listGuildAuditLogEntries = defineTool({
       .int()
       .optional()
       .describe(
-        "Filter by integer audit log action type (e.g. 1 for GUILD_UPDATE, 20 for CHANNEL_CREATE, 30 for ROLE_CREATE, 72 for BOT_ADD)",
+        "Filter by audit log action type integer (for example 1 GUILD_UPDATE, 10 CHANNEL_CREATE, 20 MEMBER_KICK, 28 BOT_ADD, 30 ROLE_CREATE)",
       ),
     before: snowflake
       .optional()
-      .describe("Filter for entries before this audit log entry ID for paging older items"),
+      .describe(
+        "Return entries with an ID lower than this audit log entry ID, newest first. Use next_before from the previous page",
+      ),
     after: snowflake
       .optional()
-      .describe("Filter for entries after this audit log entry ID for paging newer items"),
+      .describe(
+        "Return entries with an ID higher than this audit log entry ID. Use 0 to start from the oldest entries",
+      ),
     limit: z
       .number()
       .int()
