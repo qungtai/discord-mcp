@@ -6,6 +6,8 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-04
+
 ### Added
 
 - Automated MCP Registry publishing via GitHub OIDC (`github-oidc`) using `mcp-publisher` v1.8.7, along with a `workflow_dispatch` trigger from `main` to publish a version that is on npm but missing from the registry (for example after a failed registry job or when npm propagation lags).
@@ -130,6 +132,7 @@ follows [Semantic Versioning](https://semver.org/).
   sent, and the approval prompt truncates long argument values and redacts
   token-shaped strings.
 
-[Unreleased]: https://github.com/qungtai/discord-mcp/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/qungtai/discord-mcp/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/qungtai/discord-mcp/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/qungtai/discord-mcp/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/qungtai/discord-mcp/releases/tag/v0.1.0
