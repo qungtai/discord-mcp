@@ -5,7 +5,8 @@ import { dataUri, user } from "../schemas.js";
 
 export const updateMyUser = defineTool({
   name: "discord_update_my_user",
-  description: "Update the current bot's username, avatar, or banner",
+  description:
+    "Update the authenticated bot's global username, avatar image, or banner image. Changes apply globally across every server the bot is in. To modify guild-specific nickname or avatar instead, use discord_update_my_guild_member. Returns the updated bot user object.",
   operationIds: ["update_my_user"],
   toolset: "core",
   scope: "none",
@@ -15,9 +16,22 @@ export const updateMyUser = defineTool({
   approval: true,
   idempotent: true,
   input: z.object({
-    username: z.string().min(2).max(32).optional(),
-    avatar: dataUri.nullish(),
-    banner: dataUri.nullish(),
+    username: z
+      .string()
+      .min(2)
+      .max(32)
+      .optional()
+      .describe("New global username for the bot account (2 to 32 characters)"),
+    avatar: dataUri
+      .nullish()
+      .describe(
+        "New avatar image as a base64 data URI (png, jpeg, gif, webp), or null to clear avatar",
+      ),
+    banner: dataUri
+      .nullish()
+      .describe(
+        "New banner image as a base64 data URI (png, jpeg, gif, webp), or null to clear banner",
+      ),
   }),
   output: z.object({ user }),
   execute: async (body, { discord }) => ({

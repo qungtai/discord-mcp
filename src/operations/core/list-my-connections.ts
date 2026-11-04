@@ -5,7 +5,8 @@ import { connection } from "./schemas.js";
 
 export const listMyConnections = defineTool({
   name: "discord_list_my_connections",
-  description: "List the bot user's connections",
+  description:
+    "List external service accounts connected to the authenticated bot or OAuth user account, such as Battle.net, GitHub, Twitch, YouTube, or Steam. Use this to view linked platforms and their visibility settings; to inspect bot guild memberships use discord_list_my_guilds. Returns an array of connection objects with name, type, and verification status.",
   operationIds: ["list_my_connections"],
   toolset: "core",
   scope: "none",
