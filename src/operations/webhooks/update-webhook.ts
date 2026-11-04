@@ -7,7 +7,7 @@ import { sanitizeWebhook, webhook } from "./schemas.js";
 export const updateWebhook = defineTool({
   name: "discord_update_webhook",
   description:
-    "Update a webhook's name, avatar, or move it to a different channel in the same guild. Webhook tools take webhook_id and never a token or webhook URL. Use discord_delete_webhook to remove a webhook permanently. Returns the updated sanitized webhook object.",
+    "Update a webhook's name, avatar, or move it to another channel. Webhook tools take webhook_id and never a token or webhook URL. Use discord_delete_webhook to remove a webhook permanently. Returns the updated sanitized webhook object.",
   operationIds: ["update_webhook"],
   toolset: "webhooks",
   scope: { webhook: "webhook_id", channel: "channel_id" },

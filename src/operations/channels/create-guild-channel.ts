@@ -57,7 +57,7 @@ export const createGuildChannel = defineTool({
       .max(10000)
       .nullish()
       .describe(
-        "Maximum number of users allowed in voice or stage channels (0 for unlimited, up to 10000 for stage)",
+        "Maximum number of users allowed in voice (up to 99) or stage channels (up to 10000, 0 for unlimited)",
       ),
     rate_limit_per_user: rateLimitPerUser
       .nullish()

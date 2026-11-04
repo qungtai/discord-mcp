@@ -27,7 +27,7 @@ export const createChannelInvite = defineTool({
         .max(5184000)
         .optional()
         .describe(
-          "Duration of invite in seconds before expiration (0 for never, up to 5184000; default 86400)",
+          "Duration of invite in seconds before expiration: 0 for never. Discord documents up to 604800 (7 days); the schema accepts up to 5184000. Default 86400.",
         ),
       max_uses: z
         .number()

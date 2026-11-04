@@ -7,7 +7,7 @@ import { resolveWebhookToken } from "./schemas.js";
 export const deleteWebhookMessage = defineTool({
   name: "discord_delete_webhook_message",
   description:
-    "Permanently delete a message previously sent by a webhook. Webhook tools take webhook_id and never a token or webhook URL, resolving the token automatically. Deleting a message cannot be undone. Returns the deleted status along with webhook and message IDs.",
+    "Permanently delete one message that was sent through a webhook. Webhook tools take webhook_id and never a token or webhook URL. To check the message first use discord_get_webhook_message; to delete an ordinary channel message use discord_delete_message. Pass thread_id when the message is in a thread. Returns the deleted status with the webhook and message IDs.",
   operationIds: ["delete_webhook_message"],
   toolset: "webhooks",
   scope: { webhook: "webhook_id", channel: "thread_id" },

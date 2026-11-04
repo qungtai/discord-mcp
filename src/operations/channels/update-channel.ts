@@ -22,7 +22,7 @@ import {
 export const updateChannel = defineTool({
   name: "discord_update_channel",
   description:
-    "Update settings for a guild channel, voice channel, category or thread. Permission overwrites combine allow and deny bitfields, where member overwrites take precedence over role overwrites. Use discord_bulk_update_guild_channels to reorder multiple channels at once. Returns the updated channel object.",
+    "Change settings on a guild channel, category or thread; only the fields you send are modified. Channel fields (name, topic, bitrate, permission_overwrites, forum settings) apply to guild channels, and archived, locked, invitable and auto_archive_duration apply to threads. Sending permission_overwrites or available_tags replaces the whole list, so include every entry you want to keep. Overwrites combine allow and deny bitfields, and member overwrites win over role overwrites. To reorder several channels use discord_bulk_update_guild_channels. Returns the updated channel.",
   operationIds: ["update_channel"],
   toolset: "channels",
   scope: { channel: "channel_id" },
@@ -69,7 +69,7 @@ export const updateChannel = defineTool({
       .max(10000)
       .nullish()
       .describe(
-        "Maximum number of users allowed in voice or stage channels (0 for unlimited, up to 10000 for stage)",
+        "Maximum number of users allowed in voice (up to 99) or stage channels (up to 10000, 0 for unlimited)",
       ),
     parent_id: snowflake
       .nullish()

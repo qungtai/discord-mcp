@@ -1,14 +1,19 @@
 import { type RESTPostAPIWebhookWithTokenWaitResult, Routes } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
-import { messageResult, poll } from "../messages/schemas.js";
-import { allowedMentions, fileUpload, messageFlags, snowflake } from "../schemas.js";
-import { resolveWebhookToken } from "./schemas.js";
+import { messageResult } from "../messages/schemas.js";
+import { messageFlags, snowflake } from "../schemas.js";
+import {
+  resolveWebhookToken,
+  webhookAllowedMentions,
+  webhookFileUpload,
+  webhookPoll,
+} from "./schemas.js";
 
 export const executeWebhook = defineTool({
   name: "discord_execute_webhook",
   description:
-    "Post a message through an incoming webhook with support for files, embeds, polls, and custom username or avatar overrides. Webhook tools take webhook_id and never a token or webhook URL, resolving the token automatically. Use discord_edit_webhook_message to modify the sent message. Returns the created message object.",
+    "Post a message through an incoming webhook, with optional embeds, files, a poll and a custom username or avatar. Webhook tools take webhook_id and never a token or webhook URL. Send at least one of content, embeds, files or poll. Use thread_id to post into an existing thread, or thread_name to open a new post in a forum or media channel. To change a sent message use discord_edit_webhook_message. Returns the created message.",
   operationIds: ["execute_webhook"],
   toolset: "webhooks",
   scope: { webhook: "webhook_id", channel: "thread_id" },
@@ -20,30 +25,26 @@ export const executeWebhook = defineTool({
   output: messageResult,
   input: z.object({
     webhook_id: snowflake.describe("Snowflake ID of the incoming webhook to execute"),
-    content: z.string().max(2000).optional().describe("Message body text (up to 2000 characters)"),
+    content: z.string().optional().describe("Message body text (up to 2000 characters)"),
     embeds: z
       .array(z.record(z.string(), z.unknown()))
-      .max(10)
       .optional()
       .describe("Up to 10 rich embed objects to include in the message"),
-    allowed_mentions: allowedMentions.describe(
-      "Allowed mentions object controlling user, role, or everyone pings",
-    ),
+    allowed_mentions: webhookAllowedMentions,
     username: z
       .string()
-      .max(80)
       .optional()
       .describe("Override default username of the webhook (1-80 characters)"),
-    avatar_url: z.string().url().optional().describe("Override default avatar URL of the webhook"),
+    avatar_url: z.string().optional().describe("Override default avatar URL of the webhook"),
     tts: z
       .boolean()
       .optional()
       .describe("Whether this message should be spoken using text-to-speech"),
     files: z
-      .array(fileUpload)
+      .array(webhookFileUpload)
       .default([])
       .describe("Local file attachments to upload with the webhook message"),
-    poll: poll.optional().describe("Poll object to attach to the webhook message"),
+    poll: webhookPoll.optional(),
     flags: messageFlags.describe(
       "Message flags bitfield (4 for SUPPRESS_EMBEDS, 4096 for SUPPRESS_NOTIFICATIONS)",
     ),
@@ -52,7 +53,6 @@ export const executeWebhook = defineTool({
       .describe("Snowflake ID of an existing thread in the webhook channel to post into"),
     thread_name: z
       .string()
-      .max(100)
       .optional()
       .describe(
         "Name of a new thread to create when executing the webhook in a forum or media channel",

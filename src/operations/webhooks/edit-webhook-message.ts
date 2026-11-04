@@ -6,8 +6,13 @@ import {
 import { z } from "zod/v4";
 import { defineTool } from "../../core/tool-registry.js";
 import { messageResult } from "../messages/schemas.js";
-import { allowedMentions, attachmentUpdate, fileUpload, snowflake } from "../schemas.js";
-import { resolveWebhookToken } from "./schemas.js";
+import { snowflake } from "../schemas.js";
+import {
+  resolveWebhookToken,
+  webhookAllowedMentions,
+  webhookAttachmentUpdate,
+  webhookFileUpload,
+} from "./schemas.js";
 
 export const editWebhookMessage = defineTool({
   name: "discord_edit_webhook_message",
@@ -26,25 +31,18 @@ export const editWebhookMessage = defineTool({
     thread_id: snowflake
       .optional()
       .describe("Snowflake ID of the thread if the message is in a thread"),
-    content: z
-      .string()
-      .max(2000)
-      .optional()
-      .describe("Updated message body text (up to 2000 characters)"),
+    content: z.string().optional().describe("Updated message body text (up to 2000 characters)"),
     embeds: z
       .array(z.record(z.string(), z.unknown()))
-      .max(10)
       .optional()
       .describe("Replacement array of up to 10 rich embed objects"),
-    allowed_mentions: allowedMentions.describe(
-      "Allowed mentions object controlling user, role, or everyone pings",
-    ),
+    allowed_mentions: webhookAllowedMentions,
     add_files: z
-      .array(fileUpload)
+      .array(webhookFileUpload)
       .optional()
       .describe("New file attachments to upload and append to the message"),
     update_attachments: z
-      .array(attachmentUpdate)
+      .array(webhookAttachmentUpdate)
       .optional()
       .describe(
         "List of existing attachments to keep, rename, or re-describe (omit attachments to delete them)",

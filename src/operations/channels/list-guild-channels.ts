@@ -6,7 +6,7 @@ import { channel, snowflake } from "../schemas.js";
 export const listGuildChannels = defineTool({
   name: "discord_list_guild_channels",
   description:
-    "List all channels, categories, voice channels and forum channels in a guild. Does not include active or archived threads; use discord_list_public_archived_threads or discord_list_private_archived_threads for threads. Returns an array of Channel objects ordered by category and position.",
+    "List all channels, categories, voice channels and forum channels in a guild. Does not include active or archived threads; use discord_list_active_guild_threads, discord_list_public_archived_threads or discord_list_private_archived_threads for threads. Returns an array of Channel objects ordered by category and position.",
   operationIds: ["list_guild_channels"],
   toolset: "channels",
   scope: { guild: "guild_id" },

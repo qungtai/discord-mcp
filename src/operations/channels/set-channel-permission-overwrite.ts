@@ -23,10 +23,14 @@ export const setChannelPermissionOverwrite = defineTool({
       .describe("Target entity type of the overwrite: 0 for role, 1 for member"),
     allow: permissionBits
       .optional()
-      .describe("Decimal permission bitfield string representing permissions explicitly allowed"),
+      .describe(
+        "Decimal permission bitfield string representing permissions explicitly allowed (defaults to 0)",
+      ),
     deny: permissionBits
       .optional()
-      .describe("Decimal permission bitfield string representing permissions explicitly denied"),
+      .describe(
+        "Decimal permission bitfield string representing permissions explicitly denied (defaults to 0)",
+      ),
     reason: reason.describe("Reason for setting the permission overwrite in the guild audit log"),
   }),
   output: z.object({

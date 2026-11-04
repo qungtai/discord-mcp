@@ -50,24 +50,25 @@ export const permissionOverwrite = z.strictObject({
 });
 
 // Both permission lookups take exactly one of guild_id or channel_id, and implicit only with a channel.
-export const permissionLookupShape = {
+export const createPermissionLookupShape = (targetNoun: "member" | "role") => ({
   guild_id: snowflake
     .optional()
     .describe(
-      "Guild ID to compute base guild-level permissions for the target role or member across the server",
+      `Guild ID to compute base guild-level permissions for the ${targetNoun} across the server. Provide exactly one of guild_id or channel_id.`,
     ),
   channel_id: snowflake
     .optional()
     .describe(
-      "Channel ID to compute effective permissions in that specific channel after applying role and member overwrites",
+      `Channel ID to compute effective permissions for the ${targetNoun} after applying role and member overwrites. Provide exactly one of guild_id or channel_id.`,
     ),
   implicit: z
     .boolean()
     .optional()
     .describe(
-      "Whether to include implicit @everyone permissions when computing channel permissions (requires channel_id)",
+      "Whether to apply implicit permission masking: without ViewChannel (or Connect on voice and stage channels) the other permissions are cleared. Discord defaults to true. Only valid with channel_id.",
     ),
-};
+});
+export const permissionLookupShape = createPermissionLookupShape("member");
 export const exactlyOneScope = (input: { guild_id?: string; channel_id?: string }) =>
   (input.guild_id === undefined) !== (input.channel_id === undefined);
 export const implicitNeedsChannel = (input: { channel_id?: string; implicit?: boolean }) =>

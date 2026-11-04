@@ -6,7 +6,7 @@ import { inviteCode } from "./schemas.js";
 export const setInviteTargetUsers = defineTool({
   name: "discord_set_invite_target_users",
   description:
-    "Replace the authorized target users for an invite by uploading a CSV file. The CSV file must contain user snowflake IDs separated by newlines with no header. Triggering this upload starts an asynchronous processing job; poll progress with discord_get_invite_target_users_job_status. Returns the updated status and invite code.",
+    "Replace the authorized target users for an invite by uploading a CSV file. The CSV has a single column of user IDs, one per line; duplicates are ignored and invalid IDs fail with a 400 that lists them. Triggering this upload starts an asynchronous processing job; poll progress with discord_get_invite_target_users_job_status. Returns the updated status and invite code.",
   operationIds: ["update_invite_target_users"],
   toolset: "invites",
   scope: { invite: "code" },
@@ -27,9 +27,7 @@ export const setInviteTargetUsers = defineTool({
           .optional()
           .describe("Optional override filename for the multipart file upload"),
       })
-      .describe(
-        "Local CSV file descriptor containing newline-separated user snowflake IDs to set as targets",
-      ),
+      .describe("Local CSV file descriptor containing user snowflake IDs to set as targets"),
   }),
   output: z.object({
     updated: z.literal(true),

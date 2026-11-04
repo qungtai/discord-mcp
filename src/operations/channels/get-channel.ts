@@ -7,7 +7,7 @@ import { channelResult } from "./schemas.js";
 export const getChannel = defineTool({
   name: "discord_get_channel",
   description:
-    "Fetch details for a guild channel, category, thread or direct message channel by its snowflake ID. Use discord_list_guild_channels to list all channels in a guild, or discord_get_thread_member to inspect thread participants. Returns a Channel object containing metadata such as type, topic, permissions overwrites and position.",
+    "Fetch details for a guild channel, category, thread or direct message channel by its snowflake ID. Use discord_list_guild_channels to list all channels in a guild, or discord_list_thread_members to inspect thread participants. Returns a Channel object containing metadata such as type, topic, permission overwrites and position.",
   operationIds: ["get_channel"],
   toolset: "channels",
   scope: { channel: "channel_id" },

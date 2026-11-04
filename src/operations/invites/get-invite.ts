@@ -7,7 +7,7 @@ import { invite, inviteCode } from "./schemas.js";
 export const getInvite = defineTool({
   name: "discord_get_invite",
   description:
-    "Fetch invite metadata by invite code, optionally including member and online presence counts. Under a guild allowlist, setting target_message_id requires target_channel_id so message access can be validated. Use discord_delete_invite to revoke an invite. Returns the invite object with channel, guild, and expiration details.",
+    "Fetch invite metadata by invite code, optionally including member and online presence counts. Use discord_delete_invite to revoke an invite. Returns the invite object with channel, guild, and expiration details.",
   operationIds: ["invite_resolve"],
   toolset: "invites",
   scope: {
@@ -29,9 +29,7 @@ export const getInvite = defineTool({
       .describe("Snowflake ID of a scheduled event to include in the invite representation"),
     target_channel_id: snowflake
       .optional()
-      .describe(
-        "Snowflake ID of the channel containing the target message (required with target_message_id under allowlist)",
-      ),
+      .describe("Snowflake ID of the channel containing the target message"),
     target_message_id: snowflake
       .optional()
       .describe("Snowflake ID of the message linked to this invite"),
