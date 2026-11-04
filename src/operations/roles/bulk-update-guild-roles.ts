@@ -11,9 +11,7 @@ const rolePosition = z
       .number()
       .int()
       .nullish()
-      .describe(
-        "Position to move the role to (an integer above 0 and below the bot's highest role)",
-      ),
+      .describe("Position to move the role to (an integer below the bot's highest role)"),
   })
   .describe("One role and the position to move it to");
 

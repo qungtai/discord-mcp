@@ -7,7 +7,7 @@ import { auditLog, guildIds } from "./schemas.js";
 export const listGuildAuditLogEntries = defineTool({
   name: "discord_list_guild_audit_log_entries",
   description:
-    "List audit log entries for a guild, newest first. Filter by user_id (who acted), target_id (what was changed) or action_type, and return 1 to 100 entries per call (default 50). Page to older entries with before=next_before; next_after is the newest entry ID on the page. Returns audit_log_entries plus the related users, integrations, webhooks, threads and scheduled events.",
+    "List audit log entries for a guild. Without a cursor, or with before, entries come newest first; with after they come oldest first. Filter by user_id (who acted), target_id (what was changed) or action_type, and return 1 to 100 entries per call (default 50). To page to older entries pass before=next_before from a newest-first page. next_before is the lowest ID on a newest-first page and the highest ID on an after page, so after an after page continue with after=next_before. Returns audit_log_entries plus the related users, integrations, webhooks, threads and scheduled events.",
   operationIds: ["list_guild_audit_log_entries"],
   toolset: "guild",
   scope: { guild: "guild_id" },
