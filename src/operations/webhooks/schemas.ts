@@ -50,11 +50,15 @@ export const webhookAllowedMentions = z
     roles: z
       .array(snowflake)
       .optional()
-      .describe("Role IDs allowed to be pinged. Ignored when parse contains roles."),
+      .describe(
+        "Role IDs allowed to be pinged. Do not combine with roles in parse; Discord rejects the request.",
+      ),
     users: z
       .array(snowflake)
       .optional()
-      .describe("User IDs allowed to be pinged. Ignored when parse contains users."),
+      .describe(
+        "User IDs allowed to be pinged. Do not combine with users in parse; Discord rejects the request.",
+      ),
     replied_user: z
       .boolean()
       .optional()

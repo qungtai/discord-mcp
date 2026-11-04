@@ -6,7 +6,7 @@ import { snowflake } from "../schemas.js";
 export const updateVoiceChannelStatus = defineTool({
   name: "discord_update_voice_channel_status",
   description:
-    "Set or clear the status topic displayed in a voice channel. Pass a string of up to 500 characters to update the status, or null to clear it. Use discord_get_channel to inspect current channel metadata. Returns the updated status string and channel ID.",
+    "Set or clear the status line shown under a voice channel. Pass up to 500 characters of text, or null to clear it. Needs the SetVoiceChannelStatus permission, plus ManageChannels when the bot is not connected to the channel. Stage channels are not supported; use discord_update_channel. To read the channel type first use discord_get_channel. Returns the updated status and channel ID.",
   operationIds: ["update_voice_channel_status"],
   toolset: "channels",
   scope: { channel: "channel_id" },

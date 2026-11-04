@@ -22,7 +22,7 @@ import {
 export const updateChannel = defineTool({
   name: "discord_update_channel",
   description:
-    "Change settings on a guild channel, category or thread; only the fields you send are modified. Channel fields (name, topic, bitrate, permission_overwrites, forum settings) apply to guild channels, and archived, locked, invitable and auto_archive_duration apply to threads. Sending permission_overwrites or available_tags replaces the whole list, so include every entry you want to keep. Overwrites combine allow and deny bitfields, and member overwrites win over role overwrites. To reorder several channels use discord_bulk_update_guild_channels. Returns the updated channel.",
+    "Change settings on a guild channel, category or thread; only the fields you send are modified. Channel fields (name, topic, bitrate, permission_overwrites, forum settings) apply to guild channels, and archived, locked, invitable and auto_archive_duration apply to threads. Include every overwrite or tag you want to keep. Overwrites combine allow and deny bitfields, and member overwrites win over role overwrites. To reorder several channels use discord_bulk_update_guild_channels. Returns the updated channel.",
   operationIds: ["update_channel"],
   toolset: "channels",
   scope: { channel: "channel_id" },
