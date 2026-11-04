@@ -8,8 +8,7 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Automated MCP Registry publishing via GitHub OIDC (`github-oidc`) in the release workflow using `mcp-publisher` v1.8.7.
-- Manual `workflow_dispatch` trigger to re-publish an existing released version to the MCP Registry from `main`, guarded against unpublished npm versions.
+- Automated MCP Registry publishing via GitHub OIDC (`github-oidc`) using `mcp-publisher` v1.8.7, along with a `workflow_dispatch` trigger from `main` to publish a version that is on npm but missing from the registry (for example after a failed registry job or when npm propagation lags).
 
 ## [0.1.1] - 2026-11-04
 

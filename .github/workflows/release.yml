@@ -48,8 +48,8 @@ jobs:
       - name: Verify versions and npm registry presence (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
         run: |
-          if [ "${GITHUB_REF_NAME}" != "main" ]; then
-            echo "workflow_dispatch must be run from the main branch (current: ${GITHUB_REF_NAME})"
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "workflow_dispatch must be run from the main branch (current ref: ${GITHUB_REF})"
             exit 1
           fi
           PKG_VERSION=$(node -p "require('./package.json').version")
@@ -238,13 +238,20 @@ jobs:
 
       - name: Install mcp-publisher
         run: |
+          set -euo pipefail
           VERSION="v1.8.7"
           ARCHIVE="mcp-publisher_linux_amd64.tar.gz"
           CHECKSUMS="registry_1.8.7_checksums.txt"
+          EXPECTED_SHA256="00b21004149a4ce66f0782508ae4a2bce67d1bea395a8da0bd8028159fb59579"
           BASE_URL="https://github.com/modelcontextprotocol/registry/releases/download/${VERSION}"
 
-          curl -sSLO "${BASE_URL}/${ARCHIVE}"
-          curl -sSLO "${BASE_URL}/${CHECKSUMS}"
+          curl --fail --location --silent --show-error --remote-name "${BASE_URL}/${ARCHIVE}"
+          curl --fail --location --silent --show-error --remote-name "${BASE_URL}/${CHECKSUMS}"
+
+          echo "${EXPECTED_SHA256}  ${ARCHIVE}" | sha256sum --check --status || {
+            echo "Expected literal SHA256 checksum verification failed for ${ARCHIVE}"
+            exit 1
+          }
 
           grep " ${ARCHIVE}$" "${CHECKSUMS}" | sha256sum --check --status || {
             echo "SHA256 checksum verification failed for ${ARCHIVE}"

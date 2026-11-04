@@ -588,7 +588,7 @@ Releases are published automatically via the GitHub Actions `Release` workflow u
 3. Builds and pushes the multi-arch container image to `ghcr.io/qungtai/discord-mcp`.
 4. Submits server metadata to the MCP Registry (`io.github.qungtai/discord-mcp`) using `mcp-publisher` authenticated via GitHub Actions OIDC (`github-oidc`).
 
-To re-publish an existing version to the MCP Registry without re-triggering npm or Docker releases, trigger the `Release` workflow manually (`workflow_dispatch`) on `main`. The workflow verifies matching package versions and confirms the release is already available on npm before publishing to the registry.
+To publish a version that is on npm but missing from the registry (for example after a failed registry job) without re-triggering npm or Docker releases, trigger the `Release` workflow manually (`workflow_dispatch`) on `main`. The workflow verifies matching package versions and confirms the release is already available on npm before publishing to the registry.
 
 For contribution guidelines and security disclosure policies, see [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
