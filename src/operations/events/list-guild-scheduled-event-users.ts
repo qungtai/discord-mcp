@@ -7,7 +7,7 @@ import { guildScheduledEventUser, userListQuery, userPagingCursors } from "./sch
 export const listGuildScheduledEventUsers = defineTool({
   name: "discord_list_guild_scheduled_event_users",
   description:
-    "Get a list of users subscribed to a guild scheduled event, ordered by user ID ascending. Page with after=next_after",
+    "List users subscribed to a guild scheduled event, ordered by user ID ascending. Returns an array of user subscription objects, optionally including guild member records. Page with after=next_after. To get aggregate subscriber counts instead, use discord_count_guild_scheduled_event_users.",
   operationIds: ["list_guild_scheduled_event_users"],
   toolset: "events",
   scope: { guild: "guild_id" },
@@ -15,8 +15,8 @@ export const listGuildScheduledEventUsers = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    guild_id: snowflake,
-    guild_scheduled_event_id: snowflake,
+    guild_id: snowflake.describe("ID of the guild"),
+    guild_scheduled_event_id: snowflake.describe("ID of the scheduled event"),
     ...userListQuery,
   }),
   output: z.object({

@@ -5,7 +5,8 @@ import { reason, snowflake } from "../schemas.js";
 
 export const deleteGuildScheduledEvent = defineTool({
   name: "discord_delete_guild_scheduled_event",
-  description: "Delete a guild scheduled event",
+  description:
+    "Permanently delete a scheduled event from a guild. To cancel an active or scheduled event without deleting it, use discord_update_guild_scheduled_event with status=4 (Canceled). To cancel a single occurrence of a recurring series, use discord_create_guild_scheduled_event_exception with is_canceled=true.",
   operationIds: ["delete_guild_scheduled_event"],
   toolset: "events",
   scope: { guild: "guild_id" },
@@ -13,8 +14,8 @@ export const deleteGuildScheduledEvent = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object({
-    guild_id: snowflake,
-    guild_scheduled_event_id: snowflake,
+    guild_id: snowflake.describe("ID of the guild"),
+    guild_scheduled_event_id: snowflake.describe("ID of the scheduled event to delete"),
     reason,
   }),
   output: z.object({

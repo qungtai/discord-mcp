@@ -6,7 +6,7 @@ import { member, snowflake } from "../schemas.js";
 export const searchGuildMembers = defineTool({
   name: "discord_search_guild_members",
   description:
-    "Search guild members whose username or nickname starts with the query. Requires the Server Members privileged Gateway intent (GUILD_MEMBERS)",
+    "Search guild members whose username or nickname starts with the provided query string. Requires the Server Members privileged Gateway intent (GUILD_MEMBERS). Returns matching member objects. To fetch every member in order by ID instead, use discord_list_guild_members.",
   operationIds: ["search_guild_members"],
   toolset: "members",
   scope: { guild: "guild_id" },
@@ -17,9 +17,21 @@ export const searchGuildMembers = defineTool({
     members: z.array(member),
   }),
   input: z.object({
-    guild_id: snowflake,
-    query: z.string().min(1).max(100),
-    limit: z.number().int().min(1).max(1000).optional(),
+    guild_id: snowflake.describe("ID of the guild to search members in"),
+    query: z
+      .string()
+      .min(1)
+      .max(100)
+      .describe(
+        "Prefix query string to match against member username or nickname (1-100 characters)",
+      ),
+    limit: z
+      .number()
+      .int()
+      .min(1)
+      .max(1000)
+      .optional()
+      .describe("Max number of members to return (1-1000, default 1)"),
   }),
   execute: async ({ guild_id, ...query }, { discord }) => {
     const members = await discord<RESTGetAPIGuildMembersSearchResult>({

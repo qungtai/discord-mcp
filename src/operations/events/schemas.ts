@@ -10,45 +10,108 @@ import { z } from "zod/v4";
 import { member, resource, snowflake, user } from "../schemas.js";
 
 // Enums for input schemas
-export const privacyLevelEnum = z.enum(GuildScheduledEventPrivacyLevel);
-export const entityTypeEnum = z.enum(GuildScheduledEventEntityType);
-export const statusEnum = z.enum(GuildScheduledEventStatus);
+export const privacyLevelEnum = z
+  .enum(GuildScheduledEventPrivacyLevel)
+  .describe("Privacy level: 2=GuildOnly");
+export const entityTypeEnum = z
+  .enum(GuildScheduledEventEntityType)
+  .describe("Entity type: 1=StageInstance, 2=Voice, 3=External");
+export const statusEnum = z
+  .enum(GuildScheduledEventStatus)
+  .describe("Event status: 1=Scheduled, 2=Active, 3=Completed, 4=Canceled");
 
 // Strict input recurrence rule schema
-export const recurrenceRuleInput = z.strictObject({
-  start: z.iso.datetime({ offset: true }).describe("Starting time of recurrence (ISO8601)"),
-  end: z.iso
-    .datetime({ offset: true })
-    .nullable()
-    .optional()
-    .describe("Ending time of recurrence (ISO8601)"),
-  frequency: z.enum(GuildScheduledEventRecurrenceRuleFrequency),
-  interval: z.number().int().min(1).nullable().optional(),
-  by_weekday: z
-    .array(z.enum(GuildScheduledEventRecurrenceRuleWeekday))
-    .max(7)
-    .nullable()
-    .optional(),
-  by_n_weekday: z
-    .array(
-      z.strictObject({
-        n: z.number().int().min(1).max(5),
-        day: z.enum(GuildScheduledEventRecurrenceRuleWeekday),
-      }),
-    )
-    .max(7)
-    .nullable()
-    .optional(),
-  by_month: z.array(z.enum(GuildScheduledEventRecurrenceRuleMonth)).max(12).nullable().optional(),
-  by_month_day: z.array(z.number().int().min(-1).max(31)).max(33).nullable().optional(),
-  by_year_day: z.array(z.number().int().min(-1).max(365)).max(367).nullable().optional(),
-  count: z.number().int().min(1).nullable().optional(),
-});
+export const recurrenceRuleInput = z
+  .strictObject({
+    start: z.iso.datetime({ offset: true }).describe("Starting time of recurrence (ISO 8601)"),
+    end: z.iso
+      .datetime({ offset: true })
+      .nullable()
+      .optional()
+      .describe("Ending time of recurrence (ISO 8601)"),
+    frequency: z
+      .enum(GuildScheduledEventRecurrenceRuleFrequency)
+      .describe("Frequency: 0=Yearly, 1=Monthly, 2=Weekly, 3=Daily"),
+    interval: z
+      .number()
+      .int()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe("Spacing between occurrences according to frequency (min 1)"),
+    by_weekday: z
+      .array(z.enum(GuildScheduledEventRecurrenceRuleWeekday))
+      .max(7)
+      .nullable()
+      .optional()
+      .describe(
+        "Days of the week on which recurrence occurs: 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday, 6=Sunday",
+      ),
+    by_n_weekday: z
+      .array(
+        z.strictObject({
+          n: z
+            .number()
+            .int()
+            .min(1)
+            .max(5)
+            .describe("The week index of the month: 1=first, 2=second, 3=third, 4=fourth, 5=fifth"),
+          day: z
+            .enum(GuildScheduledEventRecurrenceRuleWeekday)
+            .describe(
+              "Day of the week: 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday, 6=Sunday",
+            ),
+        }),
+      )
+      .max(7)
+      .nullable()
+      .optional()
+      .describe("Specific weeks and weekdays of the month on which recurrence occurs"),
+    by_month: z
+      .array(z.enum(GuildScheduledEventRecurrenceRuleMonth))
+      .max(12)
+      .nullable()
+      .optional()
+      .describe("Months of the year on which recurrence occurs (1=January through 12=December)"),
+    by_month_day: z
+      .array(z.number().int().min(-1).max(31))
+      .max(33)
+      .nullable()
+      .optional()
+      .describe(
+        "Days of the month on which recurrence occurs (-1 to 31, where -1 is the last day)",
+      ),
+    by_year_day: z
+      .array(z.number().int().min(-1).max(365))
+      .max(367)
+      .nullable()
+      .optional()
+      .describe(
+        "Days of the year on which recurrence occurs (-1 to 365, where -1 is the last day)",
+      ),
+    count: z
+      .number()
+      .int()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe("Total number of times the recurrence rule will repeat before stopping"),
+  })
+  .describe("Recurrence rule configuration for recurring scheduled events");
 
 // Strict input entity metadata schema
-export const entityMetadataInput = z.strictObject({
-  location: z.string().min(1).max(100).optional(),
-});
+export const entityMetadataInput = z
+  .strictObject({
+    location: z
+      .string()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe(
+        "Location description for external events (1-100 characters, required when entity_type is 3=External)",
+      ),
+  })
+  .describe("Additional entity metadata (physical or virtual location for external events)");
 
 // Shared exception input override fields
 export const exceptionOverrideInput = {
@@ -56,13 +119,17 @@ export const exceptionOverrideInput = {
     .datetime({ offset: true })
     .nullable()
     .optional()
-    .describe("Overridden start time (ISO8601)"),
+    .describe("Overridden start time for this recurrence occurrence (ISO 8601)"),
   scheduled_end_time: z.iso
     .datetime({ offset: true })
     .nullable()
     .optional()
-    .describe("Overridden end time (ISO8601)"),
-  is_canceled: z.boolean().nullable().optional().describe("Whether this occurrence is canceled"),
+    .describe("Overridden end time for this recurrence occurrence (ISO 8601)"),
+  is_canceled: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe("Whether this specific occurrence in the series is canceled"),
 };
 
 // Lenient output schemas
@@ -135,10 +202,25 @@ export const guildScheduledEvent = resource(
 
 // Shared user list query parameters
 export const userListQuery = {
-  limit: z.number().int().min(1).max(100).optional(),
-  with_member: z.boolean().optional(),
-  before: snowflake.optional(),
-  after: snowflake.optional(),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(100)
+    .optional()
+    .describe("Max number of users to return (1-100, default 100)"),
+  with_member: z
+    .boolean()
+    .optional()
+    .describe("Whether to include guild member data for each user"),
+  before: snowflake
+    .optional()
+    .describe("User ID cursor to return users before; cannot be combined with after"),
+  after: snowflake
+    .optional()
+    .describe(
+      "User ID cursor to return users after; use next_after from previous page for ascending pagination",
+    ),
 };
 
 // Shared pagination cursor computation for ascending user lists

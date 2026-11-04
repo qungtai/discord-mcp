@@ -1,9 +1,13 @@
 import { z } from "zod/v4";
 import { resource, snowflake } from "../schemas.js";
 
-export const joinRequestStatus = z.enum(["STARTED", "SUBMITTED", "REJECTED", "APPROVED"]);
+export const joinRequestStatus = z
+  .enum(["STARTED", "SUBMITTED", "REJECTED", "APPROVED"])
+  .describe("Application status of the join request");
 
-export const joinRequestAction = z.enum(["APPROVED", "REJECTED"]);
+export const joinRequestAction = z
+  .enum(["APPROVED", "REJECTED"])
+  .describe("Action to take on the join request: APPROVED or REJECTED");
 
 export const joinRequest = resource(
   z.looseObject({

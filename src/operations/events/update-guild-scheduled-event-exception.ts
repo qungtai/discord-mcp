@@ -5,7 +5,8 @@ import { exceptionOverrideInput, guildScheduledEventException } from "./schemas.
 
 export const updateGuildScheduledEventException = defineTool({
   name: "discord_update_guild_scheduled_event_exception",
-  description: "Modify an exception for a recurring guild scheduled event",
+  description:
+    "Modify an existing exception for a recurring guild scheduled event to update its overridden start or end time, or cancel/uncancel the occurrence. Returns the updated exception. To delete the exception and restore original series timing, use discord_delete_guild_scheduled_event_exception.",
   operationIds: ["update_guild_scheduled_event_exception"],
   toolset: "events",
   scope: { guild: "guild_id" },
@@ -13,9 +14,9 @@ export const updateGuildScheduledEventException = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object({
-    guild_id: snowflake,
-    guild_scheduled_event_id: snowflake,
-    exception_id: snowflake,
+    guild_id: snowflake.describe("ID of the guild"),
+    guild_scheduled_event_id: snowflake.describe("ID of the recurring scheduled event"),
+    exception_id: snowflake.describe("ID of the event exception to modify"),
     ...exceptionOverrideInput,
   }),
   output: z.object({

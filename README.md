@@ -400,18 +400,18 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 <details>
 <summary>members (12 tools)</summary>
 
-- `discord_add_guild_member_role`: Add a role to a guild member (asks for approval)
-- `discord_delete_guild_member`: Remove (kick) a member from a guild (asks for approval)
-- `discord_delete_guild_member_role`: Remove a role from a guild member (asks for approval)
-- `discord_get_guild_member`: Get a guild member by user ID
-- `discord_list_guild_join_requests`: List join requests for a guild, optionally filtered by application status
-- `discord_list_guild_members`: List guild members. Requires the Server Members privileged Gateway intent (GUILD_MEMBERS). Page with after=next_after
-- `discord_preview_prune_guild`: Get the number of members that would be removed in a prune operation
-- `discord_prune_guild`: Begin a prune operation to remove inactive members from a guild (asks for approval)
-- `discord_review_guild_join_request`: Approve or reject a guild join request. rejection_reason is only used when action is REJECTED (asks for approval)
-- `discord_search_guild_members`: Search guild members whose username or nickname starts with the query. Requires the Server Members privileged Gateway intent (GUILD_MEMBERS)
-- `discord_update_guild_member`: Update attributes of a guild member. Discord refuses edits to the bot itself here; discord_update_my_guild_member changes the bot's own nickname. channel_id moves the member to a voice channel; null disconnects them (asks for approval)
-- `discord_update_my_guild_member`: Update the current bot's nickname or member profile in a guild
+- `discord_add_guild_member_role`: Add a single role to a guild member. The bot cannot add roles ranked at or above its own highest role, nor can it modify the guild owner. To assign multiple roles at once or replace all roles, use discord_update_guild_member. (asks for approval)
+- `discord_delete_guild_member`: Remove (kick) a member from a guild. The bot cannot kick the guild owner or any member whose highest role is equal to or higher than the bot's highest role. To ban a user and delete their message history instead, use discord_ban_user_from_guild. (asks for approval)
+- `discord_delete_guild_member_role`: Remove a single role from a guild member. The bot cannot remove roles ranked at or above its own highest role, nor can it modify the guild owner. To assign a role instead use discord_add_guild_member_role. (asks for approval)
+- `discord_get_guild_member`: Fetch a single member of a guild by user ID, returning their nickname, assigned roles, join date and avatar. Use it when you already know the user ID; to paginate all members use discord_list_guild_members, or to find members by name use discord_search_guild_members.
+- `discord_list_guild_join_requests`: List membership screening join requests for a guild, optionally filtered by application status. Returns join requests with applicant user details and total count. Page older requests with before=next_before or newer with after=next_after. To approve or reject a request, use discord_review_guild_join_request.
+- `discord_list_guild_members`: List members of a guild, ordered by user ID ascending. Requires the Server Members privileged Gateway intent (GUILD_MEMBERS). Page with after=next_after. To search members by username prefix instead, use discord_search_guild_members.
+- `discord_preview_prune_guild`: Preview the number of inactive members that would be kicked in a prune operation before executing it. Always run this tool before discord_prune_guild to verify the impact. Members with roles are excluded unless their roles are specified in include_roles.
+- `discord_prune_guild`: Prune inactive members from a guild. Always run discord_preview_prune_guild first to check how many members will be kicked. Members who have any roles assigned are excluded unless those roles are listed in include_roles. Returns the number of pruned members when compute_prune_count is true. (asks for approval)
+- `discord_review_guild_join_request`: Approve or reject a pending membership screening join request for a guild. Returns the updated join request record with its new status. To view pending requests first, use discord_list_guild_join_requests. (asks for approval)
+- `discord_search_guild_members`: Search guild members whose username or nickname starts with the provided query string. Requires the Server Members privileged Gateway intent (GUILD_MEMBERS). Returns matching member objects. To fetch every member in order by ID instead, use discord_list_guild_members.
+- `discord_update_guild_member`: Update attributes of a guild member including nickname, roles, mute/deaf state, voice channel and timeout. The bot cannot edit the guild owner or members whose highest role is equal to or higher than the bot's highest role. Discord refuses edits to the bot itself here; use discord_update_my_guild_member to change the bot's own nickname. (asks for approval)
+- `discord_update_my_guild_member`: Update the bot's own nickname or server profile attributes in a specific guild. Returns the updated member object. To update attributes of other guild members instead, use discord_update_guild_member. To update the bot's global user profile, use discord_update_my_user.
 
 </details>
 
@@ -431,33 +431,33 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 <details>
 <summary>moderation (10 tools)</summary>
 
-- `discord_ban_user_from_guild`: Ban a user from a guild and optionally delete their messages (asks for approval)
-- `discord_bulk_ban_users_from_guild`: Ban up to 200 users from a guild and optionally delete their messages (asks for approval)
-- `discord_create_auto_moderation_rule`: Create an auto moderation rule for a guild (asks for approval)
-- `discord_delete_auto_moderation_rule`: Delete an auto moderation rule for a guild (asks for approval)
-- `discord_get_auto_moderation_rule`: Get a specific auto moderation rule for a guild
-- `discord_get_guild_ban`: Get ban information for a user in a guild
-- `discord_list_auto_moderation_rules`: List all auto moderation rules for a guild
-- `discord_list_guild_bans`: List bans in ascending user ID order. Page with after=next_after
-- `discord_unban_user_from_guild`: Remove the ban for a user in a guild (asks for approval)
-- `discord_update_auto_moderation_rule`: Modify an existing auto moderation rule for a guild (asks for approval)
+- `discord_ban_user_from_guild`: Ban a user from a guild and optionally purge their recent messages up to 7 days (604800 seconds). The bot cannot ban the guild owner or members whose highest role is equal to or higher than the bot's highest role. To ban multiple users at once, use discord_bulk_ban_users_from_guild. To kick without banning, use discord_delete_guild_member. (asks for approval)
+- `discord_bulk_ban_users_from_guild`: Ban a list of up to 200 users from a guild simultaneously and optionally purge their messages up to 7 days (604800 seconds). The bot cannot ban the guild owner or members above its highest role. Returns lists of successfully banned user IDs and failed user IDs. To ban a single user, use discord_ban_user_from_guild. (asks for approval)
+- `discord_create_auto_moderation_rule`: Create an AutoMod rule in a guild with configured triggers (1=Keyword, 3=Spam, 4=KeywordPreset, 5=MentionSpam, 6=MemberProfile) and actions (1=BlockMessage, 2=SendAlertMessage, 3=Timeout, 4=BlockMemberInteraction). Returns the created rule object. To view existing AutoMod rules for a guild, use discord_list_auto_moderation_rules. (asks for approval)
+- `discord_delete_auto_moderation_rule`: Permanently delete an AutoMod rule from a guild. To disable a rule without deleting it, use discord_update_auto_moderation_rule with enabled=false. To list remaining AutoMod rules, use discord_list_auto_moderation_rules. (asks for approval)
+- `discord_get_auto_moderation_rule`: Fetch a single AutoMod rule by ID from a guild, including trigger configuration, actions and exempt filters. Use it when you already know the rule ID; to view all configured AutoMod rules in a guild, use discord_list_auto_moderation_rules.
+- `discord_get_guild_ban`: Fetch ban details for a specific user in a guild, including the banned user object and optional ban reason. Use it when checking whether a known user is banned; to list all bans in the guild, use discord_list_guild_bans. To remove the ban, use discord_unban_user_from_guild.
+- `discord_list_auto_moderation_rules`: List all AutoMod rules configured in a guild, including triggers, actions and exemptions. Returns an array of rule objects. To view a specific rule by ID, use discord_get_auto_moderation_rule. To create a new rule, use discord_create_auto_moderation_rule.
+- `discord_list_guild_bans`: List banned users for a guild, ordered by user ID ascending. Returns ban objects with user details and reasons. Page with after=next_after. To look up a single user ban directly, use discord_get_guild_ban. To remove a ban, use discord_unban_user_from_guild.
+- `discord_unban_user_from_guild`: Remove the ban for a user in a guild, allowing them to rejoin via invite. To check ban details before unbanning, use discord_get_guild_ban. To view all currently banned users, use discord_list_guild_bans. (asks for approval)
+- `discord_update_auto_moderation_rule`: Modify an existing AutoMod rule in a guild, including name, trigger metadata, actions (1=BlockMessage, 2=SendAlertMessage, 3=Timeout, 4=BlockMemberInteraction), enabled status and exemptions. Returns the updated rule. To delete the rule permanently instead, use discord_delete_auto_moderation_rule. (asks for approval)
 
 </details>
 
 <details>
 <summary>events (11 tools)</summary>
 
-- `discord_count_guild_scheduled_event_users`: Get user counts for a guild scheduled event and its exceptions
-- `discord_create_guild_scheduled_event`: Create a scheduled event for a guild
-- `discord_create_guild_scheduled_event_exception`: Create an exception for a recurring guild scheduled event
-- `discord_delete_guild_scheduled_event`: Delete a guild scheduled event (asks for approval)
-- `discord_delete_guild_scheduled_event_exception`: Delete an exception for a recurring guild scheduled event (asks for approval)
-- `discord_get_guild_scheduled_event`: Get a guild scheduled event by ID
-- `discord_list_guild_scheduled_event_exception_users`: Get a list of users subscribed to a specific recurrence exception of a guild scheduled event, ordered by user ID ascending. Page with after=next_after
-- `discord_list_guild_scheduled_event_users`: Get a list of users subscribed to a guild scheduled event, ordered by user ID ascending. Page with after=next_after
-- `discord_list_guild_scheduled_events`: List scheduled events for a guild
-- `discord_update_guild_scheduled_event`: Modify a guild scheduled event (asks for approval)
-- `discord_update_guild_scheduled_event_exception`: Modify an exception for a recurring guild scheduled event (asks for approval)
+- `discord_count_guild_scheduled_event_users`: Get total interested user counts for a guild scheduled event and its recurrence exceptions. Returns overall event count and an exception counts map keyed by exception ID. To list individual subscribed users instead, use discord_list_guild_scheduled_event_users.
+- `discord_create_guild_scheduled_event`: Create a new scheduled event in a guild for a Stage channel (1=StageInstance), Voice channel (2=Voice) or external venue (3=External, requiring entity_metadata.location and scheduled_end_time). Privacy level is 2=GuildOnly. Returns the created scheduled event. To view events in the guild, use discord_list_guild_scheduled_events.
+- `discord_create_guild_scheduled_event_exception`: Create an exception for a specific occurrence of a recurring guild scheduled event to cancel it or reschedule its time. Returns the created exception record. To update an existing exception later, use discord_update_guild_scheduled_event_exception; to remove it, use discord_delete_guild_scheduled_event_exception.
+- `discord_delete_guild_scheduled_event`: Permanently delete a scheduled event from a guild. To cancel an active or scheduled event without deleting it, use discord_update_guild_scheduled_event with status=4 (Canceled). To cancel a single occurrence of a recurring series, use discord_create_guild_scheduled_event_exception with is_canceled=true. (asks for approval)
+- `discord_delete_guild_scheduled_event_exception`: Delete an exception for a recurring guild scheduled event, restoring that occurrence to the parent event's standard recurrence rule. To create an exception instead, use discord_create_guild_scheduled_event_exception. To modify it, use discord_update_guild_scheduled_event_exception. (asks for approval)
+- `discord_get_guild_scheduled_event`: Fetch details for a single scheduled event in a guild by ID, with optional subscriber count. Use it when you already know the event ID; to list all scheduled events for the guild, use discord_list_guild_scheduled_events. To modify the event, use discord_update_guild_scheduled_event.
+- `discord_list_guild_scheduled_event_exception_users`: List users subscribed to a specific recurrence exception of a guild scheduled event, ordered by user ID ascending. Returns an array of user subscription objects. Page with after=next_after. To list subscribers of the parent scheduled event, use discord_list_guild_scheduled_event_users.
+- `discord_list_guild_scheduled_event_users`: List users subscribed to a guild scheduled event, ordered by user ID ascending. Returns an array of user subscription objects, optionally including guild member records. Page with after=next_after. To get aggregate subscriber counts instead, use discord_count_guild_scheduled_event_users.
+- `discord_list_guild_scheduled_events`: List all scheduled events for a guild, with optional subscriber counts. Returns an array of scheduled event objects. To fetch full details for one specific event, use discord_get_guild_scheduled_event. To create a new event, use discord_create_guild_scheduled_event.
+- `discord_update_guild_scheduled_event`: Modify an existing guild scheduled event, including channel, timing, entity type (1=StageInstance, 2=Voice, 3=External), status (1=Scheduled, 2=Active, 3=Completed, 4=Canceled) and recurrence rule. Returns the updated scheduled event. To permanently remove an event, use discord_delete_guild_scheduled_event. (asks for approval)
+- `discord_update_guild_scheduled_event_exception`: Modify an existing exception for a recurring guild scheduled event to update its overridden start or end time, or cancel/uncancel the occurrence. Returns the updated exception. To delete the exception and restore original series timing, use discord_delete_guild_scheduled_event_exception. (asks for approval)
 
 </details>
 

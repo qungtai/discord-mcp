@@ -5,7 +5,8 @@ import { reason, snowflake } from "../schemas.js";
 
 export const deleteAutoModerationRule = defineTool({
   name: "discord_delete_auto_moderation_rule",
-  description: "Delete an auto moderation rule for a guild",
+  description:
+    "Permanently delete an AutoMod rule from a guild. To disable a rule without deleting it, use discord_update_auto_moderation_rule with enabled=false. To list remaining AutoMod rules, use discord_list_auto_moderation_rules.",
   operationIds: ["delete_auto_moderation_rule"],
   toolset: "moderation",
   scope: { guild: "guild_id" },
@@ -18,8 +19,8 @@ export const deleteAutoModerationRule = defineTool({
     rule_id: snowflake,
   }),
   input: z.object({
-    guild_id: snowflake,
-    rule_id: snowflake,
+    guild_id: snowflake.describe("ID of the guild"),
+    rule_id: snowflake.describe("ID of the AutoMod rule to delete"),
     reason,
   }),
   execute: async ({ guild_id, rule_id, reason }, { discord }) => {
