@@ -5,7 +5,8 @@ import { messageIds, messageResult } from "./schemas.js";
 
 export const getMessage = defineTool({
   name: "discord_get_message",
-  description: "Get a message",
+  description:
+    "Fetch one message by ID from a channel or thread, with its author, content, attachments, embeds, reactions and poll. Use it when you already have the message ID; to read recent history use discord_list_messages, and to find messages by text use discord_search_guild_messages.",
   operationIds: ["get_message"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },

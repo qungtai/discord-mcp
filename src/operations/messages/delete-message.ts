@@ -6,7 +6,8 @@ import { messageIds } from "./schemas.js";
 
 export const deleteMessage = defineTool({
   name: "discord_delete_message",
-  description: "Delete a message from a channel",
+  description:
+    "Permanently delete a single message from a channel or thread. To delete between 2 and 100 recent messages at once use discord_bulk_delete_messages. Returns a confirmation object with the deleted message and channel IDs.",
   operationIds: ["delete_message"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },

@@ -6,7 +6,8 @@ import { messageIds } from "./schemas.js";
 
 export const deletePin = defineTool({
   name: "discord_delete_pin",
-  description: "Unpin a message in a channel",
+  description:
+    "Unpin a pinned message from a channel or thread. To add a pin use discord_create_pin, and to list all current pinned messages use discord_list_pins. Returns a confirmation object with the unpinned message and channel IDs.",
   operationIds: ["delete_pin", "deprecated_delete_pin"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },
