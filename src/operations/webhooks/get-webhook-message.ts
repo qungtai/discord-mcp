@@ -7,7 +7,8 @@ import { resolveWebhookToken } from "./schemas.js";
 
 export const getWebhookMessage = defineTool({
   name: "discord_get_webhook_message",
-  description: "Get a message previously sent by a webhook",
+  description:
+    "Fetch a message previously posted by a webhook. Webhook tools take webhook_id and never a token or webhook URL, resolving the token automatically. Use discord_edit_webhook_message to update the message or discord_delete_webhook_message to remove it. Returns the message object.",
   operationIds: ["get_webhook_message"],
   toolset: "webhooks",
   scope: { webhook: "webhook_id", channel: "thread_id" },
@@ -15,9 +16,11 @@ export const getWebhookMessage = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    webhook_id: snowflake,
-    message_id: snowflake,
-    thread_id: snowflake.optional().describe("Thread ID if the message was sent in a thread"),
+    webhook_id: snowflake.describe("Snowflake ID of the webhook that sent the message"),
+    message_id: snowflake.describe("Snowflake ID of the message sent by the webhook to fetch"),
+    thread_id: snowflake
+      .optional()
+      .describe("Snowflake ID of the thread if the message was posted in a thread"),
   }),
   output: messageResult,
   execute: async ({ webhook_id, message_id, thread_id }, { discord }) => {

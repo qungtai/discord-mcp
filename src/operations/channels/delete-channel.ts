@@ -5,7 +5,8 @@ import { reason, snowflake } from "../schemas.js";
 
 export const deleteChannel = defineTool({
   name: "discord_delete_channel",
-  description: "Delete a channel, or close a private message",
+  description:
+    "Delete a guild channel or thread, or close a direct message (DM) channel. Deleting a guild channel cannot be undone. To archive a thread without deleting it, use discord_update_channel with archived: true. Returns the deleted status and channel ID.",
   operationIds: ["delete_channel"],
   toolset: "channels",
   scope: { channel: "channel_id" },
@@ -13,8 +14,8 @@ export const deleteChannel = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object({
-    channel_id: snowflake,
-    reason,
+    channel_id: snowflake.describe("Snowflake ID of the channel, thread or DM to delete or close"),
+    reason: reason.describe("Reason for deleting the channel in the guild audit log"),
   }),
   output: z.object({
     deleted: z.literal(true),

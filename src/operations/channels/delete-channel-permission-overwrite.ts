@@ -5,7 +5,8 @@ import { reason, snowflake } from "../schemas.js";
 
 export const deleteChannelPermissionOverwrite = defineTool({
   name: "discord_delete_channel_permission_overwrite",
-  description: "Delete a permission overwrite for a channel",
+  description:
+    "Delete the permission overwrite for one role or member on a channel. Their access then comes from the remaining overwrites and their guild roles; it is not copied back from the parent category. To create or change an overwrite use discord_set_channel_permission_overwrite. Returns the deleted status with the channel and overwrite IDs.",
   operationIds: ["delete_channel_permission_overwrite"],
   toolset: "channels",
   scope: { channel: "channel_id" },
@@ -13,9 +14,9 @@ export const deleteChannelPermissionOverwrite = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object({
-    channel_id: snowflake,
-    overwrite_id: snowflake,
-    reason,
+    channel_id: snowflake.describe("Snowflake ID of the channel holding the overwrite"),
+    overwrite_id: snowflake.describe("Snowflake ID of the role or member overwrite to delete"),
+    reason: reason.describe("Reason for deleting the permission overwrite in the guild audit log"),
   }),
   output: z.object({
     deleted: z.literal(true),

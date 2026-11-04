@@ -6,7 +6,8 @@ import { resolveWebhookToken } from "./schemas.js";
 
 export const deleteWebhookMessage = defineTool({
   name: "discord_delete_webhook_message",
-  description: "Delete a message previously sent by a webhook",
+  description:
+    "Permanently delete one message that was sent through a webhook. Webhook tools take webhook_id and never a token or webhook URL. To check the message first use discord_get_webhook_message; to delete an ordinary channel message use discord_delete_message. Pass thread_id when the message is in a thread. Returns the deleted status with the webhook and message IDs.",
   operationIds: ["delete_webhook_message"],
   toolset: "webhooks",
   scope: { webhook: "webhook_id", channel: "thread_id" },
@@ -14,9 +15,11 @@ export const deleteWebhookMessage = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object({
-    webhook_id: snowflake,
-    message_id: snowflake,
-    thread_id: snowflake.optional().describe("Thread ID if the message was sent in a thread"),
+    webhook_id: snowflake.describe("Snowflake ID of the webhook that sent the message"),
+    message_id: snowflake.describe("Snowflake ID of the message to delete"),
+    thread_id: snowflake
+      .optional()
+      .describe("Snowflake ID of the thread if the message was sent in a thread"),
   }),
   output: z.object({
     deleted: z.literal(true),

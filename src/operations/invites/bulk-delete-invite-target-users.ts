@@ -5,7 +5,8 @@ import { inviteCode, targetUserIds } from "./schemas.js";
 
 export const bulkDeleteInviteTargetUsers = defineTool({
   name: "discord_bulk_delete_invite_target_users",
-  description: "Remove multiple target users from an existing invite",
+  description:
+    "Remove multiple target users from an existing invite code in a single API call (up to 1000 user IDs). Use discord_delete_invite_target_user to remove a single user, or discord_bulk_add_invite_target_users to add users. Returns the deleted status, invite code, and count of users removed.",
   operationIds: ["bulk_remove_invite_target_users"],
   toolset: "invites",
   scope: { invite: "code" },

@@ -6,7 +6,8 @@ import { sanitizeWebhook, webhook } from "./schemas.js";
 
 export const listGuildWebhooks = defineTool({
   name: "discord_list_guild_webhooks",
-  description: "List webhooks in a guild",
+  description:
+    "List all webhooks configured across all channels in a guild. Webhook tools take webhook_id and never a token or webhook URL. Use discord_list_channel_webhooks to narrow results to a specific channel. Returns an array of sanitized webhook objects with tokens redacted.",
   operationIds: ["get_guild_webhooks"],
   toolset: "webhooks",
   scope: { guild: "guild_id" },
@@ -14,7 +15,7 @@ export const listGuildWebhooks = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    guild_id: snowflake,
+    guild_id: snowflake.describe("Snowflake ID of the guild whose webhooks to list"),
   }),
   output: z.object({
     webhooks: z.array(webhook),
