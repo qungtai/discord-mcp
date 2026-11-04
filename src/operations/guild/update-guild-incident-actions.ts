@@ -18,13 +18,13 @@ export const updateGuildIncidentActions = defineTool({
       .datetime()
       .nullish()
       .describe(
-        "ISO 8601 timestamp up to 24 hours in the future when invites will be re-enabled, or null to clear pause immediately",
+        "ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z, up to 24 hours in the future when invites will be re-enabled, or null to clear pause immediately",
       ),
     dms_disabled_until: z.iso
       .datetime()
       .nullish()
       .describe(
-        "ISO 8601 timestamp up to 24 hours in the future when direct messages will be re-enabled, or null to clear pause immediately",
+        "ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z, up to 24 hours in the future when direct messages will be re-enabled, or null to clear pause immediately",
       ),
   }),
   output: z.object({ incident_actions: incidentActions }),

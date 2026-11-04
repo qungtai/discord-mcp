@@ -356,3 +356,27 @@ it.each([
   expect(errorOf(result)).toMatchObject({ category: "validation" });
   expect(makeRequest).not.toHaveBeenCalled();
 });
+
+// zod 4's z.iso.datetime({ offset: true }) requires seconds and range-checks the offset.
+it("accepts an ISO 8601 start time with seconds and a valid offset only", async () => {
+  const { client } = await harness({ policy, respond: () => EVENT });
+  const call = (scheduled_start_time: string) =>
+    client.callTool({
+      name: "discord_create_guild_scheduled_event",
+      arguments: {
+        guild_id: "10",
+        channel_id: "20",
+        name: "Stage Talk",
+        privacy_level: 2,
+        entity_type: 1,
+        scheduled_start_time,
+      },
+    });
+
+  for (const value of ["2026-11-05T18:00:00Z", "2026-11-05T18:00:00+07:00"]) {
+    expect((await call(value)).isError).not.toBe(true);
+  }
+  for (const value of ["2026-11-05T18:00Z", "2026-11-05T18:00:00+99:99"]) {
+    expect(errorOf(await call(value))).toMatchObject({ category: "validation" });
+  }
+});

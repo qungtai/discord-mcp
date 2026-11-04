@@ -6,9 +6,15 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-04
+
 ### Added
 
 - Automated MCP Registry publishing via GitHub OIDC (`github-oidc`) using `mcp-publisher` v1.8.7, along with a `workflow_dispatch` trigger from `main` to publish a version that is on npm but missing from the registry (for example after a failed registry job or when npm propagation lags).
+
+### Security
+
+- Upgraded `zod` from 3.25.76 to 4.6.7, fixing GHSA-mrhx-c7xc-m3w5 (memory exhaustion while validating oversized constrained collections). Every tool input is validated with zod, so the server was affected. The `zod/v4` import path is unchanged. `vitest` and `@vitest/coverage-v8` move to 4.1.12, which removes the dev-only `tinypool`, `minimatch` and `@vitest/mocker` versions covered by the open alerts. zod 4 validates `z.iso.datetime()` more strictly, so ISO 8601 timestamps in tool inputs now require seconds and out-of-range UTC offsets are rejected (`2026-11-05T18:00:00.000Z` and `2026-11-05T18:00:00+07:00` are accepted, `2026-11-05T18:00Z` and `2026-11-05T18:00:00+99:99` are not).
 
 ## [0.1.1] - 2026-11-04
 
@@ -126,6 +132,7 @@ follows [Semantic Versioning](https://semver.org/).
   sent, and the approval prompt truncates long argument values and redacts
   token-shaped strings.
 
-[Unreleased]: https://github.com/qungtai/discord-mcp/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/qungtai/discord-mcp/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/qungtai/discord-mcp/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/qungtai/discord-mcp/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/qungtai/discord-mcp/releases/tag/v0.1.0

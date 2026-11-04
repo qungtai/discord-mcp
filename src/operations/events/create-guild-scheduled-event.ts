@@ -37,12 +37,14 @@ export const createGuildScheduledEvent = defineTool({
     privacy_level: privacyLevelEnum,
     scheduled_start_time: z.iso
       .datetime({ offset: true })
-      .describe("Start time of the scheduled event in ISO 8601 format"),
+      .describe(
+        "Start time of the scheduled event: ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z",
+      ),
     scheduled_end_time: z.iso
       .datetime({ offset: true })
       .optional()
       .describe(
-        "End time in ISO 8601 format (required for entity_type 3=External; optional for voice/stage)",
+        "End time: ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z (required for entity_type 3=External; optional for voice/stage)",
       ),
     description: z
       .string()
