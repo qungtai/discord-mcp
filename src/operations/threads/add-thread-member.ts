@@ -5,7 +5,8 @@ import { snowflake } from "../schemas.js";
 
 export const addThreadMember = defineTool({
   name: "discord_add_thread_member",
-  description: "Add a user to a thread",
+  description:
+    "Add another user to a thread by user ID. Also causes the thread to appear in their channel list. To have the bot join a thread instead, use discord_join_thread; to remove a member, use discord_delete_thread_member.",
   operationIds: ["add_thread_member"],
   toolset: "threads",
   scope: { channel: "channel_id" },
@@ -13,8 +14,8 @@ export const addThreadMember = defineTool({
   effect: "write",
   idempotent: true,
   input: z.object({
-    channel_id: snowflake,
-    user_id: snowflake,
+    channel_id: snowflake.describe("ID of the thread to add the member to"),
+    user_id: snowflake.describe("ID of the user to add to the thread"),
   }),
   output: z.object({
     added: z.literal(true),

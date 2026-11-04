@@ -41,12 +41,35 @@ export const threadMember = resource(
 );
 
 export const forumInitialMessage = z.strictObject({
-  content: z.string().max(4000).optional(),
-  embeds: z.array(z.record(z.string(), z.unknown())).max(10).optional(),
-  allowed_mentions: allowedMentions,
-  sticker_ids: z.array(snowflake).max(3).optional(),
-  components: z.array(z.unknown()).max(40).optional(),
-  flags: z.number().optional(),
+  content: z
+    .string()
+    .max(4000)
+    .optional()
+    .describe("Text content of the first post or message (up to 4000 characters)"),
+  embeds: z
+    .array(z.record(z.string(), z.unknown()))
+    .max(10)
+    .optional()
+    .describe("Up to 10 rich embed objects to include in the starter post"),
+  allowed_mentions: allowedMentions.describe(
+    "Allowed mentions specification controlling who receives mention notifications",
+  ),
+  sticker_ids: z
+    .array(snowflake)
+    .max(3)
+    .optional()
+    .describe("IDs of up to 3 stickers to attach to the starter post"),
+  components: z
+    .array(z.unknown())
+    .max(40)
+    .optional()
+    .describe("Interactive message components such as buttons or select menus (up to 40)"),
+  flags: z
+    .number()
+    .optional()
+    .describe(
+      "Message flags integer bitfield, such as SUPPRESS_EMBEDS (4) or SUPPRESS_NOTIFICATIONS (4096)",
+    ),
 });
 
 export const threadList = z.object({

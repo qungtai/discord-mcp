@@ -5,7 +5,8 @@ import { snowflake } from "../schemas.js";
 
 export const deleteThreadMember = defineTool({
   name: "discord_delete_thread_member",
-  description: "Remove a user from a thread",
+  description:
+    "Remove another user from a thread by user ID. Requires Manage Threads permissions unless the caller created the thread. To have the bot leave a thread instead, use discord_leave_thread; to add someone to a thread, use discord_add_thread_member.",
   operationIds: ["delete_thread_member"],
   toolset: "threads",
   scope: { channel: "channel_id" },
@@ -13,8 +14,8 @@ export const deleteThreadMember = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object({
-    channel_id: snowflake,
-    user_id: snowflake,
+    channel_id: snowflake.describe("ID of the thread to remove the member from"),
+    user_id: snowflake.describe("ID of the user to remove from the thread"),
   }),
   output: z.object({
     deleted: z.literal(true),

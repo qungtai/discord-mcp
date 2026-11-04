@@ -306,31 +306,31 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 <details>
 <summary>reactions (6 tools)</summary>
 
-- `discord_add_my_message_reaction`: Add a reaction to a message as the current user
-- `discord_delete_all_message_reactions`: Delete all reactions on a message (asks for approval)
-- `discord_delete_all_message_reactions_by_emoji`: Delete all reactions for a given emoji on a message (asks for approval)
-- `discord_delete_my_message_reaction`: Delete the current user's reaction from a message
-- `discord_delete_user_message_reaction`: Delete another user's reaction from a message (asks for approval)
-- `discord_list_message_reactions_by_emoji`: Get a list of users that reacted with a given emoji
+- `discord_add_my_message_reaction`: Add a reaction to a message as the bot user. Specify unicode characters or custom emojis as name:id. To see who already reacted, use discord_list_message_reactions_by_emoji; to remove this reaction later, use discord_delete_my_message_reaction.
+- `discord_delete_all_message_reactions`: Delete all reactions across all emojis and users on a single message. This permanently clears the reaction list for everyone. To remove only a single emoji type across users, use discord_delete_all_message_reactions_by_emoji; to remove only the bot's own reaction, use discord_delete_my_message_reaction. (asks for approval)
+- `discord_delete_all_message_reactions_by_emoji`: Delete all reactions for one specified emoji on a message across every user who reacted. To remove every emoji reaction at once, use discord_delete_all_message_reactions; to remove only the bot's own reaction, use discord_delete_my_message_reaction. (asks for approval)
+- `discord_delete_my_message_reaction`: Delete the bot's own reaction for a specific emoji on a message. This only removes the bot's reaction and does not affect other users. To delete another user's reaction, use discord_delete_user_message_reaction; to add a reaction, use discord_add_my_message_reaction.
+- `discord_delete_user_message_reaction`: Delete another user's reaction for a specific emoji on a message. This removes only the target user's reaction, leaving all other reactions untouched. To remove the bot's own reaction without moderation permissions, use discord_delete_my_message_reaction; to remove all reactions of this emoji, use discord_delete_all_message_reactions_by_emoji. (asks for approval)
+- `discord_list_message_reactions_by_emoji`: List users who reacted with a specific emoji on a message. Returns an array of user objects and a next_after cursor. Page older reactions in ascending order using after=next_after. To add the bot's reaction, use discord_add_my_message_reaction.
 
 </details>
 
 <details>
 <summary>threads (13 tools)</summary>
 
-- `discord_add_thread_member`: Add a user to a thread
-- `discord_create_thread`: Create a new thread in a channel without an existing message (or start a forum post if message is provided). Defaults to private thread (type 12) if type is omitted in text channels; invitable only applies to private threads.
-- `discord_create_thread_from_message`: Create a new thread from an existing message in a channel
-- `discord_delete_thread_member`: Remove a user from a thread (asks for approval)
-- `discord_get_thread_member`: Get a member of a thread by user ID
-- `discord_join_thread`: Add the current user to a thread
-- `discord_leave_thread`: Remove the current user from a thread
-- `discord_list_active_guild_threads`: Get all active threads in a guild, including public and private threads
-- `discord_list_my_private_archived_threads`: List private archived threads that the bot has joined in a channel. Page with before=next_before
-- `discord_list_private_archived_threads`: List private archived threads in a channel. Page with before=next_before
-- `discord_list_public_archived_threads`: List public archived threads in a channel. Page with before=next_before
-- `discord_list_thread_members`: List members of a thread. Note: after and limit pagination only apply when with_member is true and the bot has GUILD_MEMBERS intent. Page with after=next_after
-- `discord_search_threads`: Search threads in a channel. A new thread can take about 30 seconds to appear in results. Page with offset=next_offset
+- `discord_add_thread_member`: Add another user to a thread by user ID. Also causes the thread to appear in their channel list. To have the bot join a thread instead, use discord_join_thread; to remove a member, use discord_delete_thread_member.
+- `discord_create_thread`: Create a new thread without a starter message, or start a new forum or media channel post. Announcement threads (type 10) broadcast across servers, public threads (11) are visible to everyone with channel access, and private threads (12) restrict access to explicitly invited members. In forum or media channels, provide message to create the initial post.
+- `discord_create_thread_from_message`: Create a new public or announcement thread originating from an existing message in a text or announcement channel. The type of thread matches the parent channel type. Returns the created thread object. To create a standalone thread without a starter message, use discord_create_thread.
+- `discord_delete_thread_member`: Remove another user from a thread by user ID. Requires Manage Threads permissions unless the caller created the thread. To have the bot leave a thread instead, use discord_leave_thread; to add someone to a thread, use discord_add_thread_member. (asks for approval)
+- `discord_get_thread_member`: Fetch membership details for one user in a thread, including their join timestamp and flags. Set with_member to true to include full guild member details. To list all members of a thread, use discord_list_thread_members.
+- `discord_join_thread`: Add the bot user to a thread. Also causes the thread to show up in the bot's channel sidebar and enables message notifications. To remove the bot from a thread, use discord_leave_thread; to add another user, use discord_add_thread_member.
+- `discord_leave_thread`: Remove the bot user from a thread. If the thread is private, the bot must be re-added or reinvited to rejoin. To join a thread, use discord_join_thread; to remove another user, use discord_delete_thread_member.
+- `discord_list_active_guild_threads`: List all active unarchived threads in a guild that the bot has permission to view, including public and joined private threads. Returns thread objects along with thread member objects for the bot. To find older archived threads, use discord_list_public_archived_threads or discord_list_private_archived_threads.
+- `discord_list_my_private_archived_threads`: List private archived threads within a channel that the bot user has joined. Returns thread objects, thread member entries, and a next_before cursor. Page older threads in descending order using before=next_before. To list all private archived threads in the channel regardless of bot participation, use discord_list_private_archived_threads.
+- `discord_list_private_archived_threads`: List private archived threads in a channel. Returns thread objects, thread member entries, and a next_before cursor. Page older threads in descending order by archive timestamp using before=next_before. To list public archived threads instead, use discord_list_public_archived_threads.
+- `discord_list_public_archived_threads`: List public archived threads in a channel. Returns thread objects, thread member entries, and a next_before cursor. Page older threads in descending order by archive timestamp using before=next_before. To list private archived threads instead, use discord_list_private_archived_threads.
+- `discord_list_thread_members`: List members of a thread. Note that after and limit pagination only apply when with_member is true and the bot has GUILD_MEMBERS intent. Returns an array of thread members and a next_after cursor. Page forward using after=next_after. To fetch a single thread member, use discord_get_thread_member.
+- `discord_search_threads`: Search threads in a channel by name, tags, and time bounds. New threads take about 30 seconds to appear in search results. Returns matched threads, first messages, and member objects. Page results with offset=next_offset. To browse active threads without indexing delays, use discord_list_active_guild_threads.
 
 </details>
 
