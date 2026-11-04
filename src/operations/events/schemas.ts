@@ -25,13 +25,17 @@ export const statusEnum = z
 // Strict input recurrence rule schema
 export const recurrenceRuleInput = z
   .strictObject({
-    start: z.iso.datetime({ offset: true }).describe("Starting time of recurrence (ISO 8601)"),
+    start: z.iso
+      .datetime({ offset: true })
+      .describe(
+        "Starting time of recurrence: ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z",
+      ),
     end: z.iso
       .datetime({ offset: true })
       .nullable()
       .optional()
       .describe(
-        "Not settable through the API at present; Discord rejects or ignores it, so omit it",
+        "ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z; not settable through the API at present, as Discord rejects or ignores it, so omit it",
       ),
     frequency: z
       .enum(GuildScheduledEventRecurrenceRuleFrequency)
@@ -135,12 +139,16 @@ export const exceptionOverrideInput = {
     .datetime({ offset: true })
     .nullable()
     .optional()
-    .describe("Overridden start time for this recurrence occurrence (ISO 8601)"),
+    .describe(
+      "Overridden start time for this recurrence occurrence: ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z",
+    ),
   scheduled_end_time: z.iso
     .datetime({ offset: true })
     .nullable()
     .optional()
-    .describe("Overridden end time for this recurrence occurrence (ISO 8601)"),
+    .describe(
+      "Overridden end time for this recurrence occurrence: ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z",
+    ),
   is_canceled: z
     .boolean()
     .nullable()

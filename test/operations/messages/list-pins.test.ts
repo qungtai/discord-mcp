@@ -95,6 +95,21 @@ it("fails input validation on invalid snowflake or out of bounds limit", async (
   expect(makeRequest).not.toHaveBeenCalled();
 });
 
+it("requires seconds in the ISO 8601 before cursor", async () => {
+  const { client } = await harness({ respond: () => ({ items: [], has_more: false }) });
+  const accepted = await client.callTool({
+    name: "discord_list_pins",
+    arguments: { channel_id: "1", before: "2026-11-05T18:00:00Z" },
+  });
+  expect(accepted.isError).not.toBe(true);
+
+  const rejected = await client.callTool({
+    name: "discord_list_pins",
+    arguments: { channel_id: "1", before: "2026-11-05T18:00Z" },
+  });
+  expect(errorOf(rejected)).toMatchObject({ category: "validation" });
+});
+
 it("maps a 403 to permission error", async () => {
   const { client } = await harness({
     makeRequest: async () => json({ message: "Missing Permissions", code: 50013 }, { status: 403 }),

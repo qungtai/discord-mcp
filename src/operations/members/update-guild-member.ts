@@ -66,7 +66,7 @@ export const updateGuildMember = defineTool({
       .nullable()
       .optional()
       .describe(
-        "ISO 8601 timestamp up to 28 days in the future to timeout the member, or null to remove timeout; requires ModerateMembers",
+        "ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z, up to 28 days in the future to timeout the member, or null to remove timeout; requires ModerateMembers",
       ),
     flags: z
       .number()

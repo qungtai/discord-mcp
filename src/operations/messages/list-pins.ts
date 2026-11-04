@@ -25,7 +25,7 @@ export const listPins = defineTool({
       .datetime()
       .optional()
       .describe(
-        "ISO 8601 timestamp cursor to fetch pins created before this time (use next_before)",
+        "ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z; cursor to fetch pins created before this time (use next_before)",
       ),
     limit: z
       .number()

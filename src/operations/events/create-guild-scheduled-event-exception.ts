@@ -18,7 +18,9 @@ export const createGuildScheduledEventException = defineTool({
     guild_scheduled_event_id: snowflake.describe("ID of the recurring scheduled event"),
     original_scheduled_start_time: z.iso
       .datetime({ offset: true })
-      .describe("Original start time of the recurring occurrence to override (ISO 8601)"),
+      .describe(
+        "Original start time of the recurring occurrence to override: ISO 8601 date and time with seconds, for example 2026-11-05T18:00:00Z",
+      ),
     ...exceptionOverrideInput,
   }),
   output: z.object({

@@ -12,7 +12,7 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Security
 
-- Upgraded `zod` from 3.25.76 to 4.6.7, fixing GHSA-mrhx-c7xc-m3w5 (memory exhaustion while validating oversized constrained collections). Every tool input is validated with zod, so the server was affected. The `zod/v4` import path is unchanged. `vitest` and `@vitest/coverage-v8` move to 4.1.12, which removes the dev-only `tinypool`, `minimatch` and `@vitest/mocker` versions covered by the open alerts. zod 4 validates `z.iso.datetime()` more strictly, so ISO 8601 timestamps in tool inputs now require seconds (`2026-11-05T18:00:00Z`, not `2026-11-05T18:00Z`).
+- Upgraded `zod` from 3.25.76 to 4.6.7, fixing GHSA-mrhx-c7xc-m3w5 (memory exhaustion while validating oversized constrained collections). Every tool input is validated with zod, so the server was affected. The `zod/v4` import path is unchanged. `vitest` and `@vitest/coverage-v8` move to 4.1.12, which removes the dev-only `tinypool`, `minimatch` and `@vitest/mocker` versions covered by the open alerts. zod 4 validates `z.iso.datetime()` more strictly, so ISO 8601 timestamps in tool inputs now require seconds and out-of-range UTC offsets are rejected (`2026-11-05T18:00:00.000Z` and `2026-11-05T18:00:00+07:00` are accepted, `2026-11-05T18:00Z` and `2026-11-05T18:00:00+99:99` are not).
 
 ## [0.1.1] - 2026-11-04
 
