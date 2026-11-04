@@ -372,28 +372,28 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 <details>
 <summary>guild (22 tools)</summary>
 
-- `discord_create_guild_template`: Create a template for a guild
-- `discord_delete_guild_integration`: Delete an integration from a guild (asks for approval)
-- `discord_delete_guild_template`: Delete a guild template (asks for approval)
-- `discord_get_guild`: Get a guild by ID
-- `discord_get_guild_new_member_welcome`: Get new member welcome (home settings) for a guild
-- `discord_get_guild_onboarding`: Get the onboarding configuration for a guild
-- `discord_get_guild_preview`: Get a guild's preview
-- `discord_get_guild_template`: Get a guild template by its code
-- `discord_get_guild_vanity_url`: Get the vanity URL code for a guild
-- `discord_get_guild_welcome_screen`: Get the welcome screen for a guild
-- `discord_get_guild_widget`: Get the widget data for a guild
-- `discord_get_guild_widget_settings`: Get widget settings for a guild
-- `discord_list_guild_audit_log_entries`: List audit log entries for a guild
-- `discord_list_guild_integrations`: List integrations for a guild
-- `discord_list_guild_templates`: List templates for a guild
-- `discord_sync_guild_template`: Sync a guild template to the current state of the guild (asks for approval)
-- `discord_update_guild`: Update guild settings (asks for approval)
-- `discord_update_guild_incident_actions`: Update the time until invites or DMs are disabled for a guild (asks for approval)
-- `discord_update_guild_onboarding`: Set the onboarding configuration for a guild (asks for approval)
-- `discord_update_guild_template`: Update a guild template metadata (asks for approval)
-- `discord_update_guild_welcome_screen`: Update the welcome screen for a guild (asks for approval)
-- `discord_update_guild_widget_settings`: Update widget settings for a guild (asks for approval)
+- `discord_create_guild_template`: Create a new template from an existing guild snapshot. Discord permits only one template per guild; creating another fails unless the existing one is deleted. To list existing templates use discord_list_guild_templates. Returns the created template object including its unique code.
+- `discord_delete_guild_integration`: Delete an attached integration from a guild by integration ID. Deleting an integration removes any linked synchronization or webhook access. To inspect active integrations first use discord_list_guild_integrations. Returns confirmation with deleted IDs. (asks for approval)
+- `discord_delete_guild_template`: Delete a template from a guild by template code. Because Discord allows only one template per guild, deleting the existing template permits creating a new snapshot. To inspect the template before deleting use discord_get_guild_template. Returns the deleted template object. (asks for approval)
+- `discord_get_guild`: Fetch detailed information for a guild by ID that the bot currently belongs to. To view basic discoverable information without bot membership use discord_get_guild_preview, and to list all guilds the bot belongs to use discord_list_my_guilds. Returns the full guild object including owner ID, features, verification level, and optional counts.
+- `discord_get_guild_new_member_welcome`: Retrieve the new member welcome experience (Home tab settings) for a guild. This feature requires Community to be enabled on the guild. To inspect full onboarding questions use discord_get_guild_onboarding, or use discord_get_guild_welcome_screen for legacy welcome screens. Returns welcome settings or null when unconfigured.
+- `discord_get_guild_onboarding`: Retrieve the onboarding configuration for a guild, including prompt questions, response options, and default channels. Onboarding requires a Community server with the GUILD_ONBOARDING feature. To update onboarding settings use discord_update_guild_onboarding. Returns the onboarding object.
+- `discord_get_guild_preview`: Fetch public preview data for a guild even if the bot is not a member. The target guild must be discoverable or public (have DISCOVERABLE feature or invite splash enabled). To fetch complete details for a guild the bot belongs to use discord_get_guild. Returns guild preview data including approximate presence and member counts.
+- `discord_get_guild_template`: Fetch a guild template by its unique template code without requiring guild membership. Each guild can have at most one template. To list templates belonging to a specific guild use discord_list_guild_templates. Returns the template details including serialized guild structure and usage count.
+- `discord_get_guild_vanity_url`: Retrieve the custom vanity URL invite code and usage statistics for a guild. Vanity URLs require a Community server with the VANITY_URL feature, typically unlocked at Server Boost Level 3. To inspect regular guild invites use discord_list_guild_invites. Returns an object containing the vanity code and total uses.
+- `discord_get_guild_welcome_screen`: Retrieve the welcome screen configuration shown to new members in a guild. Welcome screens require a Community server with the WELCOME_SCREEN_ENABLED feature. To modify recommended channels or the welcome description use discord_update_guild_welcome_screen. Returns the welcome screen details including recommended channels.
+- `discord_get_guild_widget`: Fetch public widget JSON data for a guild, including active voice channels and online members. Requires the guild widget to be enabled in widget settings. To view or toggle widget configuration use discord_get_guild_widget_settings or discord_update_guild_widget_settings. Returns public widget info including channel list and online presence count.
+- `discord_get_guild_widget_settings`: Retrieve widget settings for a guild, indicating whether the embeddable widget is enabled and which channel it binds to. To read the rendered widget payload with member presences use discord_get_guild_widget. To toggle the widget or change its invite channel use discord_update_guild_widget_settings. Returns whether the widget is enabled and its channel ID.
+- `discord_list_guild_audit_log_entries`: List and filter audit log entries for moderation, settings, and role changes in a guild. Supports filtering by user_id, target_id, or action_type, with chronological pagination using before and after cursors. Use next_before to page backwards to older entries and next_after for newer entries. Returns audit log entries, users, integrations, and webhooks.
+- `discord_list_guild_integrations`: List all attached integrations for a guild, including bots, Twitch, and YouTube connections. To remove an integration use discord_delete_guild_integration. To inspect audit log events generated by integrations use discord_list_guild_audit_log_entries. Returns an array of integration objects with enabled statuses and types.
+- `discord_list_guild_templates`: List templates created for a specific guild. Because Discord enforces a limit of one template per guild, this endpoint returns an array containing at most one template. To sync a template after guild changes use discord_sync_guild_template, or to create one use discord_create_guild_template. Returns the list of template objects.
+- `discord_sync_guild_template`: Synchronize an existing template with the current state and structure of the guild. A guild can have at most one template; when the source guild changes, the template becomes out of sync until updated here. To view or check template dirty state use discord_list_guild_templates. Returns the updated template object. (asks for approval)
+- `discord_update_guild`: Update configuration, channels, images, and community settings for a guild. Settings such as rules_channel_id, public_updates_channel_id, and discovery_splash require the COMMUNITY feature to be enabled. To inspect current guild configuration before updating use discord_get_guild. Returns the updated guild object. (asks for approval)
+- `discord_update_guild_incident_actions`: Pause or resume guild invites and direct messages during raid or security incidents. Timestamps must be future ISO 8601 strings up to 24 hours, or null to clear restrictions immediately. To audit raid mitigation actions use discord_list_guild_audit_log_entries. Returns the updated incident actions status. (asks for approval)
+- `discord_update_guild_onboarding`: Configure member onboarding flow, prompts, role assignments, and default channels for a guild. Modifying onboarding requires a Community server with GUILD_ONBOARDING enabled. To inspect existing onboarding setup before modifying use discord_get_guild_onboarding. Returns the complete updated onboarding configuration. (asks for approval)
+- `discord_update_guild_template`: Update name and description metadata for an existing guild template. Each guild supports only one template; updating metadata does not sync channels or roles. To synchronize template structure with server changes use discord_sync_guild_template. Returns the updated template object. (asks for approval)
+- `discord_update_guild_welcome_screen`: Update the welcome screen configuration and recommended channels shown to new members. This feature requires Community to be enabled on the guild. To inspect current welcome screen settings use discord_get_guild_welcome_screen. Returns the updated welcome screen object. (asks for approval)
+- `discord_update_guild_widget_settings`: Update widget configuration for a guild to enable or disable the widget and set its invite channel. To inspect current widget settings before modifying use discord_get_guild_widget_settings, or fetch the live JSON widget via discord_get_guild_widget. Returns the updated widget settings. (asks for approval)
 
 </details>
 
@@ -418,13 +418,13 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 <details>
 <summary>roles (7 tools)</summary>
 
-- `discord_bulk_update_guild_roles`: Modify the positions of a list of role objects for the guild (asks for approval)
-- `discord_create_guild_role`: Create a new guild role (asks for approval)
-- `discord_delete_guild_role`: Delete a guild role (asks for approval)
-- `discord_get_guild_role`: Get a guild role
-- `discord_get_guild_role_member_counts`: Get role member counts for a guild
-- `discord_list_guild_roles`: List roles in a guild
-- `discord_update_guild_role`: Update a guild role (asks for approval)
+- `discord_bulk_update_guild_roles`: Batch update sorting positions for multiple guild roles. Discord reorders positions from 0 upwards; swapping or moving positions shifts intervening roles. Under Discord role hierarchy rules, the bot can only modify positions of roles strictly below its highest role. To inspect current role order use discord_list_guild_roles. Returns the updated list of all guild roles. (asks for approval)
+- `discord_create_guild_role`: Create a new role in a guild with customized name, permissions bitfield, color, hoist, and icon settings. Under role hierarchy rules, the bot can only grant permissions it currently holds. Newly created roles are placed just above the @everyone role. To list existing roles use discord_list_guild_roles. Returns the created role object. (asks for approval)
+- `discord_delete_guild_role`: Delete a role from a guild by role ID. Under role hierarchy rules, the bot can only delete roles positioned strictly below the bot highest role; managed integration roles and the @everyone role cannot be deleted. To remove a role from a specific member instead use discord_delete_guild_member_role. Returns confirmation with deleted IDs. (asks for approval)
+- `discord_get_guild_role`: Fetch a single role by role ID within a guild. To list all roles belonging to the guild at once use discord_list_guild_roles. To view channel-specific permissions computed for a role use discord_get_role_permissions. Returns the complete role object including name, color, hoist status, position, and permission bits.
+- `discord_get_guild_role_member_counts`: Retrieve the count of members assigned to each role in a guild. Useful for analyzing role usage and auditing membership across tiers without fetching all member records. To list the full metadata of each role use discord_list_guild_roles. Returns a mapping of role ID snowflakes to integer member counts.
+- `discord_list_guild_roles`: List every role configured in a guild, including @everyone, bot integration roles, and booster roles. To fetch member counts across roles use discord_get_guild_role_member_counts, or to create a new role use discord_create_guild_role. Returns an array of all role objects ordered by hierarchy position.
+- `discord_update_guild_role`: Update settings, name, permissions bitfield, color, hoist, and icon for an existing guild role. Under Discord role hierarchy rules, the bot can only modify roles positioned strictly below its highest role and cannot grant permissions it does not possess. To modify role ordering instead use discord_bulk_update_guild_roles. Returns the updated role object. (asks for approval)
 
 </details>
 

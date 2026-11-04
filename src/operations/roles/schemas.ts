@@ -2,9 +2,26 @@ import { z } from "zod/v4";
 import { resource, roleObject, snowflake } from "../schemas.js";
 
 export const roleColors = z.strictObject({
-  primary_color: z.number().int().min(0).max(16777215),
-  secondary_color: z.number().int().min(0).max(16777215).nullish(),
-  tertiary_color: z.number().int().min(0).max(16777215).nullish(),
+  primary_color: z
+    .number()
+    .int()
+    .min(0)
+    .max(16777215)
+    .describe("Primary RGB color as an integer between 0 and 16777215 (e.g. 0xFF0000 for red)"),
+  secondary_color: z
+    .number()
+    .int()
+    .min(0)
+    .max(16777215)
+    .nullish()
+    .describe("Secondary RGB color integer for gradient role styling, or null"),
+  tertiary_color: z
+    .number()
+    .int()
+    .min(0)
+    .max(16777215)
+    .nullish()
+    .describe("Tertiary RGB color integer for gradient role styling, or null"),
 });
 
 export const role = resource(

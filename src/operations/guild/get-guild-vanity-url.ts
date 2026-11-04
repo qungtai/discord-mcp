@@ -5,7 +5,8 @@ import { guildIds, vanityUrl } from "./schemas.js";
 
 export const getGuildVanityUrl = defineTool({
   name: "discord_get_guild_vanity_url",
-  description: "Get the vanity URL code for a guild",
+  description:
+    "Retrieve the custom vanity URL invite code and usage statistics for a guild. Vanity URLs require a Community server with the VANITY_URL feature, typically unlocked at Server Boost Level 3. To inspect regular guild invites use discord_list_guild_invites. Returns an object containing the vanity code and total uses.",
   operationIds: ["get_guild_vanity_url"],
   toolset: "guild",
   scope: { guild: "guild_id" },

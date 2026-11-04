@@ -1,7 +1,9 @@
 import { z } from "zod/v4";
 import { codeParam, resource, snowflake, user } from "../schemas.js";
 
-export const guildIds = { guild_id: snowflake };
+export const guildIds = {
+  guild_id: snowflake.describe("ID of the guild (numeric snowflake string)"),
+};
 
 export const guild = resource(
   z.looseObject({
@@ -142,7 +144,9 @@ export const newMemberWelcome = resource(
   }),
 );
 
-export const templateCode = codeParam("template");
+export const templateCode = codeParam("template").describe(
+  "Unique alphanumeric template code identifying the guild template",
+);
 
 export const guildTemplate = resource(
   z.looseObject({

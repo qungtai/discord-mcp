@@ -5,7 +5,8 @@ import { guildIds, onboarding } from "./schemas.js";
 
 export const getGuildOnboarding = defineTool({
   name: "discord_get_guild_onboarding",
-  description: "Get the onboarding configuration for a guild",
+  description:
+    "Retrieve the onboarding configuration for a guild, including prompt questions, response options, and default channels. Onboarding requires a Community server with the GUILD_ONBOARDING feature. To update onboarding settings use discord_update_guild_onboarding. Returns the onboarding object.",
   operationIds: ["get_guilds_onboarding"],
   toolset: "guild",
   scope: { guild: "guild_id" },

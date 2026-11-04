@@ -6,7 +6,8 @@ import { auditLog, guildIds } from "./schemas.js";
 
 export const listGuildAuditLogEntries = defineTool({
   name: "discord_list_guild_audit_log_entries",
-  description: "List audit log entries for a guild",
+  description:
+    "List and filter audit log entries for moderation, settings, and role changes in a guild. Supports filtering by user_id, target_id, or action_type, with chronological pagination using before and after cursors. Use next_before to page backwards to older entries and next_after for newer entries. Returns audit log entries, users, integrations, and webhooks.",
   operationIds: ["list_guild_audit_log_entries"],
   toolset: "guild",
   scope: { guild: "guild_id" },
@@ -15,18 +16,32 @@ export const listGuildAuditLogEntries = defineTool({
   idempotent: true,
   input: z.object({
     ...guildIds,
-    user_id: snowflake.optional().describe("Filter by user who made the changes"),
-    target_id: snowflake.optional().describe("Filter by target entity ID"),
-    action_type: z.number().int().optional().describe("Filter by audit log event type"),
-    before: snowflake.optional().describe("Filter for entries before this ID"),
-    after: snowflake.optional().describe("Filter for entries after this ID"),
+    user_id: snowflake
+      .optional()
+      .describe("Filter audit log entries by the user ID who performed the action"),
+    target_id: snowflake
+      .optional()
+      .describe("Filter audit log entries by the target resource ID (user, channel, role, etc.)"),
+    action_type: z
+      .number()
+      .int()
+      .optional()
+      .describe(
+        "Filter by integer audit log action type (e.g. 1 for GUILD_UPDATE, 20 for CHANNEL_CREATE, 30 for ROLE_CREATE, 72 for BOT_ADD)",
+      ),
+    before: snowflake
+      .optional()
+      .describe("Filter for entries before this audit log entry ID for paging older items"),
+    after: snowflake
+      .optional()
+      .describe("Filter for entries after this audit log entry ID for paging newer items"),
     limit: z
       .number()
       .int()
       .min(1)
       .max(100)
       .optional()
-      .describe("Number of entries to return (1-100)"),
+      .describe("Number of entries to return (1-100, defaults to 50)"),
   }),
   output: z.object({
     audit_log: auditLog,

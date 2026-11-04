@@ -6,7 +6,8 @@ import { guildIds } from "./schemas.js";
 
 export const deleteGuildIntegration = defineTool({
   name: "discord_delete_guild_integration",
-  description: "Delete an integration from a guild",
+  description:
+    "Delete an attached integration from a guild by integration ID. Deleting an integration removes any linked synchronization or webhook access. To inspect active integrations first use discord_list_guild_integrations. Returns confirmation with deleted IDs.",
   operationIds: ["delete_guild_integration"],
   toolset: "guild",
   scope: { guild: "guild_id" },
@@ -15,7 +16,9 @@ export const deleteGuildIntegration = defineTool({
   idempotent: true,
   input: z.object({
     ...guildIds,
-    integration_id: snowflake,
+    integration_id: snowflake.describe(
+      "ID of the integration to delete (numeric snowflake string)",
+    ),
     reason,
   }),
   output: z.object({
