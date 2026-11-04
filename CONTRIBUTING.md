@@ -54,6 +54,13 @@ pnpm install --frozen-lockfile && pnpm biome check --write . && pnpm typecheck &
 
 All commands must exit cleanly with zero errors and zero lint warnings.
 
+## Release workflow
+
+Releases are published through GitHub Actions (`.github/workflows/release.yml`):
+
+- **Automated tag release**: Pushing a version tag `v*.*.*` runs verification, publishes to npm with provenance, builds and pushes multi-arch Docker images to GHCR, and publishes to the official MCP Registry via `mcp-publisher` authenticated with GitHub Actions OIDC (`github-oidc`).
+- **MCP Registry re-publish**: If an already-released version needs re-publishing to the MCP Registry, run the `Release` workflow manually (`workflow_dispatch`) against `main`. It runs verification and registry publishing without repeating npm or Docker steps, guarded by a check ensuring the version in `package.json` and `server.json` is already published on npm.
+
 ## Pull request expectations
 
 - Branch naming: `feat/<toolset>-<task>`, `fix/<scope>-<task>`, or `chore/<scope>-<task>`.
