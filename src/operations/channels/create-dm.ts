@@ -13,7 +13,7 @@ export const createDm = defineTool({
   scope: { user: "recipient_id" },
   permissions: [],
   effect: "write",
-  idempotent: false,
+  idempotent: true,
   input: z.object({
     recipient_id: snowflake.describe(
       "Snowflake ID of the user recipient to open a direct message channel with",

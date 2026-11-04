@@ -10,13 +10,17 @@ follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Rewrote every tool description and every input parameter description.
-- Each tool description ends with a generated sentence stating the bot permissions, whether the tool changes Discord data, retry safety and whether the user is asked to approve.
+- Rewrote every tool description and gave every input parameter a description.
+- Each tool description ends with a generated sentence built from the tool's metadata: the bot permissions it may need, what it changes, and retry safety or the approval prompt where they apply.
 
 ### Added
 
 - Server instructions in the initialize response: enabled toolsets, the other toolsets and how to enable them, ID format, allowlist and approval behavior.
 - A test that enforces description length, valid tool references and parameter description coverage.
+
+### Fixed
+
+- discord_prune_guild and discord_preview_prune_guild list Manage Server with Kick Members, as Discord requires.
 
 ## [0.1.0] - 2026-11-04
 
