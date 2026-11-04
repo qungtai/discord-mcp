@@ -14,6 +14,8 @@ const PERMISSION_NAME_OVERRIDES: Record<string, string> = {
   CreateInstantInvite: "Create Invite",
   ModerateMembers: "Timeout Members",
   ManageGuildExpressions: "Manage Expressions",
+  SendMessagesInThreads: "Send Messages in Threads",
+  MentionEveryone: "Mention @everyone, @here, and All Roles",
 };
 
 export function formatPermissionName(permission: string): string {
@@ -39,11 +41,17 @@ export function buildBehaviorSentence(tool: ToolDescriptor, approvalMode: Approv
     case "read":
       effectPart = "Read-only; safe to retry.";
       break;
-    case "write":
-      effectPart = tool.idempotent
+    case "write": {
+      const base = tool.idempotent
         ? "Changes Discord data; safe to retry."
         : "Creates Discord data; a retry can create a duplicate.";
+      const approvalNotice =
+        tool.approval && approvalMode === "elicitation"
+          ? " The user is asked to approve the exact change before it runs."
+          : "";
+      effectPart = `${base}${approvalNotice}`;
       break;
+    }
     case "destructive":
       if (tool.approval && approvalMode === "elicitation") {
         effectPart = "Destructive: the user is asked to approve the exact change before it runs.";
@@ -60,18 +68,18 @@ export function buildBehaviorSentence(tool: ToolDescriptor, approvalMode: Approv
 }
 
 export const TOOLSET_SUMMARIES: Record<string, string> = {
-  core: "Current bot user, user lookup, guild list and leave, user connections",
-  messages: "Send, get, edit, delete, pin, search messages, polls, attachments",
+  core: "Bot user, user lookup, guild list and leave",
+  messages: "Send, get, edit, delete, pin, search messages",
   reactions: "Add, remove, list reactions on messages",
-  threads: "Create, list, join, leave, archive threads and thread members",
+  threads: "Create, join, leave, list and search threads, thread members",
   channels: "Create, edit, delete channels, permission overwrites, voice status",
-  webhooks: "Create, edit, delete, execute webhooks and edit webhook messages",
+  webhooks: "Create, edit, delete, execute webhooks, edit webhook messages",
   guild: "Guild settings, audit log, onboarding, welcome screen, widget",
   members: "List, search, update, kick, mute, deafen members, prune",
-  roles: "Create, update, delete, list guild roles, role member counts",
+  roles: "Create, update, delete, list guild roles, member counts",
   moderation: "Ban, unban, list bans, AutoMod rules",
-  events: "Create, update, delete scheduled events and list subscribers",
-  invites: "Create, get, delete invites, guild/channel invites, target users",
+  events: "Create, update, delete scheduled events, list subscribers",
+  invites: "Create, get, delete invites, target users",
 };
 
 export function buildServerInstructions(
@@ -94,7 +102,7 @@ export function buildServerInstructions(
 
   return (
     `MCP server for the Discord REST API. Enabled toolsets: ${enabledToolsets.join(", ")}.${otherPart} ` +
-    `IDs are snowflakes as strings, found with the list tools. When an allowlist is set, the bot only acts in the allowed guilds. When approval is on, destructive tools ask the user first.`
+    `IDs are snowflakes as strings, found with the list tools. When an allowlist is set, the bot only acts in the allowed guilds. When approval is on, tools whose description says the user is asked to approve ask before they run.`
   );
 }
 

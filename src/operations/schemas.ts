@@ -15,7 +15,7 @@ export const codeParam = (name: string) =>
   z
     .string()
     .regex(/^[\w-]+$/, `Expected a ${name} code without path segments`)
-    .describe(`${name} code or vanity slug without URL path segments`);
+    .describe(`${name} code without URL path segments, the part after the last slash of the link`);
 
 export const dataUri = z
   .string()
@@ -159,14 +159,12 @@ export const fileUpload = z
     is_spoiler: z
       .boolean()
       .optional()
-      .describe(
-        "Whether to mark attachment as a spoiler by prefixing filename with SPOILER_; defaults to false",
-      ),
+      .describe("Whether to mark the attachment as a spoiler; defaults to false"),
     title: z.string().optional().describe("Display title for the uploaded file"),
     content_type: z
       .string()
       .optional()
-      .describe("MIME content type of the file; inferred from extension when omitted"),
+      .describe("MIME type of the file; detected from the file content when omitted"),
   })
   .describe("Local file upload specification with path and optional metadata");
 
@@ -220,7 +218,7 @@ export const autoArchiveDuration = z
 export const threadTagSetting = z
   .enum(["match_all", "match_some"])
   .describe(
-    "Tag match strategy for thread search queries: 'match_all' requires every tag, 'match_some' matches any tag",
+    "Tag filter mode: 'match_all' requires every selected tag, 'match_some' matches any one tag",
   );
 
 export interface SearchNotReady {

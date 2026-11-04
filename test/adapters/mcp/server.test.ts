@@ -32,6 +32,10 @@ describe("createServer", () => {
       expect(formatPermissionName("CreateInstantInvite")).toBe("Create Invite");
       expect(formatPermissionName("ModerateMembers")).toBe("Timeout Members");
       expect(formatPermissionName("ManageGuildExpressions")).toBe("Manage Expressions");
+      expect(formatPermissionName("SendMessagesInThreads")).toBe("Send Messages in Threads");
+      expect(formatPermissionName("MentionEveryone")).toBe(
+        "Mention @everyone, @here, and All Roles",
+      );
     });
 
     it("inserts spaces into PascalCase permission names", () => {
@@ -80,7 +84,7 @@ describe("createServer", () => {
       );
     });
 
-    it("renders sentence for write and idempotent tool", () => {
+    it("renders sentence for write and idempotent tool with approval under elicitation", () => {
       const tool = defineTool({
         name: "discord_test_write_idempotent",
         description: "Write idempotent tool.",
@@ -96,11 +100,11 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "elicitation")).toBe(
-        "Bot permissions: Manage Roles. Changes Discord data; safe to retry.",
+        "Bot permissions: Manage Roles. Changes Discord data; safe to retry. The user is asked to approve the exact change before it runs.",
       );
     });
 
-    it("renders sentence for write and not idempotent tool", () => {
+    it("renders sentence for write and not idempotent tool with approval under elicitation", () => {
       const tool = defineTool({
         name: "discord_test_write_not_idempotent",
         description: "Write not idempotent tool.",
@@ -116,7 +120,27 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "elicitation")).toBe(
-        "Bot permissions: Manage Server. Creates Discord data; a retry can create a duplicate.",
+        "Bot permissions: Manage Server. Creates Discord data; a retry can create a duplicate. The user is asked to approve the exact change before it runs.",
+      );
+    });
+
+    it("renders sentence for write tool with approval under none mode", () => {
+      const tool = defineTool({
+        name: "discord_test_write_approval_none",
+        description: "Write tool.",
+        operationIds: ["test_write_approval_none"],
+        toolset: "roles",
+        scope: "none",
+        permissions: ["ManageRoles"],
+        effect: "write",
+        idempotent: true,
+        approval: true,
+        input: z.object({}),
+        output: z.object({}),
+        execute: async () => ({}),
+      });
+      expect(buildBehaviorSentence(tool, "none")).toBe(
+        "Bot permissions: Manage Roles. Changes Discord data; safe to retry.",
       );
     });
 
@@ -205,7 +229,7 @@ describe("createServer", () => {
       const registry = await PToolRegistry.load();
       const instructions = buildServerInstructions(DEFAULT_TOOLSETS, registry.list());
       expect(instructions).toBe(
-        "MCP server for the Discord REST API. Enabled toolsets: core, messages. Other available toolsets that can be enabled with DISCORD_MCP_TOOLSETS: reactions (Add, remove, list reactions on messages); threads (Create, list, join, leave, archive threads and thread members); channels (Create, edit, delete channels, permission overwrites, voice status); webhooks (Create, edit, delete, execute webhooks and edit webhook messages); guild (Guild settings, audit log, onboarding, welcome screen, widget); members (List, search, update, kick, mute, deafen members, prune); roles (Create, update, delete, list guild roles, role member counts); moderation (Ban, unban, list bans, AutoMod rules); events (Create, update, delete scheduled events and list subscribers); invites (Create, get, delete invites, guild/channel invites, target users). If a task needs a disabled toolset, tell the user which one to enable. IDs are snowflakes as strings, found with the list tools. When an allowlist is set, the bot only acts in the allowed guilds. When approval is on, destructive tools ask the user first.",
+        "MCP server for the Discord REST API. Enabled toolsets: core, messages. Other available toolsets that can be enabled with DISCORD_MCP_TOOLSETS: reactions (Add, remove, list reactions on messages); threads (Create, join, leave, list and search threads, thread members); channels (Create, edit, delete channels, permission overwrites, voice status); webhooks (Create, edit, delete, execute webhooks, edit webhook messages); guild (Guild settings, audit log, onboarding, welcome screen, widget); members (List, search, update, kick, mute, deafen members, prune); roles (Create, update, delete, list guild roles, member counts); moderation (Ban, unban, list bans, AutoMod rules); events (Create, update, delete scheduled events, list subscribers); invites (Create, get, delete invites, target users). If a task needs a disabled toolset, tell the user which one to enable. IDs are snowflakes as strings, found with the list tools. When an allowlist is set, the bot only acts in the allowed guilds. When approval is on, tools whose description says the user is asked to approve ask before they run.",
       );
     });
   });
