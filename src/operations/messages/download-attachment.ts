@@ -8,7 +8,7 @@ import { messageIds } from "./schemas.js";
 export const downloadAttachment = defineTool({
   name: "discord_download_attachment",
   description:
-    "Download a message attachment from Discord into the local directory DISCORD_MCP_DOWNLOAD_DIR. Requires the message ID and the specific attachment ID (attachment_id comes from the attachments of discord_get_message). Returns local file path, size, content type and SHA-256 hash.",
+    "Download a message attachment from Discord into the local download folder (DISCORD_MCP_DOWNLOAD_DIR, default ~/Downloads/discord-mcp). Requires the message ID and the specific attachment ID (attachment_id comes from the attachments of discord_get_message). Returns local file path, size, content type and SHA-256 hash.",
   operationIds: ["get_message"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },

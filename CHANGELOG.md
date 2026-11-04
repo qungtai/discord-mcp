@@ -8,9 +8,15 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [0.1.1] - 2026-11-04
 
+### Changed
+
+- Rewrote every tool description and every input parameter description.
+- Each tool description ends with a generated sentence stating the bot permissions, whether the tool changes Discord data, retry safety and whether the user is asked to approve.
+
 ### Added
 
-- Glama TDQS grade A tool definitions for the core toolset (`discord_get_my_user`, `discord_get_user`, `discord_leave_guild`, `discord_list_my_connections`, `discord_list_my_guilds`, `discord_update_my_user`), comprehensive descriptions on shared input schemas, generated behavior sentences reporting bot permissions and runtime side effects for all MCP tools, and dynamic server instructions during MCP initialize.
+- Server instructions in the initialize response: enabled toolsets, the other toolsets and how to enable them, ID format, allowlist and approval behavior.
+- A test that enforces description length, valid tool references and parameter description coverage.
 
 ## [0.1.0] - 2026-11-04
 

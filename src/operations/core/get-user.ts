@@ -6,7 +6,7 @@ import { snowflake, user } from "../schemas.js";
 export const getUser = defineTool({
   name: "discord_get_user",
   description:
-    "Fetch a Discord user profile by snowflake user ID, returning their username, global name, avatar, accent color, banner, and bot status. Use this when you have a specific user ID to resolve; to inspect the authenticated bot account use discord_get_my_user, and to find guild member data including roles and join dates use discord_get_guild_member. Returns the user object.",
+    "Fetch any Discord user by user ID: username, global name, avatar, banner, accent color and whether the account is a bot. Use it to resolve an ID taken from a message author, a mention or a poll voter; for the bot's own account use discord_get_my_user, and for guild data such as nickname, roles and join date use discord_get_guild_member (members toolset). Returns the user object.",
   operationIds: ["get_user"],
   toolset: "core",
   scope: "none",

@@ -22,7 +22,7 @@ export const updateMyUser = defineTool({
       .max(32)
       .optional()
       .describe(
-        "New global username for the bot account (2 to 32 characters); cannot contain @, #, :, backticks or 'discord', and cannot be 'everyone' or 'here'",
+        "New global username for the bot account (2 to 32 characters); cannot contain @, #, :, three backticks (```) or 'discord', and cannot be 'everyone' or 'here'",
       ),
     avatar: dataUri
       .nullish()

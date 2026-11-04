@@ -5,7 +5,7 @@ export const emoji = z
   .string()
   .min(1)
   .describe(
-    "URL-encoded emoji string, either a Unicode emoji (e.g. '👍' or '%F0%9F%91%8D') or a custom emoji in the format 'name:id' (e.g. 'party_blob:123456789012345678')",
+    "Emoji as a Unicode character ('👍') or its URL-encoded form ('%F0%9F%91%8D'), or a custom emoji as name:id ('party_blob:123456789012345678')",
   );
 
 export const reactionIds = {

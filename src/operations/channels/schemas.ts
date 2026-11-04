@@ -68,7 +68,6 @@ export const createPermissionLookupShape = (targetNoun: "member" | "role") => ({
       "Whether to apply implicit permission masking: without ViewChannel (or Connect on voice and stage channels) the other permissions are cleared. Discord defaults to true. Only valid with channel_id.",
     ),
 });
-export const permissionLookupShape = createPermissionLookupShape("member");
 export const exactlyOneScope = (input: { guild_id?: string; channel_id?: string }) =>
   (input.guild_id === undefined) !== (input.channel_id === undefined);
 export const implicitNeedsChannel = (input: { channel_id?: string; implicit?: boolean }) =>

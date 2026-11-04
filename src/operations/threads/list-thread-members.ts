@@ -7,7 +7,7 @@ import { threadMember } from "./schemas.js";
 export const listThreadMembers = defineTool({
   name: "discord_list_thread_members",
   description:
-    "List members of a thread. Note that after and limit pagination only apply when with_member is true and the bot has the Server Members privileged intent. Returns thread members and next_after; page forward using after=next_after and stop when a page comes back empty. To fetch a single member, use discord_get_thread_member.",
+    "List members of a thread. Note that after and limit only apply when with_member is true, and Discord restricts this endpoint by the Server Members privileged intent. Returns thread members and next_after; page forward using after=next_after and stop when a page comes back empty. To fetch a single member, use discord_get_thread_member.",
   operationIds: ["list_thread_members"],
   toolset: "threads",
   scope: { channel: "channel_id" },

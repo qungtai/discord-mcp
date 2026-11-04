@@ -6,7 +6,7 @@ import { reason, snowflake } from "../schemas.js";
 export const bulkBanUsersFromGuild = defineTool({
   name: "discord_bulk_ban_users_from_guild",
   description:
-    "Ban a list of up to 200 users from a guild simultaneously and optionally purge their messages up to 7 days (604800 seconds). The bot cannot ban the guild owner or members above its highest role. failed_users also lists users who were already banned; Discord returns error 500000 when nobody could be banned. Returns lists of successfully banned and failed user IDs. To ban a single user, use discord_ban_user_from_guild.",
+    "Ban a list of up to 200 users from a guild simultaneously and optionally purge their messages up to 7 days (604800 seconds). The bot cannot ban the guild owner or members whose highest role is at or above the bot's. failed_users also lists users who were already banned; Discord returns error 500000 when nobody could be banned. Returns lists of successfully banned and failed user IDs. To ban a single user, use discord_ban_user_from_guild.",
   operationIds: ["bulk_ban_users_from_guild"],
   toolset: "moderation",
   scope: { guild: "guild_id" },

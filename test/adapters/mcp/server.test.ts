@@ -33,9 +33,7 @@ describe("createServer", () => {
       expect(formatPermissionName("ModerateMembers")).toBe("Timeout Members");
       expect(formatPermissionName("ManageGuildExpressions")).toBe("Manage Expressions");
       expect(formatPermissionName("SendMessagesInThreads")).toBe("Send Messages in Threads");
-      expect(formatPermissionName("MentionEveryone")).toBe(
-        "Mention @everyone, @here, and All Roles",
-      );
+      expect(formatPermissionName("MentionEveryone")).toBe("Mention Everyone");
     });
 
     it("inserts spaces into PascalCase permission names", () => {
@@ -61,7 +59,7 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "elicitation")).toBe(
-        "Bot permissions: View Channel. Read-only; safe to retry.",
+        "Bot permissions (some only for the options used): View Channel. Read-only; safe to retry.",
       );
     });
 
@@ -100,7 +98,7 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "elicitation")).toBe(
-        "Bot permissions: Manage Roles. Changes Discord data; safe to retry. The user is asked to approve the exact change before it runs.",
+        "Bot permissions (some only for the options used): Manage Roles. Changes Discord data; safe to retry. The user is asked to approve the exact change before it runs.",
       );
     });
 
@@ -120,7 +118,7 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "elicitation")).toBe(
-        "Bot permissions: Manage Server. Changes Discord data and is not idempotent; check the result before retrying. The user is asked to approve the exact change before it runs.",
+        "Bot permissions (some only for the options used): Manage Server. Changes Discord data and is not idempotent; check the result before retrying. The user is asked to approve the exact change before it runs.",
       );
     });
 
@@ -140,7 +138,7 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "none")).toBe(
-        "Bot permissions: Manage Roles. Changes Discord data; safe to retry.",
+        "Bot permissions (some only for the options used): Manage Roles. Changes Discord data; safe to retry.",
       );
     });
 
@@ -160,7 +158,7 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "elicitation")).toBe(
-        "Bot permissions: Ban Members. Destructive: the user is asked to approve the exact change before it runs.",
+        "Bot permissions (some only for the options used): Ban Members. Destructive: the user is asked to approve the exact change before it runs.",
       );
     });
 
@@ -180,7 +178,7 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "none")).toBe(
-        "Bot permissions: Ban Members. Changes or removes existing Discord data without an approval prompt.",
+        "Bot permissions (some only for the options used): Ban Members. Changes or removes existing Discord data without an approval prompt.",
       );
     });
 
@@ -200,7 +198,7 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "elicitation")).toBe(
-        "Bot permissions: View Channel, Read Message History. Changes or removes existing Discord data without an approval prompt.",
+        "Bot permissions (some only for the options used): View Channel, Read Message History. Changes or removes existing Discord data without an approval prompt.",
       );
     });
 
@@ -219,7 +217,7 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "elicitation")).toBe(
-        "Bot permissions: View Channel, Read Message History. Writes a file to the local download folder and changes nothing in Discord.",
+        "Bot permissions (some only for the options used): View Channel, Read Message History. Writes a file to the local download folder and changes nothing in Discord.",
       );
     });
   });
@@ -229,7 +227,7 @@ describe("createServer", () => {
       const registry = await PToolRegistry.load();
       const instructions = buildServerInstructions(DEFAULT_TOOLSETS, registry.list());
       expect(instructions).toBe(
-        "MCP server for the Discord REST API. Enabled toolsets: core, messages. Other available toolsets that can be enabled with DISCORD_MCP_TOOLSETS: reactions (Add, remove, list reactions on messages); threads (Create, join, leave, list and search threads, thread members); channels (Create, edit, delete channels, permission overwrites, voice status); webhooks (Create, edit, delete, execute webhooks, edit webhook messages); guild (Guild settings, audit log, onboarding, welcome screen, widget); members (List, search, update, kick, mute, deafen members, prune); roles (Create, update, delete, list guild roles, member counts); moderation (Ban, unban, list bans, AutoMod rules); events (Create, update, delete scheduled events, list subscribers); invites (Create, get, delete invites, target users). If a task needs a disabled toolset, tell the user which one to enable. IDs are snowflakes passed as strings. Guild IDs come from discord_list_my_guilds; channel IDs come from the user, from message results such as discord_search_guild_messages, or from discord_list_guild_channels when the channels toolset is enabled. When DISCORD_MCP_ALLOWED_GUILDS is set, tools that target a guild, channel or message refuse targets outside those guilds, and DMs are refused unless DISCORD_MCP_ALLOW_DMS=true; account tools such as discord_get_user and discord_update_my_user are not limited by it. When approval is on, tools whose description says the user is asked to approve ask before they run. Reading message text with discord_get_message, discord_list_messages or discord_search_guild_messages needs the Message Content privileged intent; without it Discord returns empty content, embeds, attachments and polls except in DMs, the bot's own messages and messages that mention the bot.",
+        "MCP server for the Discord REST API. Enabled toolsets: core, messages. Other available toolsets that can be enabled with DISCORD_MCP_TOOLSETS: reactions (Add, remove, list reactions on messages); threads (Create, join, leave, list and search threads, thread members); channels (Create, edit, delete channels, permission overwrites, voice status); webhooks (Create, edit, delete, execute webhooks, edit webhook messages); guild (Guild settings, audit log, onboarding, welcome screen, widget); members (List, search, update, kick, mute, deafen members, prune); roles (Create, update, delete, list guild roles, member counts); moderation (Ban, unban, list bans, AutoMod rules); events (Create, update, delete scheduled events, list subscribers); invites (Create, get, delete invites, target users). If a task needs a disabled toolset, tell the user which one to enable. IDs are snowflakes passed as strings. Guild IDs come from discord_list_my_guilds; channel IDs come from the user, from message results such as discord_search_guild_messages, or from discord_list_guild_channels when the channels toolset is enabled. When DISCORD_MCP_ALLOWED_GUILDS is set, tools that target a guild, channel or message refuse targets outside those guilds, and DMs are refused unless DISCORD_MCP_ALLOW_DMS=true; account tools such as discord_get_user and discord_update_my_user are not limited by it. When approval is on, tools whose description says the user is asked to approve ask before they run. If the client cannot show approval prompts, those tools fail until the operator sets DISCORD_MCP_APPROVAL=none. Reading message text with discord_get_message, discord_list_messages or discord_search_guild_messages needs the Message Content privileged intent; without it Discord returns empty content, embeds, attachments and polls except in DMs, the bot's own messages and messages that mention the bot.",
       );
     });
   });

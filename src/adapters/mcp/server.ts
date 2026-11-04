@@ -15,7 +15,7 @@ const PERMISSION_NAME_OVERRIDES: Record<string, string> = {
   ModerateMembers: "Timeout Members",
   ManageGuildExpressions: "Manage Expressions",
   SendMessagesInThreads: "Send Messages in Threads",
-  MentionEveryone: "Mention @everyone, @here, and All Roles",
+  MentionEveryone: "Mention Everyone",
 };
 
 export function formatPermissionName(permission: string): string {
@@ -33,7 +33,7 @@ export function buildBehaviorSentence(tool: ToolDescriptor, approvalMode: Approv
     permsPart = "No special bot permissions.";
   } else {
     const formatted = tool.permissions.map(formatPermissionName).join(", ");
-    permsPart = `Bot permissions: ${formatted}.`;
+    permsPart = `Bot permissions (some only for the options used): ${formatted}.`;
   }
 
   let effectPart: string;
@@ -105,6 +105,7 @@ export function buildServerInstructions(
     `IDs are snowflakes passed as strings. Guild IDs come from discord_list_my_guilds; channel IDs come from the user, from message results such as discord_search_guild_messages, or from discord_list_guild_channels when the channels toolset is enabled. ` +
     `When DISCORD_MCP_ALLOWED_GUILDS is set, tools that target a guild, channel or message refuse targets outside those guilds, and DMs are refused unless DISCORD_MCP_ALLOW_DMS=true; account tools such as discord_get_user and discord_update_my_user are not limited by it. ` +
     `When approval is on, tools whose description says the user is asked to approve ask before they run. ` +
+    `If the client cannot show approval prompts, those tools fail until the operator sets DISCORD_MCP_APPROVAL=none. ` +
     `Reading message text with discord_get_message, discord_list_messages or discord_search_guild_messages needs the Message Content privileged intent; without it Discord returns empty content, embeds, attachments and polls except in DMs, the bot's own messages and messages that mention the bot.`
   );
 }

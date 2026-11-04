@@ -71,7 +71,7 @@ export const getChannel = defineTool({
 ## Descriptions
 Follow the TDQS style guide rules for every tool:
 - **Authored tool description (`description` in `defineTool`)**:
-  - Two to four plain sentences, most important first, 200 to 600 characters.
+  - Two to four plain sentences, most important first, 150 to 900 characters.
   - **Purpose**: what it does, to which Discord resource, and in which scope ("one message in a channel or thread", "every role in a guild").
   - **Usage**: when to use it, and which tool to use instead for neighbouring jobs, by exact tool name ("To read recent history use discord_list_messages; to find messages by text use discord_search_guild_messages.").
   - **Returns and paging**: what it returns and how to page, if not obvious ("Returns the message with author, attachments and embeds." "Page older messages with before=next_before.").
