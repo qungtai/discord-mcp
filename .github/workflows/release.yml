@@ -266,4 +266,33 @@ jobs:
         run: mcp-publisher login github-oidc
 
       - name: Publish to MCP Registry
-        run: mcp-publisher publish
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+
+          # The registry reads npm directly, so wait until the new version is visible there.
+          DEADLINE=$((SECONDS + 600))
+          until [ "$(npm view "@qungtai/discord-mcp@${VERSION}" version 2>/dev/null)" = "${VERSION}" ]; do
+            if [ "${SECONDS}" -ge "${DEADLINE}" ]; then
+              echo "Timed out after 10 minutes waiting for @qungtai/discord-mcp@${VERSION} to appear on npm"
+              exit 1
+            fi
+            echo "Waiting for @qungtai/discord-mcp@${VERSION} to appear on npm"
+            sleep 15
+          done
+
+          # Retry only while the registry says the version is not there yet.
+          ATTEMPT=1
+          while :; do
+            if OUTPUT=$(mcp-publisher publish 2>&1); then
+              printf '%s\n' "${OUTPUT}"
+              break
+            fi
+            printf '%s\n' "${OUTPUT}"
+            if ! grep -q "was not found" <<< "${OUTPUT}" || [ "${ATTEMPT}" -ge 4 ]; then
+              exit 1
+            fi
+            echo "Registry does not see version ${VERSION} yet; retrying in 30 seconds (attempt ${ATTEMPT}/4)"
+            ATTEMPT=$((ATTEMPT + 1))
+            sleep 30
+          done
