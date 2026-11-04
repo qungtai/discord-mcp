@@ -7,7 +7,7 @@ import { messageIds } from "./schemas.js";
 export const createPin = defineTool({
   name: "discord_create_pin",
   description:
-    "Pin a message in a channel or thread so it stays highlighted and easy to find. Each channel can hold at most 50 pinned messages. To inspect pinned messages use discord_list_pins, and to unpin use discord_delete_pin.",
+    "Pin a message in a channel or thread so it shows in the channel's pinned list. Use discord_list_pins to see pinned messages and discord_delete_pin to unpin.",
   operationIds: ["create_pin", "deprecated_create_pin"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },

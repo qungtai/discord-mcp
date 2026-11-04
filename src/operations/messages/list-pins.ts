@@ -7,7 +7,7 @@ import { pinnedMessage } from "./schemas.js";
 export const listPins = defineTool({
   name: "discord_list_pins",
   description:
-    "List pinned messages in a channel or thread with their pin timestamps, newest pin first. Each channel supports up to 50 pins. To pin a new message use discord_create_pin, and to unpin use discord_delete_pin. Page older pins with before=next_before.",
+    "List the pinned messages of a channel or thread, newest pin first, each with its pin time. To pin a message use discord_create_pin, and to unpin use discord_delete_pin. Page with before=next_before while has_more is true.",
   operationIds: ["list_pins", "deprecated_list_pins"],
   toolset: "messages",
   scope: { channel: "channel_id" },

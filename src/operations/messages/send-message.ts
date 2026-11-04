@@ -8,7 +8,7 @@ import { messageBody, messageResult, poll } from "./schemas.js";
 export const sendMessage = defineTool({
   name: "discord_send_message",
   description:
-    "Send a new message to a channel or thread. Supports text content, rich embeds, interactive polls, local file uploads, replies to existing messages, stickers, and delivery flags (such as suppressing embeds or silent notifications without push pings). To modify an existing message instead use discord_edit_message.",
+    "Send a message to a channel or thread. It can carry text, embeds, a poll, files from the local machine, a reply to an existing message, stickers (up to 3) and flags (suppress embeds, silent). At least one of content, embeds, sticker_ids, files or poll is required. Mentions do not ping unless allowed_mentions permits it. To change a message already sent use discord_edit_message.",
   operationIds: ["create_message"],
   toolset: "messages",
   scope: { channel: "channel_id" },
@@ -53,7 +53,7 @@ export const sendMessage = defineTool({
       .optional()
       .describe("Whether this message should be spoken using text-to-speech (default false)"),
     flags: messageFlags.describe(
-      "Message flags bitfield (e.g. 4096 for SUPPRESS_EMBEDDS, 4096 to suppress notifications silent)",
+      "Message flags bitfield. 4 suppresses link embeds, 4096 sends without push or desktop notifications; add them to set both (4100). No other flags are accepted.",
     ),
     sticker_ids: z
       .array(snowflake.describe("Sticker snowflake ID"))

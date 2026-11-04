@@ -11,7 +11,7 @@ import { messageBody, messageIds, messageResult } from "./schemas.js";
 export const editMessage = defineTool({
   name: "discord_edit_message",
   description:
-    "Edit a message previously sent by the bot: replace its content or embeds, and keep, redescribe, or remove its attachments. Discord only allows a bot to edit messages it authored; to post a new message use discord_send_message. Returns the updated message object.",
+    "Edit a message the bot sent: replace its content or embeds, add uploaded files, and change the description or spoiler flag of existing attachments. Existing attachments are always kept; they cannot be removed with this tool. Discord only lets a bot edit its own messages; to post a new message use discord_send_message. Returns the updated message.",
   operationIds: ["get_message", "update_message"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },
@@ -28,12 +28,12 @@ export const editMessage = defineTool({
     add_files: z
       .array(fileUpload)
       .optional()
-      .describe("New files to upload and attach to the message"),
+      .describe("New local files to upload and append to the message's existing attachments"),
     update_attachments: z
       .array(attachmentUpdate)
       .optional()
       .describe(
-        "List of existing attachments to retain, update descriptions for, or mark as spoilers (attachments omitted from this list are removed)",
+        "Changes to existing attachments, matched by attachment ID. Attachments not listed stay unchanged, and none are removed.",
       ),
   }),
   execute: async ({ channel_id, message_id, add_files, update_attachments, ...p }, ctx) => {

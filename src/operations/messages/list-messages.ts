@@ -30,17 +30,17 @@ export const listMessages = defineTool({
     before: snowflake
       .optional()
       .describe(
-        "Get messages posted before this message snowflake ID (use next_before to page backward in time)",
+        "Get messages posted before this message snowflake ID (use next_before to page backward in time). Use only one of before, after or around",
       ),
     after: snowflake
       .optional()
       .describe(
-        "Get messages posted after this message snowflake ID (use next_after to page forward in time)",
+        "Get messages posted after this message snowflake ID (use next_after to page forward in time). Use only one of before, after or around",
       ),
     around: snowflake
       .optional()
       .describe(
-        "Get messages centered around this message snowflake ID (cannot be combined with before or after)",
+        "Get messages centered around this message snowflake ID. Use only one of before, after or around",
       ),
   }),
   execute: async ({ channel_id, ...query }, { discord }) => {

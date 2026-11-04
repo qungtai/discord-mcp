@@ -7,22 +7,21 @@ export const messageIds = {
 };
 
 export const messageBody = {
-  content: z.string().max(2000).optional().describe("Message text content up to 2000 characters"),
+  content: z.string().optional().describe("Message text, up to 2000 characters"),
   embeds: z
-    .array(z.record(z.string(), z.unknown()))
-    .max(10)
+    .array(z.record(z.string(), z.unknown()).describe("One Discord embed object"))
     .optional()
     .describe(
-      "Embedded rich content objects (up to 10 embeds, total text across all embeds cannot exceed 6000 characters)",
+      "Up to 10 rich embed objects; text across all embeds is limited to 6000 characters. Each object takes Discord embed fields such as title, description, url, color (integer), fields, author, footer, image and thumbnail",
     ),
   allowed_mentions: allowedMentions.describe(
-    "Allowed mentions object controlling which role, user, or @everyone pings produce notifications",
+    "Allowed mentions object controlling which role, user, or @everyone pings produce notifications; defaults to no pings",
   ),
 };
 
 export const messageResult = z.object({ message });
 
-const pollMediaEmoji = z
+const pollEmoji = z
   .strictObject({
     id: snowflake.optional().describe("ID of a custom guild emoji"),
     name: z.string().min(1).optional().describe("Unicode emoji character or custom emoji name"),
@@ -30,11 +29,6 @@ const pollMediaEmoji = z
   .refine((media) => media.id !== undefined || media.name !== undefined, {
     message: "Provide id or name",
   });
-
-const pollMedia = z.strictObject({
-  text: z.string().min(1).max(55).describe("Answer text (1-55 characters)"),
-  emoji: pollMediaEmoji.optional().describe("Optional emoji display for the answer"),
-});
 
 // Discord create-message poll body.
 export const poll = z
@@ -46,9 +40,16 @@ export const poll = z
       .describe("Poll question prompt"),
     answers: z
       .array(
-        z.strictObject({
-          poll_media: pollMedia.describe("Answer choice display content (text and optional emoji)"),
-        }),
+        z
+          .strictObject({
+            poll_media: z
+              .strictObject({
+                text: z.string().min(1).max(55).describe("Answer text (1-55 characters)"),
+                emoji: pollEmoji.optional().describe("Optional emoji display for the answer"),
+              })
+              .describe("Answer choice display content (text and optional emoji)"),
+          })
+          .describe("One answer choice"),
       )
       .min(1)
       .max(10)

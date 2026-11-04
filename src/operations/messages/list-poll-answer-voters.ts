@@ -16,7 +16,13 @@ export const listPollAnswerVoters = defineTool({
   idempotent: true,
   input: z.object({
     ...messageIds,
-    answer_id: z.number().int().min(1).describe("ID of the poll answer to list voters for"),
+    answer_id: z
+      .number()
+      .int()
+      .min(1)
+      .describe(
+        "ID of the poll answer to list voters for (answer_id is poll.answers[].answer_id on the message from discord_get_message)",
+      ),
     after: snowflake
       .optional()
       .describe("User snowflake ID cursor to fetch voters after (use next_after)"),

@@ -6,7 +6,7 @@ import { messageIds, messageResult } from "./schemas.js";
 export const endPoll = defineTool({
   name: "discord_end_poll",
   description:
-    "Immediately end a poll on a message before its scheduled duration finishes. Discord only permits the user or bot that created the poll to expire it early. Returns the message containing the finalized poll results.",
+    "Immediately end a poll on a message before its scheduled duration finishes. Discord only permits the user or bot that created the poll to expire it early. Use discord_get_message to read the results afterwards. Returns the message containing the finalized poll results.",
   operationIds: ["poll_expire"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },

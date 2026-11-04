@@ -6,7 +6,7 @@ import { reason, snowflake } from "../schemas.js";
 export const bulkDeleteMessages = defineTool({
   name: "discord_bulk_delete_messages",
   description:
-    "Delete multiple messages from a channel in a single request. Messages older than 14 days cannot be deleted this way and are rejected by Discord. To delete a single message use discord_delete_message.",
+    "Delete 2 to 100 messages from a guild channel in one request. The whole request fails if any message is older than 14 days or any message ID is duplicated. To delete a single message instead use discord_delete_message.",
   operationIds: ["bulk_delete_messages"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_ids" },

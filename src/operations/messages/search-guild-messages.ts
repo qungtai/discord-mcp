@@ -51,7 +51,7 @@ type GuildSearchOutput = z.input<typeof outputSchema>;
 export const searchGuildMessages = defineTool({
   name: "discord_search_guild_messages",
   description:
-    "Search messages across an entire guild using full-text search, author, channel, attachment, link and mention filters. Filter conditions combine conjunctively with AND semantics. If the guild index is newly created or busy building, Discord may respond that the index is not ready with a retry_after delay. Page through search matches with offset=next_offset.",
+    'Search messages across a whole guild by text and filters (author, channel, mentions, attachments, links, embeds, pinned state, message ID range). Use discord_list_messages to read one channel in order. Results come back newest first by default; a page can hold fewer than limit, so page with offset=next_offset until it is null. A new or busy guild index can answer "not ready"; the tool then fails with a retryable error that carries the retry delay in seconds. Results omit reactions.',
   operationIds: ["guild_search"],
   toolset: "messages",
   scope: { guild: "guild_id", channel: "channel_id" },
@@ -68,7 +68,7 @@ export const searchGuildMessages = defineTool({
     sort_order: sortingOrder
       .optional()
       .describe(
-        "Sort direction: 'desc' (newest/most relevant first) or 'asc' (oldest first; default 'desc')",
+        "Sort direction, 'asc' or 'desc' (default 'desc'). Ignored when sort_by is 'relevance'",
       ),
     content: z
       .string()
@@ -81,12 +81,12 @@ export const searchGuildMessages = defineTool({
       .min(0)
       .max(100)
       .optional()
-      .describe("Fuzzy word-distance slop allowance for phrase searching"),
+      .describe("Max words allowed between matching words of content (0-100, default 2)"),
     author_id: z
       .array(snowflake.describe("Author snowflake ID"))
       .max(100)
       .optional()
-      .describe("Filter messages sent by any of these user IDs (up to 100)"),
+      .describe("Only messages from these user IDs (up to 100)"),
     author_type: z
       .array(authorType)
       .max(6)
@@ -98,22 +98,22 @@ export const searchGuildMessages = defineTool({
       .array(snowflake.describe("Mentioned user snowflake ID"))
       .max(100)
       .optional()
-      .describe("Filter messages that mention any of these user IDs (up to 100)"),
+      .describe("Only messages that mention these user IDs (up to 100)"),
     mentions_role_id: z
       .array(snowflake.describe("Mentioned role snowflake ID"))
       .max(100)
       .optional()
-      .describe("Filter messages that mention any of these role IDs (up to 100)"),
+      .describe("Only messages that mention these role IDs (up to 100)"),
     replied_to_user_id: z
       .array(snowflake.describe("Replied-to user snowflake ID"))
       .max(100)
       .optional()
-      .describe("Filter messages sent in reply to any of these user IDs (up to 100)"),
+      .describe("Only messages sent in reply to these user IDs (up to 100)"),
     replied_to_message_id: z
       .array(snowflake.describe("Replied-to message snowflake ID"))
       .max(100)
       .optional()
-      .describe("Filter messages replying directly to any of these message IDs (up to 100)"),
+      .describe("Only messages replying directly to these message IDs (up to 100)"),
     mention_everyone: z
       .boolean()
       .optional()
@@ -149,12 +149,14 @@ export const searchGuildMessages = defineTool({
       .array(z.string().max(256))
       .max(100)
       .optional()
-      .describe("Filter messages containing links to any of these domains (up to 100)"),
+      .describe("Only messages containing links to these domains (up to 100)"),
     embed_provider: z
       .array(z.string().max(256))
       .max(100)
       .optional()
-      .describe("Filter messages by rich embed provider name (up to 100)"),
+      .describe(
+        "Only messages with an embed from these providers, case-sensitive, for example 'Tenor' (up to 100)",
+      ),
     embed_type: z
       .array(searchableEmbedType)
       .max(5)
@@ -171,7 +173,7 @@ export const searchGuildMessages = defineTool({
       .array(z.string().max(1024))
       .max(100)
       .optional()
-      .describe("Filter messages by exact or pattern filename on attachments (up to 100)"),
+      .describe("Only messages with an attachment with one of these filenames (up to 100)"),
     pinned: z
       .boolean()
       .optional()
