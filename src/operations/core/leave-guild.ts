@@ -6,7 +6,7 @@ import { snowflake } from "../schemas.js";
 export const leaveGuild = defineTool({
   name: "discord_leave_guild",
   description:
-    "Remove the authenticated bot from a guild by server ID. The bot ceases to be a member immediately and requires a new invite URL with bot scopes to rejoin. Use this when the bot is instructed to depart a server; to kick or remove another guild member instead use discord_delete_guild_member. Returns deleted: true and the guild ID.",
+    "Remove the authenticated bot from a guild by server ID. The bot ceases to be a member immediately and requires a new invite URL with bot scopes to rejoin. Use this when the bot is instructed to depart a server; to kick another member use discord_delete_guild_member (members toolset). Returns deleted: true and the guild ID.",
   operationIds: ["leave_guild"],
   toolset: "core",
   scope: { guild: "guild_id" },

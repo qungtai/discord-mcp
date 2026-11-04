@@ -6,7 +6,7 @@ import { dataUri, user } from "../schemas.js";
 export const updateMyUser = defineTool({
   name: "discord_update_my_user",
   description:
-    "Update the authenticated bot's global username, avatar image, or banner image. Changes apply globally across every server the bot is in. Changing the username can randomize the discriminator. To modify guild-specific nickname or avatar instead, use discord_update_my_guild_member. Returns the updated bot user object.",
+    "Update the authenticated bot's global username, avatar image, or banner image. Changes apply globally across every server the bot is in. Changing the username can randomize the discriminator. To change the bot's nickname or avatar in one guild only, use discord_update_my_guild_member (members toolset). Returns the updated bot user object.",
   operationIds: ["update_my_user"],
   toolset: "core",
   scope: "none",
