@@ -4,7 +4,8 @@ import { guildIds, newMemberWelcome } from "./schemas.js";
 
 export const getGuildNewMemberWelcome = defineTool({
   name: "discord_get_guild_new_member_welcome",
-  description: "Get new member welcome (home settings) for a guild",
+  description:
+    "Retrieve the new member welcome experience (Home tab settings) for a guild. This feature requires Community to be enabled on the guild. To inspect full onboarding questions use discord_get_guild_onboarding, or use discord_get_guild_welcome_screen for legacy welcome screens. Returns welcome settings or null when unconfigured.",
   operationIds: ["get_guild_new_member_welcome"],
   toolset: "guild",
   scope: { guild: "guild_id" },

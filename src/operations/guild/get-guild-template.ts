@@ -6,7 +6,8 @@ import { templateCode, templateResult } from "./schemas.js";
 
 export const getGuildTemplate = defineTool({
   name: "discord_get_guild_template",
-  description: "Get a guild template by its code",
+  description:
+    "Fetch a guild template by its unique template code without requiring guild membership. Each guild can have at most one template. To list templates belonging to a specific guild use discord_list_guild_templates. Returns the template details including serialized guild structure and usage count.",
   operationIds: ["get_guild_template"],
   toolset: "guild",
   scope: "none",

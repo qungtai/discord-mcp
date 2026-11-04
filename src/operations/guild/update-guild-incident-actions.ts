@@ -4,7 +4,8 @@ import { guildIds, incidentActions } from "./schemas.js";
 
 export const updateGuildIncidentActions = defineTool({
   name: "discord_update_guild_incident_actions",
-  description: "Update the time until invites or DMs are disabled for a guild",
+  description:
+    "Pause or resume guild invites and direct messages during raid or security incidents. Timestamps must be future ISO 8601 strings up to 24 hours, or null to clear restrictions immediately. To audit raid mitigation actions use discord_list_guild_audit_log_entries. Returns the updated incident actions status.",
   operationIds: ["update_guild_incident_actions"],
   toolset: "guild",
   scope: { guild: "guild_id" },
@@ -16,11 +17,15 @@ export const updateGuildIncidentActions = defineTool({
     invites_disabled_until: z.iso
       .datetime()
       .nullish()
-      .describe("When invites will be enabled again (ISO8601 timestamp)"),
+      .describe(
+        "ISO 8601 timestamp up to 24 hours in the future when invites will be re-enabled, or null to clear pause immediately",
+      ),
     dms_disabled_until: z.iso
       .datetime()
       .nullish()
-      .describe("When direct messages will be enabled again (ISO8601 timestamp)"),
+      .describe(
+        "ISO 8601 timestamp up to 24 hours in the future when direct messages will be re-enabled, or null to clear pause immediately",
+      ),
   }),
   output: z.object({ incident_actions: incidentActions }),
   execute: async ({ guild_id, ...body }, { discord }) => ({
