@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `glama.json` at the repository root declaring the GitHub users allowed to administer this server's Glama listing.
+
 ### Fixed
 
 - The release workflow waits for the new version to appear on npm (polling `npm view` every 15 seconds for up to 10 minutes) before publishing to the MCP Registry, and retries `mcp-publisher publish` up to 4 times 30 seconds apart when the registry answers that the version was not found. The v0.1.2 registry job failed on that race; any other publish error still fails immediately.
