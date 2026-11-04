@@ -6,7 +6,7 @@ import { member, reason, snowflake } from "../schemas.js";
 export const updateGuildMember = defineTool({
   name: "discord_update_guild_member",
   description:
-    "Update attributes of a guild member including nickname, roles, mute/deaf state, voice channel and timeout. The bot cannot edit the guild owner or members whose highest role is equal to or higher than the bot's highest role. Discord refuses edits to the bot itself here; use discord_update_my_guild_member to change the bot's own nickname.",
+    "Update attributes of a guild member including nickname, roles, mute/deaf state, voice channel and timeout. The bot cannot edit the guild owner or members whose highest role is equal to or higher than the bot's highest role. Muting, deafening or moving a member fails with 400 unless they are in a voice channel; a timeout fails with 403 for the owner or an administrator. To change the bot's own nickname, banner, avatar or bio use discord_update_my_guild_member.",
   operationIds: ["update_guild_member"],
   toolset: "members",
   scope: { guild: "guild_id", channel: "channel_id" },
@@ -46,12 +46,16 @@ export const updateGuildMember = defineTool({
       .boolean()
       .nullable()
       .optional()
-      .describe("Whether to server-mute the member in voice channels; requires MuteMembers"),
+      .describe(
+        "Whether to server-mute the member in voice channels; requires MuteMembers; fails with 400 if the member is not in a voice channel",
+      ),
     deaf: z
       .boolean()
       .nullable()
       .optional()
-      .describe("Whether to server-deafen the member in voice channels; requires DeafenMembers"),
+      .describe(
+        "Whether to server-deafen the member in voice channels; requires DeafenMembers; fails with 400 if the member is not in a voice channel",
+      ),
     channel_id: snowflake
       .nullish()
       .describe(
@@ -70,7 +74,7 @@ export const updateGuildMember = defineTool({
       .nullable()
       .optional()
       .describe(
-        "Guild member flags bitfield (e.g. 1=DID_REJOIN, 2=COMPLETED_ONBOARDING, 4=BYPASSES_VERIFICATION)",
+        "Member flags bitfield; only 4=BYPASSES_VERIFICATION can be changed, the others are read-only. Needs ManageGuild or ManageRoles (or ModerateMembers, KickMembers and BanMembers together)",
       ),
     reason,
   }),

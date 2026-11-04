@@ -31,21 +31,16 @@ export const updateMyGuildMember = defineTool({
       .nullable()
       .optional()
       .describe(
-        "Base64 encoded image data for a guild-specific avatar, or null to remove; requires Nitro or server boost features",
+        "Guild avatar as a data URI, for example data:image/png;base64,AAAA, or null to remove it",
       ),
     banner: z
       .string()
       .nullable()
       .optional()
       .describe(
-        "Base64 encoded image data for a guild-specific banner, or null to remove; requires server boost features",
+        "Guild banner as a data URI, for example data:image/png;base64,AAAA, or null to remove it",
       ),
-    bio: z
-      .string()
-      .max(300)
-      .nullable()
-      .optional()
-      .describe("Guild-specific biography text (max 300 characters), or null to clear"),
+    bio: z.string().max(300).nullable().optional().describe("Guild bio text, or null to clear"),
     reason,
   }),
   execute: async ({ guild_id, reason, ...body }, { discord }) => ({

@@ -14,39 +14,43 @@ export const ban = resource(
   }),
 );
 
-export const autoModerationAction = z.strictObject({
-  type: z
-    .enum(AutoModerationActionType)
-    .describe(
-      "Action type: 1=BlockMessage, 2=SendAlertMessage, 3=Timeout, 4=BlockMemberInteraction",
-    ),
-  metadata: z
-    .strictObject({
-      channel_id: snowflake
-        .optional()
-        .describe(
-          "Channel ID to send alert message to (required for action type 2=SendAlertMessage)",
-        ),
-      duration_seconds: z
-        .number()
-        .int()
-        .min(0)
-        .max(2419200)
-        .optional()
-        .describe(
-          "Timeout duration in seconds up to 2419200 (4 weeks, required for action type 3=Timeout)",
-        ),
-      custom_message: z
-        .string()
-        .max(300)
-        .nullish()
-        .describe(
-          "Custom message explaining the block shown to the user (max 300 characters, for action type 1=BlockMessage)",
-        ),
-    })
-    .optional()
-    .describe("Additional configuration metadata for the action"),
-});
+export const autoModerationAction = z
+  .strictObject({
+    type: z
+      .enum(AutoModerationActionType)
+      .describe(
+        "Action type: 1=BlockMessage, 2=SendAlertMessage, 3=Timeout, 4=BlockMemberInteraction",
+      ),
+    metadata: z
+      .strictObject({
+        channel_id: snowflake
+          .optional()
+          .describe(
+            "Channel ID to send alert message to (required for action type 2=SendAlertMessage)",
+          ),
+        duration_seconds: z
+          .number()
+          .int()
+          .min(0)
+          .max(2419200)
+          .optional()
+          .describe(
+            "Timeout duration in seconds up to 2419200 (4 weeks, required for action type 3=Timeout)",
+          ),
+        custom_message: z
+          .string()
+          .max(300)
+          .nullish()
+          .describe(
+            "Explanation shown to the member when their message is blocked (Discord allows up to 150 characters); only used by action type 1=BlockMessage",
+          ),
+      })
+      .optional()
+      .describe("Additional configuration metadata for the action"),
+  })
+  .describe(
+    "One action to run when the rule triggers; type picks the action and metadata carries its settings",
+  );
 
 export const autoModerationTriggerMetadata = z
   .strictObject({
@@ -79,7 +83,7 @@ export const autoModerationTriggerMetadata = z
       .max(1000)
       .optional()
       .describe(
-        "Substrings or regex patterns exempt from triggering the rule (max 1000 items, each 1-60 characters)",
+        "Keywords or phrases that never trigger the rule (each 1-60 characters; max 100 items for 1=Keyword and 6=MemberProfile, 1000 for 4=KeywordPreset)",
       ),
     mention_total_limit: z
       .number()

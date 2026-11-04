@@ -29,7 +29,9 @@ export const listGuildBans = defineTool({
       .describe("Max number of bans to return (1-1000, default 1000)"),
     before: snowflake
       .optional()
-      .describe("User ID cursor to fetch bans before; use for descending pagination"),
+      .describe(
+        "Return only bans for user IDs lower than this one, still sorted ascending; Discord ignores after when both are set",
+      ),
     after: snowflake
       .optional()
       .describe(

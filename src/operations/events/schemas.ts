@@ -18,7 +18,9 @@ export const entityTypeEnum = z
   .describe("Entity type: 1=StageInstance, 2=Voice, 3=External");
 export const statusEnum = z
   .enum(GuildScheduledEventStatus)
-  .describe("Event status: 1=Scheduled, 2=Active, 3=Completed, 4=Canceled");
+  .describe(
+    "Status: 2=Active starts a scheduled event, 3=Completed ends an active one, 4=Canceled cancels one that is still scheduled; completed and canceled events cannot change status",
+  );
 
 // Strict input recurrence rule schema
 export const recurrenceRuleInput = z
@@ -28,7 +30,9 @@ export const recurrenceRuleInput = z
       .datetime({ offset: true })
       .nullable()
       .optional()
-      .describe("Ending time of recurrence (ISO 8601)"),
+      .describe(
+        "Not settable through the API at present; Discord rejects or ignores it, so omit it",
+      ),
     frequency: z
       .enum(GuildScheduledEventRecurrenceRuleFrequency)
       .describe("Frequency: 0=Yearly, 1=Monthly, 2=Weekly, 3=Daily"),
@@ -38,7 +42,9 @@ export const recurrenceRuleInput = z
       .min(1)
       .nullable()
       .optional()
-      .describe("Spacing between occurrences according to frequency (min 1)"),
+      .describe(
+        "Spacing between occurrences; Discord accepts a value other than 1 only for weekly (2=Weekly) rules, where 2 means every other week",
+      ),
     by_weekday: z
       .array(z.enum(GuildScheduledEventRecurrenceRuleWeekday))
       .max(7)
@@ -49,19 +55,25 @@ export const recurrenceRuleInput = z
       ),
     by_n_weekday: z
       .array(
-        z.strictObject({
-          n: z
-            .number()
-            .int()
-            .min(1)
-            .max(5)
-            .describe("The week index of the month: 1=first, 2=second, 3=third, 4=fourth, 5=fifth"),
-          day: z
-            .enum(GuildScheduledEventRecurrenceRuleWeekday)
-            .describe(
-              "Day of the week: 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday, 6=Sunday",
-            ),
-        }),
+        z
+          .strictObject({
+            n: z
+              .number()
+              .int()
+              .min(1)
+              .max(5)
+              .describe(
+                "The week index of the month: 1=first, 2=second, 3=third, 4=fourth, 5=fifth",
+              ),
+            day: z
+              .enum(GuildScheduledEventRecurrenceRuleWeekday)
+              .describe(
+                "Day of the week: 0=Monday, 1=Tuesday, 2=Wednesday, 3=Thursday, 4=Friday, 5=Saturday, 6=Sunday",
+              ),
+          })
+          .describe(
+            "One week-of-month and weekday pair, for example n=4, day=2 for the fourth Wednesday",
+          ),
       )
       .max(7)
       .nullable()
@@ -79,7 +91,7 @@ export const recurrenceRuleInput = z
       .nullable()
       .optional()
       .describe(
-        "Days of the month on which recurrence occurs (-1 to 31, where -1 is the last day)",
+        "Day of the month to recur on, 1-31; for yearly events set it together with by_month, each with exactly one value",
       ),
     by_year_day: z
       .array(z.number().int().min(-1).max(365))
@@ -87,7 +99,7 @@ export const recurrenceRuleInput = z
       .nullable()
       .optional()
       .describe(
-        "Days of the year on which recurrence occurs (-1 to 365, where -1 is the last day)",
+        "Not settable through the API at present, omit it; use by_month with by_month_day for yearly events",
       ),
     count: z
       .number()
@@ -95,9 +107,13 @@ export const recurrenceRuleInput = z
       .min(1)
       .nullable()
       .optional()
-      .describe("Total number of times the recurrence rule will repeat before stopping"),
+      .describe(
+        "Not settable through the API at present; Discord rejects or ignores it, so omit it",
+      ),
   })
-  .describe("Recurrence rule configuration for recurring scheduled events");
+  .describe(
+    "Recurrence rule. Discord supports only simple rules: daily with a fixed weekday set, weekly on one weekday (interval 1 or 2), monthly on one by_n_weekday, or yearly with one by_month and one by_month_day. by_weekday, by_n_weekday and by_month with by_month_day cannot be mixed",
+  );
 
 // Strict input entity metadata schema
 export const entityMetadataInput = z
@@ -215,7 +231,9 @@ export const userListQuery = {
     .describe("Whether to include guild member data for each user"),
   before: snowflake
     .optional()
-    .describe("User ID cursor to return users before; cannot be combined with after"),
+    .describe(
+      "Return only users with IDs lower than this one; if after is also set Discord ignores it",
+    ),
   after: snowflake
     .optional()
     .describe(

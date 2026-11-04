@@ -14,7 +14,7 @@ import {
 export const updateGuildScheduledEvent = defineTool({
   name: "discord_update_guild_scheduled_event",
   description:
-    "Modify an existing guild scheduled event, including channel, timing, entity type (1=StageInstance, 2=Voice, 3=External), status (1=Scheduled, 2=Active, 3=Completed, 4=Canceled) and recurrence rule. Returns the updated scheduled event. To permanently remove an event, use discord_delete_guild_scheduled_event.",
+    "Modify an existing guild scheduled event. Status moves only from 1=Scheduled to 2=Active or 4=Canceled, and from 2=Active to 3=Completed. Returns the updated scheduled event. To permanently remove an event, use discord_delete_guild_scheduled_event.",
   operationIds: ["update_guild_scheduled_event"],
   toolset: "events",
   scope: {
@@ -63,22 +63,28 @@ export const updateGuildScheduledEvent = defineTool({
     entity_type: entityTypeEnum
       .nullable()
       .optional()
-      .describe("Entity type of the scheduled event: 1=StageInstance, 2=Voice, 3=External"),
+      .describe(
+        "Entity type: 1=StageInstance, 2=Voice, 3=External; when changing to 3=External, channel_id must be null and entity_metadata.location and scheduled_end_time are required",
+      ),
     image: z
       .string()
       .nullable()
       .optional()
       .describe(
-        "Base64 encoded 1024x1024 JPEG/PNG/GIF image data for the event banner, or null to remove",
+        "New cover image as a data URI, for example data:image/png;base64,AAAA, or null to remove it",
       ),
     status: statusEnum
       .nullable()
       .optional()
-      .describe("Status of the scheduled event: 1=Scheduled, 2=Active, 3=Completed, 4=Canceled"),
+      .describe(
+        "Status: 2=Active starts a scheduled event, 3=Completed ends an active one, 4=Canceled cancels one that is still scheduled; completed and canceled events cannot change status",
+      ),
     recurrence_rule: recurrenceRuleInput
       .nullable()
       .optional()
-      .describe("Recurrence rule definition for recurring events, or null to remove recurrence"),
+      .describe(
+        "Recurrence rule. Discord supports only simple rules: daily with a fixed weekday set, weekly on one weekday (interval 1 or 2), monthly on one by_n_weekday, or yearly with one by_month and one by_month_day. by_weekday, by_n_weekday and by_month with by_month_day cannot be mixed, or null to remove recurrence",
+      ),
     reason,
   }),
   output: z.object({

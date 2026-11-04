@@ -6,7 +6,7 @@ import { member, snowflake } from "../schemas.js";
 export const searchGuildMembers = defineTool({
   name: "discord_search_guild_members",
   description:
-    "Search guild members whose username or nickname starts with the provided query string. Requires the Server Members privileged Gateway intent (GUILD_MEMBERS). Returns matching member objects. To fetch every member in order by ID instead, use discord_list_guild_members.",
+    "Search guild members whose username or nickname starts with the query string. Returns matching member objects, up to limit (default 1). To page through every member by ID use discord_list_guild_members.",
   operationIds: ["search_guild_members"],
   toolset: "members",
   scope: { guild: "guild_id" },

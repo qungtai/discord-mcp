@@ -13,7 +13,7 @@ import {
 export const createAutoModerationRule = defineTool({
   name: "discord_create_auto_moderation_rule",
   description:
-    "Create an AutoMod rule in a guild with configured triggers (1=Keyword, 3=Spam, 4=KeywordPreset, 5=MentionSpam, 6=MemberProfile) and actions (1=BlockMessage, 2=SendAlertMessage, 3=Timeout, 4=BlockMemberInteraction). Returns the created rule object. To view existing AutoMod rules for a guild, use discord_list_auto_moderation_rules.",
+    "Create an AutoMod rule in a guild. Rules per guild: 6 keyword rules, 1 each of the other trigger types. trigger_type cannot be changed after creation. Timeout (3) works only with 1=Keyword and 5=MentionSpam. Returns the created rule. To view existing AutoMod rules for a guild, use discord_list_auto_moderation_rules.",
   operationIds: ["create_auto_moderation_rule"],
   toolset: "moderation",
   scope: { guild: "guild_id" },

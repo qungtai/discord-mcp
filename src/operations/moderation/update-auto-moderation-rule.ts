@@ -12,7 +12,7 @@ import {
 export const updateAutoModerationRule = defineTool({
   name: "discord_update_auto_moderation_rule",
   description:
-    "Modify an existing AutoMod rule in a guild, including name, trigger metadata, actions (1=BlockMessage, 2=SendAlertMessage, 3=Timeout, 4=BlockMemberInteraction), enabled status and exemptions. Returns the updated rule. To delete the rule permanently instead, use discord_delete_auto_moderation_rule.",
+    "Modify an existing AutoMod rule in a guild. trigger_type cannot be changed after creation. Timeout (3) works only with 1=Keyword and 5=MentionSpam. Returns the updated rule. To delete the rule permanently instead, use discord_delete_auto_moderation_rule.",
   operationIds: ["update_auto_moderation_rule"],
   toolset: "moderation",
   scope: { guild: "guild_id" },

@@ -7,7 +7,7 @@ import { pruneCount } from "./schemas.js";
 export const previewPruneGuild = defineTool({
   name: "discord_preview_prune_guild",
   description:
-    "Preview the number of inactive members that would be kicked in a prune operation before executing it. Always run this tool before discord_prune_guild to verify the impact. Members with roles are excluded unless their roles are specified in include_roles.",
+    "Preview the number of inactive members that would be kicked in a prune operation before executing it. Always run this tool before discord_prune_guild to verify the impact. A member with a role outside include_roles is never pruned.",
   operationIds: ["preview_prune_guild"],
   toolset: "members",
   scope: { guild: "guild_id" },

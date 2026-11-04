@@ -53,10 +53,14 @@ export const createGuildScheduledEvent = defineTool({
     image: z
       .string()
       .optional()
-      .describe("Base64 encoded 1024x1024 JPEG/PNG/GIF image data for the event banner"),
+      .describe(
+        "Cover image as a data URI, for example data:image/png;base64,AAAA; JPEG, PNG or GIF",
+      ),
     recurrence_rule: recurrenceRuleInput
       .optional()
-      .describe("Recurrence rule definition for recurring scheduled events"),
+      .describe(
+        "Recurrence rule. Discord supports only simple rules: daily with a fixed weekday set, weekly on one weekday (interval 1 or 2), monthly on one by_n_weekday, or yearly with one by_month and one by_month_day. by_weekday, by_n_weekday and by_month with by_month_day cannot be mixed",
+      ),
     reason,
   }),
   output: z.object({

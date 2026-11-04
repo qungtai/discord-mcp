@@ -7,7 +7,7 @@ import { guildScheduledEventUser, userListQuery, userPagingCursors } from "./sch
 export const listGuildScheduledEventExceptionUsers = defineTool({
   name: "discord_list_guild_scheduled_event_exception_users",
   description:
-    "List users subscribed to a specific recurrence exception of a guild scheduled event, ordered by user ID ascending. Returns an array of user subscription objects. Page with after=next_after. To list subscribers of the parent scheduled event, use discord_list_guild_scheduled_event_users.",
+    "List users subscribed to a specific recurrence exception of a guild scheduled event, ordered by user ID ascending. Returns users with next_after for paging. Page with after=next_after. To list subscribers of the parent scheduled event, use discord_list_guild_scheduled_event_users.",
   operationIds: ["list_guild_scheduled_event_exception_users"],
   toolset: "events",
   scope: { guild: "guild_id" },
