@@ -6,7 +6,8 @@ import { templateResult } from "./schemas.js";
 
 export const createGuildTemplate = defineTool({
   name: "discord_create_guild_template",
-  description: "Create a template for a guild",
+  description:
+    "Create a new template from an existing guild snapshot. Discord permits only one template per guild; creating another fails unless the existing one is deleted. To list existing templates use discord_list_guild_templates. Returns the created template object including its unique code.",
   operationIds: ["create_guild_template"],
   toolset: "guild",
   scope: { guild: "guild_id" },
@@ -14,9 +15,13 @@ export const createGuildTemplate = defineTool({
   effect: "write",
   idempotent: false,
   input: z.object({
-    guild_id: snowflake,
-    name: z.string().min(1).max(100),
-    description: z.string().max(120).nullish(),
+    guild_id: snowflake.describe("ID of the source guild to snapshot (numeric snowflake string)"),
+    name: z.string().min(1).max(100).describe("Name for the template (1-100 characters)"),
+    description: z
+      .string()
+      .max(120)
+      .nullish()
+      .describe("Optional template description (up to 120 characters)"),
   }),
   output: templateResult,
   execute: async ({ guild_id, ...body }, { discord }) => ({

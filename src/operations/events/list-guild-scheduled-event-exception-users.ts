@@ -7,7 +7,7 @@ import { guildScheduledEventUser, userListQuery, userPagingCursors } from "./sch
 export const listGuildScheduledEventExceptionUsers = defineTool({
   name: "discord_list_guild_scheduled_event_exception_users",
   description:
-    "Get a list of users subscribed to a specific recurrence exception of a guild scheduled event, ordered by user ID ascending. Page with after=next_after",
+    "List users subscribed to a specific recurrence exception of a guild scheduled event, ordered by user ID ascending. Returns users with next_after for paging. Page with after=next_after. To list subscribers of the parent scheduled event, use discord_list_guild_scheduled_event_users.",
   operationIds: ["list_guild_scheduled_event_exception_users"],
   toolset: "events",
   scope: { guild: "guild_id" },
@@ -15,9 +15,11 @@ export const listGuildScheduledEventExceptionUsers = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    guild_id: snowflake,
-    guild_scheduled_event_id: snowflake,
-    guild_scheduled_event_exception_id: snowflake,
+    guild_id: snowflake.describe("ID of the guild"),
+    guild_scheduled_event_id: snowflake.describe("ID of the scheduled event"),
+    guild_scheduled_event_exception_id: snowflake.describe(
+      "ID of the event exception to list subscribed users for",
+    ),
     ...userListQuery,
   }),
   output: z.object({

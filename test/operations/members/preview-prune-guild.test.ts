@@ -85,7 +85,7 @@ it("handles 403 missing permissions error", async () => {
       category: "permission",
       status: 403,
       discord_code: 50013,
-      remediation: "Check the bot permissions; this tool needs KickMembers",
+      remediation: "Check the bot permissions; this tool needs KickMembers, ManageGuild",
     },
   });
 });

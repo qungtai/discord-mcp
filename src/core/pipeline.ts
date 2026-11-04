@@ -47,8 +47,8 @@ const LOGGED_CATEGORIES = new Set(["discord", "uncertain", "internal"]);
 
 export class PToolPipeline {
   constructor(
-    private readonly registry: PToolRegistry,
-    private readonly policy: PPolicyEngine,
+    readonly registry: PToolRegistry,
+    readonly policy: PPolicyEngine,
     private readonly services: PipelineServices,
   ) {}
   tools(): ToolDescriptor[] {

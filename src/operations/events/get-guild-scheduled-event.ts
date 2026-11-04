@@ -6,7 +6,8 @@ import { guildScheduledEvent } from "./schemas.js";
 
 export const getGuildScheduledEvent = defineTool({
   name: "discord_get_guild_scheduled_event",
-  description: "Get a guild scheduled event by ID",
+  description:
+    "Fetch details for a single scheduled event in a guild by ID, with optional subscriber count. Use it when you already know the event ID; to list all scheduled events for the guild, use discord_list_guild_scheduled_events. To modify the event, use discord_update_guild_scheduled_event.",
   operationIds: ["get_guild_scheduled_event"],
   toolset: "events",
   scope: { guild: "guild_id" },
@@ -14,9 +15,12 @@ export const getGuildScheduledEvent = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    guild_id: snowflake,
-    guild_scheduled_event_id: snowflake,
-    with_user_count: z.boolean().optional(),
+    guild_id: snowflake.describe("ID of the guild"),
+    guild_scheduled_event_id: snowflake.describe("ID of the scheduled event to fetch"),
+    with_user_count: z
+      .boolean()
+      .optional()
+      .describe("Whether to include the number of users subscribed to the event in the response"),
   }),
   output: z.object({
     guild_scheduled_event: guildScheduledEvent,

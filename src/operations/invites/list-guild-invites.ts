@@ -6,7 +6,8 @@ import { invite } from "./schemas.js";
 
 export const listGuildInvites = defineTool({
   name: "discord_list_guild_invites",
-  description: "Get all active invites for a guild",
+  description:
+    "List all active invite codes across all channels in a guild, including inviter details and usage counts. Use discord_list_channel_invites to restrict results to a single channel. Returns an array of invite objects.",
   operationIds: ["list_guild_invites"],
   toolset: "invites",
   scope: { guild: "guild_id" },
@@ -14,7 +15,7 @@ export const listGuildInvites = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    guild_id: snowflake,
+    guild_id: snowflake.describe("Snowflake ID of the guild whose active invites to list"),
   }),
   output: z.object({
     invites: z.array(invite),

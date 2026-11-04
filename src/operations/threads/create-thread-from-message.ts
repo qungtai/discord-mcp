@@ -6,7 +6,8 @@ import { thread } from "./schemas.js";
 
 export const createThreadFromMessage = defineTool({
   name: "discord_create_thread_from_message",
-  description: "Create a new thread from an existing message in a channel",
+  description:
+    "Create a new public or announcement thread from an existing message in a text or announcement channel. The new thread gets the same ID as the source message, so a message can have only one thread. Not supported in forum or media channels. Returns the created thread. To create a standalone thread without a starter message, use discord_create_thread.",
   operationIds: ["create_thread_from_message"],
   toolset: "threads",
   scope: { channel: "channel_id", message: "message_id" },
@@ -15,12 +16,18 @@ export const createThreadFromMessage = defineTool({
   effect: "write",
   idempotent: false,
   input: z.object({
-    channel_id: snowflake,
-    message_id: snowflake,
-    name: z.string().min(1).max(100),
-    auto_archive_duration: autoArchiveDuration.optional(),
-    rate_limit_per_user: rateLimitPerUser.optional(),
-    reason,
+    channel_id: snowflake.describe("ID of the parent channel containing the message"),
+    message_id: snowflake.describe("ID of the message to branch the thread from"),
+    name: z.string().min(1).max(100).describe("Title or name of the new thread (1-100 characters)"),
+    auto_archive_duration: autoArchiveDuration
+      .optional()
+      .describe(
+        "Duration in minutes to automatically archive thread after inactivity: 60, 1440, 4320, or 10080",
+      ),
+    rate_limit_per_user: rateLimitPerUser
+      .optional()
+      .describe("Slowmode delay per user in seconds (0-21600)"),
+    reason: reason.describe("Audit log reason for creating the thread"),
   }),
   output: z.object({ thread }),
   execute: async ({ channel_id, message_id, reason: auditReason, ...body }, { discord }) => ({

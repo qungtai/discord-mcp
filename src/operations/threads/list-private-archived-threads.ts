@@ -6,7 +6,8 @@ import { threadList } from "./schemas.js";
 
 export const listPrivateArchivedThreads = defineTool({
   name: "discord_list_private_archived_threads",
-  description: "List private archived threads in a channel. Page with before=next_before",
+  description:
+    "List private archived threads in a channel. Returns thread objects, thread member entries, and a next_before cursor. Page older threads in descending order by archive timestamp using before=next_before. To list public archived threads instead, use discord_list_public_archived_threads.",
   operationIds: ["list_private_archived_threads"],
   toolset: "threads",
   scope: { channel: "channel_id" },
@@ -14,9 +15,22 @@ export const listPrivateArchivedThreads = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    channel_id: snowflake,
-    before: z.string().optional().describe("ISO8601 timestamp to return threads before"),
-    limit: z.number().int().min(2).max(100).optional(),
+    channel_id: snowflake.describe(
+      "ID of the parent channel containing the private archived threads",
+    ),
+    before: z
+      .string()
+      .optional()
+      .describe(
+        "ISO 8601 timestamp cursor to return threads archived before this time; page with next_before",
+      ),
+    limit: z
+      .number()
+      .int()
+      .min(2)
+      .max(100)
+      .optional()
+      .describe("Maximum number of threads to return (2-100)"),
   }),
   output: threadList,
   execute: async ({ channel_id, ...query }, { discord }) => {

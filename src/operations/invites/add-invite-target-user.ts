@@ -6,7 +6,8 @@ import { inviteCode } from "./schemas.js";
 
 export const addInviteTargetUser = defineTool({
   name: "discord_add_invite_target_user",
-  description: "Add a target user to an existing invite",
+  description:
+    "Add a single target user to an existing invite code so only authorized users can accept it. Target users can also be uploaded in bulk via CSV using discord_set_invite_target_users or discord_bulk_add_invite_target_users. Use discord_delete_invite_target_user to remove a user. Returns the added status, invite code, and user ID.",
   operationIds: ["add_invite_target_user"],
   toolset: "invites",
   scope: { invite: "code" },
@@ -17,7 +18,9 @@ export const addInviteTargetUser = defineTool({
   idempotent: true,
   input: z.object({
     code: inviteCode,
-    user_id: snowflake,
+    user_id: snowflake.describe(
+      "Snowflake ID of the user to add as an authorized target for this invite",
+    ),
   }),
   output: z.object({
     added: z.literal(true),

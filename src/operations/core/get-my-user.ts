@@ -5,7 +5,8 @@ import { user } from "../schemas.js";
 
 export const getMyUser = defineTool({
   name: "discord_get_my_user",
-  description: "Get the current bot user",
+  description:
+    "Fetch the bot's own user object: id, username, global name, avatar, banner and flags. Use it to confirm which account the token belongs to; to look up any other user by ID use discord_get_user. Returns the user object.",
   operationIds: ["get_my_user"],
   toolset: "core",
   scope: "none",

@@ -5,7 +5,8 @@ import { messageIds, messageResult } from "./schemas.js";
 
 export const endPoll = defineTool({
   name: "discord_end_poll",
-  description: "Immediately end a poll on a message",
+  description:
+    "End a poll the bot created before its duration runs out. Discord does not let a bot end polls posted by other users. Returns the message with the poll; Discord finishes the final vote count in the background, so read the final tally later with discord_get_message once poll.results.is_finalized is true.",
   operationIds: ["poll_expire"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },

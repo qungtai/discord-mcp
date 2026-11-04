@@ -6,7 +6,8 @@ import { autoModerationRule } from "./schemas.js";
 
 export const listAutoModerationRules = defineTool({
   name: "discord_list_auto_moderation_rules",
-  description: "List all auto moderation rules for a guild",
+  description:
+    "List all AutoMod rules configured in a guild, including triggers, actions and exemptions. Returns an array of rule objects. To view a specific rule by ID, use discord_get_auto_moderation_rule. To create a new rule, use discord_create_auto_moderation_rule.",
   operationIds: ["list_auto_moderation_rules"],
   toolset: "moderation",
   scope: { guild: "guild_id" },
@@ -17,7 +18,7 @@ export const listAutoModerationRules = defineTool({
     rules: z.array(autoModerationRule),
   }),
   input: z.object({
-    guild_id: snowflake,
+    guild_id: snowflake.describe("ID of the guild"),
   }),
   execute: async ({ guild_id }, { discord }) => ({
     rules: await discord<RESTGetAPIAutoModerationRulesResult>({

@@ -8,7 +8,7 @@ import { partialGuild } from "./schemas.js";
 export const listMyGuilds = defineTool({
   name: "discord_list_my_guilds",
   description:
-    "List the guilds the bot is a member of. Page with after=next_after. Under DISCORD_MCP_ALLOWED_GUILDS, paging is not available; every allowed guild is returned in one call.",
+    "List the Discord guilds (servers) the authenticated bot account belongs to. Use this to discover available guild IDs before calling guild-scoped tools, or to check membership counts. Page older results with before and newer results with after. Under DISCORD_MCP_ALLOWED_GUILDS, paging parameters must be omitted; every allowed guild is returned in a single call. Returns partial guild objects plus next_before and next_after cursors; both are set only when the page is full, so a full page can be followed by an empty one, and both are null when the page holds fewer guilds than limit.",
   operationIds: ["list_my_guilds"],
   toolset: "core",
   scope: "none",
@@ -16,10 +16,31 @@ export const listMyGuilds = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    before: snowflake.optional(),
-    after: snowflake.optional(),
-    limit: z.number().int().min(1).max(200).optional(),
-    with_counts: z.boolean().optional(),
+    before: snowflake
+      .optional()
+      .describe(
+        "Guild ID cursor to page backwards; returns guilds with IDs smaller than this snowflake. Omit when DISCORD_MCP_ALLOWED_GUILDS is set",
+      ),
+    after: snowflake
+      .optional()
+      .describe(
+        "Guild ID cursor to page forward; returns guilds with IDs larger than this snowflake. Omit when DISCORD_MCP_ALLOWED_GUILDS is set",
+      ),
+    limit: z
+      .number()
+      .int()
+      .min(1)
+      .max(200)
+      .optional()
+      .describe(
+        "Maximum number of guilds to return (1 to 200, default 200). Omit when DISCORD_MCP_ALLOWED_GUILDS is set",
+      ),
+    with_counts: z
+      .boolean()
+      .optional()
+      .describe(
+        "Whether to include approximate_member_count and approximate_presence_count in response objects; defaults to false",
+      ),
   }),
   output: z.object({
     guilds: z.array(partialGuild),

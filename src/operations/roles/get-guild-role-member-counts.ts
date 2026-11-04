@@ -6,14 +6,19 @@ import { roleMemberCountsResult } from "./schemas.js";
 
 export const getGuildRoleMemberCounts = defineTool({
   name: "discord_get_guild_role_member_counts",
-  description: "Get role member counts for a guild",
+  description:
+    "Count the members that hold each role in a guild, without fetching every member. To list the full metadata of each role use discord_list_guild_roles. Returns a mapping of role ID snowflakes to integer member counts.",
   operationIds: ["guild_role_member_counts"],
   toolset: "roles",
   scope: { guild: "guild_id" },
   permissions: [],
   effect: "read",
   idempotent: true,
-  input: z.object({ guild_id: snowflake }),
+  input: z.object({
+    guild_id: snowflake.describe(
+      "ID of the guild whose role member counts to retrieve (numeric snowflake string)",
+    ),
+  }),
   output: roleMemberCountsResult,
   execute: async ({ guild_id }, { discord }) => ({
     counts: await discord<RESTGetAPIGuildRoleMemberCountsResult>({

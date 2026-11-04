@@ -5,7 +5,8 @@ import { snowflake } from "../schemas.js";
 
 export const triggerTypingIndicator = defineTool({
   name: "discord_trigger_typing_indicator",
-  description: "Trigger the typing indicator in a channel",
+  description:
+    "Show the typing indicator in a channel or thread for 10 seconds, for a bot that needs a few seconds to prepare an answer. Discord advises most bots not to use it. To post the reply use discord_send_message.",
   operationIds: ["trigger_typing_indicator"],
   toolset: "messages",
   scope: { channel: "channel_id" },
@@ -18,7 +19,7 @@ export const triggerTypingIndicator = defineTool({
     channel_id: snowflake,
   }),
   input: z.object({
-    channel_id: snowflake,
+    channel_id: snowflake.describe("ID of the channel or thread to display typing indicator in"),
   }),
   execute: async ({ channel_id }, { discord }) => {
     await discord<void>({

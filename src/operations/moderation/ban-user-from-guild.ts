@@ -5,7 +5,8 @@ import { reason, snowflake } from "../schemas.js";
 
 export const banUserFromGuild = defineTool({
   name: "discord_ban_user_from_guild",
-  description: "Ban a user from a guild and optionally delete their messages",
+  description:
+    "Ban a user from a guild and optionally purge their recent messages up to 7 days (604800 seconds). The bot cannot ban the guild owner or members whose highest role is equal to or higher than the bot's highest role. To ban multiple users at once, use discord_bulk_ban_users_from_guild. To kick without banning, use discord_delete_guild_member.",
   operationIds: ["ban_user_from_guild"],
   toolset: "moderation",
   scope: { guild: "guild_id" },
@@ -18,9 +19,17 @@ export const banUserFromGuild = defineTool({
     user_id: snowflake,
   }),
   input: z.object({
-    guild_id: snowflake,
-    user_id: snowflake,
-    delete_message_seconds: z.number().int().min(0).max(604800).optional(),
+    guild_id: snowflake.describe("ID of the guild"),
+    user_id: snowflake.describe("ID of the user to ban"),
+    delete_message_seconds: z
+      .number()
+      .int()
+      .min(0)
+      .max(604800)
+      .optional()
+      .describe(
+        "Number of seconds of recent messages by this user to delete (0 to 604800 seconds / 7 days, default 0)",
+      ),
     reason,
   }),
   execute: async ({ guild_id, user_id, reason, ...body }, { discord }) => {

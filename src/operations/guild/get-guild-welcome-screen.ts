@@ -5,7 +5,8 @@ import { guildIds, welcomeScreen } from "./schemas.js";
 
 export const getGuildWelcomeScreen = defineTool({
   name: "discord_get_guild_welcome_screen",
-  description: "Get the welcome screen for a guild",
+  description:
+    "Retrieve the welcome screen of a guild: its description and up to 5 featured channels. The welcome screen is a Community server feature. To change it use discord_update_guild_welcome_screen. Returns the welcome screen object.",
   operationIds: ["get_guild_welcome_screen"],
   toolset: "guild",
   scope: { guild: "guild_id" },

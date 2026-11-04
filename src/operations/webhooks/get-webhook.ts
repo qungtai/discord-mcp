@@ -6,7 +6,8 @@ import { sanitizeWebhook, webhook } from "./schemas.js";
 
 export const getWebhook = defineTool({
   name: "discord_get_webhook",
-  description: "Get a webhook by ID",
+  description:
+    "Fetch a webhook by its snowflake ID. Webhook tools take webhook_id and never a token or webhook URL, automatically resolving the required token internally. Use discord_list_channel_webhooks to find webhooks in a specific channel. Returns the sanitized webhook object with credentials redacted.",
   operationIds: ["get_webhook"],
   toolset: "webhooks",
   scope: { webhook: "webhook_id" },
@@ -14,7 +15,7 @@ export const getWebhook = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    webhook_id: snowflake,
+    webhook_id: snowflake.describe("Snowflake ID of the webhook to fetch"),
   }),
   output: z.object({
     webhook,

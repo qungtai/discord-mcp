@@ -1,9 +1,15 @@
 import { z } from "zod/v4";
 import { channel, codeParam, resource, snowflake, user } from "../schemas.js";
 
-export const inviteCode = codeParam("invite");
+export const inviteCode = codeParam("invite").describe(
+  "Unique invite code string identifying the invite (alphanumeric with dashes, no URL or path)",
+);
 
-export const targetUserIds = z.array(snowflake).min(1).max(1000);
+export const targetUserIds = z
+  .array(snowflake)
+  .min(1)
+  .max(1000)
+  .describe("Array of 1 to 1000 user snowflake IDs to target with this invite");
 
 export const invite = resource(
   z.looseObject({

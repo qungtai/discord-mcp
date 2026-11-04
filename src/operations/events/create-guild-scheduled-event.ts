@@ -12,7 +12,8 @@ import {
 
 export const createGuildScheduledEvent = defineTool({
   name: "discord_create_guild_scheduled_event",
-  description: "Create a scheduled event for a guild",
+  description:
+    "Create a new scheduled event in a guild for a Stage channel (1=StageInstance), Voice channel (2=Voice) or external venue (3=External, requiring entity_metadata.location and scheduled_end_time). Privacy level is 2=GuildOnly. Returns the created scheduled event. To view events in the guild, use discord_list_guild_scheduled_events.",
   operationIds: ["create_guild_scheduled_event"],
   toolset: "events",
   scope: {
@@ -23,17 +24,43 @@ export const createGuildScheduledEvent = defineTool({
   effect: "write",
   idempotent: false,
   input: z.object({
-    guild_id: snowflake,
-    channel_id: snowflake.optional(),
-    entity_metadata: entityMetadataInput.optional(),
-    name: z.string().min(1).max(100),
+    guild_id: snowflake.describe("ID of the guild"),
+    channel_id: snowflake
+      .optional()
+      .describe(
+        "Channel ID where the event will be hosted (required for entity_type 1=StageInstance and 2=Voice; omitted for 3=External)",
+      ),
+    entity_metadata: entityMetadataInput
+      .optional()
+      .describe("Additional entity metadata (physical or virtual location for external events)"),
+    name: z.string().min(1).max(100).describe("Event name (1-100 characters)"),
     privacy_level: privacyLevelEnum,
-    scheduled_start_time: z.iso.datetime({ offset: true }).describe("ISO8601 timestamp"),
-    scheduled_end_time: z.iso.datetime({ offset: true }).optional().describe("ISO8601 timestamp"),
-    description: z.string().max(1000).optional(),
-    entity_type: entityTypeEnum.describe("1: STAGE_INSTANCE, 2: VOICE, 3: EXTERNAL"),
-    image: z.string().optional().describe("Base64 1024x1024 jpeg/png/gif image data"),
-    recurrence_rule: recurrenceRuleInput.optional(),
+    scheduled_start_time: z.iso
+      .datetime({ offset: true })
+      .describe("Start time of the scheduled event in ISO 8601 format"),
+    scheduled_end_time: z.iso
+      .datetime({ offset: true })
+      .optional()
+      .describe(
+        "End time in ISO 8601 format (required for entity_type 3=External; optional for voice/stage)",
+      ),
+    description: z
+      .string()
+      .max(1000)
+      .optional()
+      .describe("Description of the scheduled event (max 1000 characters)"),
+    entity_type: entityTypeEnum,
+    image: z
+      .string()
+      .optional()
+      .describe(
+        "Cover image as a data URI, for example data:image/png;base64,AAAA; JPEG, PNG or GIF",
+      ),
+    recurrence_rule: recurrenceRuleInput
+      .optional()
+      .describe(
+        "Recurrence rule. Discord supports only simple rules: daily with a fixed weekday set, weekly on one weekday (interval 1 or 2), monthly on one by_n_weekday, or yearly with one by_month and one by_month_day. by_weekday, by_n_weekday and by_month with by_month_day cannot be mixed",
+      ),
     reason,
   }),
   output: z.object({
