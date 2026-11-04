@@ -11,7 +11,7 @@ export const previewPruneGuild = defineTool({
   operationIds: ["preview_prune_guild"],
   toolset: "members",
   scope: { guild: "guild_id" },
-  permissions: ["KickMembers"],
+  permissions: ["KickMembers", "ManageGuild"],
   effect: "read",
   idempotent: true,
   output: pruneCount,

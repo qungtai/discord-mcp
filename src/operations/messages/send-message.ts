@@ -8,7 +8,7 @@ import { messageBody, messageResult, poll } from "./schemas.js";
 export const sendMessage = defineTool({
   name: "discord_send_message",
   description:
-    "Send a message to a channel or thread. It can carry text, embeds, a poll, files from the local machine, a reply to an existing message, stickers (up to 3) and flags (suppress embeds, silent). At least one of content, embeds, sticker_ids, files or poll is required. Mentions do not ping unless allowed_mentions permits it. To change a message already sent use discord_edit_message.",
+    "Send a message to a channel or thread. It can carry text, embeds, a poll, files from the local machine, a reply to an existing message, stickers (up to 3) and flags (suppress embeds, silent). At least one of content, embeds, sticker_ids, files or poll is required. Mentions do not ping unless allowed_mentions permits it. To change a message already sent use discord_edit_message. A retry without the same nonce posts a second message.",
   operationIds: ["create_message"],
   toolset: "messages",
   scope: { channel: "channel_id" },

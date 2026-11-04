@@ -11,7 +11,7 @@ export const pruneGuild = defineTool({
   operationIds: ["prune_guild"],
   toolset: "members",
   scope: { guild: "guild_id" },
-  permissions: ["KickMembers"],
+  permissions: ["KickMembers", "ManageGuild"],
   effect: "destructive",
   idempotent: false,
   output: pruneCount,

@@ -120,7 +120,7 @@ describe("createServer", () => {
         execute: async () => ({}),
       });
       expect(buildBehaviorSentence(tool, "elicitation")).toBe(
-        "Bot permissions: Manage Server. Creates Discord data; a retry can create a duplicate. The user is asked to approve the exact change before it runs.",
+        "Bot permissions: Manage Server. Changes Discord data and is not idempotent; check the result before retrying. The user is asked to approve the exact change before it runs.",
       );
     });
 
@@ -229,7 +229,7 @@ describe("createServer", () => {
       const registry = await PToolRegistry.load();
       const instructions = buildServerInstructions(DEFAULT_TOOLSETS, registry.list());
       expect(instructions).toBe(
-        "MCP server for the Discord REST API. Enabled toolsets: core, messages. Other available toolsets that can be enabled with DISCORD_MCP_TOOLSETS: reactions (Add, remove, list reactions on messages); threads (Create, join, leave, list and search threads, thread members); channels (Create, edit, delete channels, permission overwrites, voice status); webhooks (Create, edit, delete, execute webhooks, edit webhook messages); guild (Guild settings, audit log, onboarding, welcome screen, widget); members (List, search, update, kick, mute, deafen members, prune); roles (Create, update, delete, list guild roles, member counts); moderation (Ban, unban, list bans, AutoMod rules); events (Create, update, delete scheduled events, list subscribers); invites (Create, get, delete invites, target users). If a task needs a disabled toolset, tell the user which one to enable. IDs are snowflakes as strings, found with the list tools. When an allowlist is set, the bot only acts in the allowed guilds. When approval is on, tools whose description says the user is asked to approve ask before they run.",
+        "MCP server for the Discord REST API. Enabled toolsets: core, messages. Other available toolsets that can be enabled with DISCORD_MCP_TOOLSETS: reactions (Add, remove, list reactions on messages); threads (Create, join, leave, list and search threads, thread members); channels (Create, edit, delete channels, permission overwrites, voice status); webhooks (Create, edit, delete, execute webhooks, edit webhook messages); guild (Guild settings, audit log, onboarding, welcome screen, widget); members (List, search, update, kick, mute, deafen members, prune); roles (Create, update, delete, list guild roles, member counts); moderation (Ban, unban, list bans, AutoMod rules); events (Create, update, delete scheduled events, list subscribers); invites (Create, get, delete invites, target users). If a task needs a disabled toolset, tell the user which one to enable. IDs are snowflakes as strings, found with the list tools. When DISCORD_MCP_ALLOWED_GUILDS is set, tools that target a guild, channel or message refuse targets outside those guilds, and DMs are refused unless DISCORD_MCP_ALLOW_DMS=true; account tools such as discord_get_user and discord_update_my_user are not limited by it. When approval is on, tools whose description says the user is asked to approve ask before they run.",
       );
     });
   });

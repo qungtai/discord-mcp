@@ -44,7 +44,7 @@ export function buildBehaviorSentence(tool: ToolDescriptor, approvalMode: Approv
     case "write": {
       const base = tool.idempotent
         ? "Changes Discord data; safe to retry."
-        : "Creates Discord data; a retry can create a duplicate.";
+        : "Changes Discord data and is not idempotent; check the result before retrying.";
       const approvalNotice =
         tool.approval && approvalMode === "elicitation"
           ? " The user is asked to approve the exact change before it runs."
@@ -102,7 +102,7 @@ export function buildServerInstructions(
 
   return (
     `MCP server for the Discord REST API. Enabled toolsets: ${enabledToolsets.join(", ")}.${otherPart} ` +
-    `IDs are snowflakes as strings, found with the list tools. When an allowlist is set, the bot only acts in the allowed guilds. When approval is on, tools whose description says the user is asked to approve ask before they run.`
+    `IDs are snowflakes as strings, found with the list tools. When DISCORD_MCP_ALLOWED_GUILDS is set, tools that target a guild, channel or message refuse targets outside those guilds, and DMs are refused unless DISCORD_MCP_ALLOW_DMS=true; account tools such as discord_get_user and discord_update_my_user are not limited by it. When approval is on, tools whose description says the user is asked to approve ask before they run.`
   );
 }
 

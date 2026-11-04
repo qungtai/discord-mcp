@@ -8,7 +8,7 @@ import { partialGuild } from "./schemas.js";
 export const listMyGuilds = defineTool({
   name: "discord_list_my_guilds",
   description:
-    "List the Discord guilds (servers) the authenticated bot account belongs to. Use this to discover available guild IDs before calling guild-scoped tools, or to check membership counts. Page older results with before and newer results with after. Under DISCORD_MCP_ALLOWED_GUILDS, paging parameters must be omitted; every allowed guild is returned in a single call. Returns partial guild objects plus next_before and next_after, which are null when there is no further page.",
+    "List the Discord guilds (servers) the authenticated bot account belongs to. Use this to discover available guild IDs before calling guild-scoped tools, or to check membership counts. Page older results with before and newer results with after. Under DISCORD_MCP_ALLOWED_GUILDS, paging parameters must be omitted; every allowed guild is returned in a single call. Returns partial guild objects plus next_before and next_after cursors; both are set only when the page is full, so a full page can be followed by an empty one, and both are null when the page holds fewer guilds than limit.",
   operationIds: ["list_my_guilds"],
   toolset: "core",
   scope: "none",
