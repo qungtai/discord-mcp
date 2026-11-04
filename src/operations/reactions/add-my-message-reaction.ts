@@ -5,7 +5,8 @@ import { reactionIds } from "./schemas.js";
 
 export const addMyMessageReaction = defineTool({
   name: "discord_add_my_message_reaction",
-  description: "Add a reaction to a message as the current user",
+  description:
+    "Add a reaction to a message as the bot user. Specify unicode characters or custom emojis as name:id. Adding the same reaction twice is not an error. To see who already reacted, use discord_list_message_reactions_by_emoji; to remove this reaction later, use discord_delete_my_message_reaction.",
   operationIds: ["add_my_message_reaction"],
   toolset: "reactions",
   scope: { channel: "channel_id", message: "message_id" },

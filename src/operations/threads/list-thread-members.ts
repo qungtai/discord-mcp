@@ -7,7 +7,7 @@ import { threadMember } from "./schemas.js";
 export const listThreadMembers = defineTool({
   name: "discord_list_thread_members",
   description:
-    "List members of a thread. Note: after and limit pagination only apply when with_member is true and the bot has GUILD_MEMBERS intent. Page with after=next_after",
+    "List members of a thread. Note that after and limit pagination only apply when with_member is true and the bot has the Server Members privileged intent. Returns thread members and next_after; page forward using after=next_after and stop when a page comes back empty. To fetch a single member, use discord_get_thread_member.",
   operationIds: ["list_thread_members"],
   toolset: "threads",
   scope: { channel: "channel_id" },
@@ -15,10 +15,27 @@ export const listThreadMembers = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    channel_id: snowflake,
-    with_member: z.boolean().optional(),
-    after: snowflake.optional(),
-    limit: z.number().int().min(1).max(100).optional(),
+    channel_id: snowflake.describe("ID of the thread whose members to list"),
+    with_member: z
+      .boolean()
+      .optional()
+      .describe(
+        "Whether to include the full guild member object for each thread member (defaults to false)",
+      ),
+    after: snowflake
+      .optional()
+      .describe(
+        "User ID snowflake cursor to return thread members after; only functional when with_member is true",
+      ),
+    limit: z
+      .number()
+      .int()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe(
+        "Maximum number of thread members to return (1-100, defaults to 100); only functional when with_member is true",
+      ),
   }),
   output: z.object({
     members: z.array(threadMember),

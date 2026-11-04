@@ -6,7 +6,8 @@ import { reactionIds } from "./schemas.js";
 
 export const listMessageReactionsByEmoji = defineTool({
   name: "discord_list_message_reactions_by_emoji",
-  description: "Get a list of users that reacted with a given emoji",
+  description:
+    "List the users who reacted to a message with one emoji, ordered by user ID. Returns users and next_after; pass it as after to get the next page, and stop when a page comes back empty. To add the bot's own reaction, use discord_add_my_message_reaction.",
   operationIds: ["list_message_reactions_by_emoji"],
   toolset: "reactions",
   scope: { channel: "channel_id", message: "message_id" },
@@ -15,12 +16,20 @@ export const listMessageReactionsByEmoji = defineTool({
   idempotent: true,
   input: z.object({
     ...reactionIds,
-    after: snowflake.optional(),
-    limit: z.number().int().min(1).max(100).optional(),
+    after: snowflake.optional().describe("Get users after this user ID for forward pagination"),
+    limit: z
+      .number()
+      .int()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe("Maximum number of users to return (1-100, defaults to 25)"),
     type: z
       .union([z.literal(0), z.literal(1)])
       .optional()
-      .describe("0 for normal, 1 for burst"),
+      .describe(
+        "Reaction type filter: 0 for normal reactions, 1 for burst (super) reactions (defaults to 0)",
+      ),
   }),
   output: z.object({
     users: z.array(user),

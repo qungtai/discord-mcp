@@ -6,7 +6,8 @@ import { threadMember } from "./schemas.js";
 
 export const getThreadMember = defineTool({
   name: "discord_get_thread_member",
-  description: "Get a member of a thread by user ID",
+  description:
+    "Fetch membership details for one user in a thread, including their join timestamp and flags. Fails with 404 if the user is not a member. Set with_member to true to include full guild member details. To list all members of a thread, use discord_list_thread_members.",
   operationIds: ["get_thread_member"],
   toolset: "threads",
   scope: { channel: "channel_id" },
@@ -14,9 +15,14 @@ export const getThreadMember = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    channel_id: snowflake,
-    user_id: snowflake,
-    with_member: z.boolean().optional(),
+    channel_id: snowflake.describe("ID of the thread to look up membership in"),
+    user_id: snowflake.describe("ID of the user whose thread membership to check"),
+    with_member: z
+      .boolean()
+      .optional()
+      .describe(
+        "Whether to include the full guild member object in the result (defaults to false)",
+      ),
   }),
   output: z.object({
     member: threadMember,

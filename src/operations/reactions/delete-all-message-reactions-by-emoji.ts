@@ -5,7 +5,8 @@ import { reactionIds } from "./schemas.js";
 
 export const deleteAllMessageReactionsByEmoji = defineTool({
   name: "discord_delete_all_message_reactions_by_emoji",
-  description: "Delete all reactions for a given emoji on a message",
+  description:
+    "Delete all reactions for one specified emoji on a message across every user who reacted. To remove every emoji reaction at once, use discord_delete_all_message_reactions; to remove only the bot's own reaction, use discord_delete_my_message_reaction.",
   operationIds: ["delete_all_message_reactions_by_emoji"],
   toolset: "reactions",
   scope: { channel: "channel_id", message: "message_id" },
