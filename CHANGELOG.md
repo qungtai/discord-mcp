@@ -6,6 +6,8 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-04
+
 ### Added
 
 - Glama TDQS grade A tool definitions for the core toolset (`discord_get_my_user`, `discord_get_user`, `discord_leave_guild`, `discord_list_my_connections`, `discord_list_my_guilds`, `discord_update_my_user`), comprehensive descriptions on shared input schemas, generated behavior sentences reporting bot permissions and runtime side effects for all MCP tools, and dynamic server instructions during MCP initialize.
@@ -110,5 +112,6 @@ follows [Semantic Versioning](https://semver.org/).
   sent, and the approval prompt truncates long argument values and redacts
   token-shaped strings.
 
-[Unreleased]: https://github.com/qungtai/discord-mcp/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/qungtai/discord-mcp/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/qungtai/discord-mcp/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/qungtai/discord-mcp/releases/tag/v0.1.0
