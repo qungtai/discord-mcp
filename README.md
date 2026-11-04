@@ -17,7 +17,7 @@ A community Model Context Protocol (MCP) server for the Discord REST API.
 
 ## Status
 
-0.1.0, early release. Available on npm as @qungtai/discord-mcp; MCP Registry name io.github.qungtai/discord-mcp.
+Early release (0.x): tool names and parameters can still change before 1.0. Available on npm as @qungtai/discord-mcp and on the MCP Registry as io.github.qungtai/discord-mcp.
 
 ## Quick start
 
