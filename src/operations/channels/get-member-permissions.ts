@@ -10,7 +10,8 @@ import {
 
 export const getMemberPermissions = defineTool({
   name: "discord_get_member_permissions",
-  description: "Get computed guild or channel member permissions",
+  description:
+    "Compute permissions for a guild member either across the guild or within a specific channel. Takes either guild_id for guild-wide base permissions or channel_id to evaluate channel overwrites. Use discord_get_role_permissions to evaluate role permissions instead. Returns the computed permissions as a decimal bitfield string.",
   operationIds: ["get_channel_member_permissions", "get_guild_member_permissions"],
   toolset: "channels",
   scope: { guild: "guild_id", channel: "channel_id" },
@@ -19,7 +20,10 @@ export const getMemberPermissions = defineTool({
   effect: "read",
   idempotent: true,
   input: z
-    .object({ ...permissionLookupShape, user_id: snowflake })
+    .object({
+      ...permissionLookupShape,
+      user_id: snowflake.describe("Snowflake ID of the user member whose permissions to evaluate"),
+    })
     .refine(exactlyOneScope, { message: "Provide exactly one of guild_id or channel_id" })
     .refine(implicitNeedsChannel, { message: "implicit is only supported with channel_id" }),
   output: z.object({ permissions: z.string() }),

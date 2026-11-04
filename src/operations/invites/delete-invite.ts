@@ -6,7 +6,8 @@ import { invite, inviteCode } from "./schemas.js";
 
 export const deleteInvite = defineTool({
   name: "discord_delete_invite",
-  description: "Delete an invite by its code",
+  description:
+    "Permanently delete and revoke an invite code from a guild channel. Deletion cannot be undone; use discord_create_channel_invite to generate a replacement invite. Returns the deleted invite object containing its final metadata.",
   operationIds: ["invite_revoke"],
   toolset: "invites",
   scope: { invite: "code" },
@@ -15,7 +16,7 @@ export const deleteInvite = defineTool({
   idempotent: true,
   input: z.object({
     code: inviteCode,
-    reason,
+    reason: reason.describe("Reason for revoking the invite in the guild audit log"),
   }),
   output: z.object({
     invite,

@@ -337,35 +337,35 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 <details>
 <summary>channels (13 tools)</summary>
 
-- `discord_bulk_update_guild_channels`: Modify the positions of a set of channels for the guild (asks for approval)
-- `discord_create_dm`: Open a direct message channel with a user
-- `discord_create_guild_channel`: Create a new channel in a guild (asks for approval)
-- `discord_delete_channel`: Delete a channel, or close a private message (asks for approval)
-- `discord_delete_channel_permission_overwrite`: Delete a permission overwrite for a channel (asks for approval)
-- `discord_follow_channel`: Follow an announcement channel to send messages to a target channel
-- `discord_get_channel`: Get a channel by ID
-- `discord_get_member_permissions`: Get computed guild or channel member permissions
-- `discord_get_role_permissions`: Get computed guild or channel role permissions
-- `discord_list_guild_channels`: List channels in a guild
-- `discord_set_channel_permission_overwrite`: Set or update permission overwrite for a channel (asks for approval)
-- `discord_update_channel`: Update a channel's settings (asks for approval)
-- `discord_update_voice_channel_status`: Set or clear a voice channel status (asks for approval)
+- `discord_bulk_update_guild_channels`: Modify the sorting positions and parent categories for a set of channels in a guild. Can sync channel permissions with parent categories via lock_permissions. Use discord_update_channel to change single-channel properties such as topic, name or bitrate. Returns the updated guild ID and list of affected channel IDs. (asks for approval)
+- `discord_create_dm`: Open a direct message (DM) channel with a target user. When a guild allowlist is active, DMs are blocked unless DISCORD_MCP_ALLOW_DMS is set to true. Use discord_send_message to post messages to the resulting DM channel. Returns the DM channel object.
+- `discord_create_guild_channel`: Create a new channel in a guild, such as a text (0), voice (2), category (4), announcement (5), stage (13), or forum (15) channel. Permission overwrites combine allow and deny bitfields, with member-specific overwrites taking precedence over role overwrites. Use discord_update_channel to modify settings after creation. Returns the newly created channel. (asks for approval)
+- `discord_delete_channel`: Delete a guild channel or thread, or close a direct message (DM) channel. Deleting a guild channel cannot be undone. To archive a thread without deleting it, use discord_update_channel with archived: true. Returns the deleted status and channel ID. (asks for approval)
+- `discord_delete_channel_permission_overwrite`: Delete a channel permission overwrite for a role or member, restoring default inheritance from the category or server. Use discord_set_channel_permission_overwrite to create or modify an overwrite instead. Returns the deleted status along with channel and overwrite IDs. (asks for approval)
+- `discord_follow_channel`: Follow an announcement (type 5) channel to automatically crosspost messages into a target channel in another guild or the same guild. Creates a follower webhook in the target channel. Use discord_crosspost_message to publish a message from an announcement channel. Returns the source channel ID and created follower webhook ID.
+- `discord_get_channel`: Fetch details for a guild channel, category, thread or direct message channel by its snowflake ID. Use discord_list_guild_channels to list all channels in a guild, or discord_get_thread_member to inspect thread participants. Returns a Channel object containing metadata such as type, topic, permissions overwrites and position.
+- `discord_get_member_permissions`: Compute permissions for a guild member either across the guild or within a specific channel. Takes either guild_id for guild-wide base permissions or channel_id to evaluate channel overwrites. Use discord_get_role_permissions to evaluate role permissions instead. Returns the computed permissions as a decimal bitfield string.
+- `discord_get_role_permissions`: Compute permissions for a guild role either across the guild or within a specific channel. Takes either guild_id for guild-wide base role permissions or channel_id to evaluate role channel overwrites. Use discord_get_member_permissions to evaluate a specific member's permissions. Returns the computed permissions as a decimal bitfield string.
+- `discord_list_guild_channels`: List all channels, categories, voice channels and forum channels in a guild. Does not include active or archived threads; use discord_list_public_archived_threads or discord_list_private_archived_threads for threads. Returns an array of Channel objects ordered by category and position.
+- `discord_set_channel_permission_overwrite`: Set or edit a permission overwrite for a role or member in a channel. Overwrites combine allow and deny bitfields, with member overwrites taking precedence over role overwrites. Use discord_delete_channel_permission_overwrite to remove an overwrite completely. Returns the updated status with channel and overwrite IDs. (asks for approval)
+- `discord_update_channel`: Update settings for a guild channel, voice channel, category or thread. Permission overwrites combine allow and deny bitfields, where member overwrites take precedence over role overwrites. Use discord_bulk_update_guild_channels to reorder multiple channels at once. Returns the updated channel object. (asks for approval)
+- `discord_update_voice_channel_status`: Set or clear the status topic displayed in a voice or stage channel. Pass a string of up to 500 characters to update the status, or null to clear it. Use discord_get_channel to inspect current channel metadata. Returns the updated status string and channel ID. (asks for approval)
 
 </details>
 
 <details>
 <summary>webhooks (10 tools)</summary>
 
-- `discord_create_webhook`: Create a new webhook in a channel
-- `discord_delete_webhook`: Delete a webhook permanently (asks for approval)
-- `discord_delete_webhook_message`: Delete a message previously sent by a webhook (asks for approval)
-- `discord_edit_webhook_message`: Edit a message previously sent by a webhook (asks for approval)
-- `discord_execute_webhook`: Execute a webhook to send a message (asks for approval)
-- `discord_get_webhook`: Get a webhook by ID
-- `discord_get_webhook_message`: Get a message previously sent by a webhook
-- `discord_list_channel_webhooks`: List webhooks in a channel
-- `discord_list_guild_webhooks`: List webhooks in a guild
-- `discord_update_webhook`: Update a webhook's name, avatar, or move it to a different channel (asks for approval)
+- `discord_create_webhook`: Create a new incoming webhook in a guild channel. The returned webhook contains an ID used by other webhook tools; webhook tools in this MCP server take webhook_id and never a token or webhook URL. Use discord_execute_webhook to send messages through the created webhook. Returns the sanitized webhook object.
+- `discord_delete_webhook`: Permanently delete a webhook by its snowflake ID. Webhook tools take webhook_id and never a token or webhook URL. Deletion cannot be undone; use discord_create_webhook to create a replacement webhook. Returns the deleted status and webhook ID. (asks for approval)
+- `discord_delete_webhook_message`: Permanently delete a message previously sent by a webhook. Webhook tools take webhook_id and never a token or webhook URL, resolving the token automatically. Deleting a message cannot be undone. Returns the deleted status along with webhook and message IDs. (asks for approval)
+- `discord_edit_webhook_message`: Edit a message previously sent by a webhook, modifying content, embeds, attachments, or allowed mentions. Webhook tools take webhook_id and never a token or webhook URL, resolving the token automatically. Use discord_get_webhook_message to read the current message. Returns the updated message object. (asks for approval)
+- `discord_execute_webhook`: Post a message through an incoming webhook with support for files, embeds, polls, and custom username or avatar overrides. Webhook tools take webhook_id and never a token or webhook URL, resolving the token automatically. Use discord_edit_webhook_message to modify the sent message. Returns the created message object. (asks for approval)
+- `discord_get_webhook`: Fetch a webhook by its snowflake ID. Webhook tools take webhook_id and never a token or webhook URL, automatically resolving the required token internally. Use discord_list_channel_webhooks to find webhooks in a specific channel. Returns the sanitized webhook object with credentials redacted.
+- `discord_get_webhook_message`: Fetch a message previously posted by a webhook. Webhook tools take webhook_id and never a token or webhook URL, resolving the token automatically. Use discord_edit_webhook_message to update the message or discord_delete_webhook_message to remove it. Returns the message object.
+- `discord_list_channel_webhooks`: List all webhooks configured for a specific channel. Webhook tools take webhook_id and never a token or webhook URL. Use discord_list_guild_webhooks to inspect all webhooks across an entire guild instead. Returns an array of sanitized webhook objects with tokens redacted.
+- `discord_list_guild_webhooks`: List all webhooks configured across all channels in a guild. Webhook tools take webhook_id and never a token or webhook URL. Use discord_list_channel_webhooks to narrow results to a specific channel. Returns an array of sanitized webhook objects with tokens redacted.
+- `discord_update_webhook`: Update a webhook's name, avatar, or move it to a different channel in the same guild. Webhook tools take webhook_id and never a token or webhook URL. Use discord_delete_webhook to remove a webhook permanently. Returns the updated sanitized webhook object. (asks for approval)
 
 </details>
 
@@ -464,18 +464,18 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 <details>
 <summary>invites (12 tools)</summary>
 
-- `discord_add_invite_target_user`: Add a target user to an existing invite (asks for approval)
-- `discord_bulk_add_invite_target_users`: Add multiple target users to an existing invite (asks for approval)
-- `discord_bulk_delete_invite_target_users`: Remove multiple target users from an existing invite (asks for approval)
-- `discord_create_channel_invite`: Create a new invite for a channel (asks for approval)
-- `discord_delete_invite`: Delete an invite by its code (asks for approval)
-- `discord_delete_invite_target_user`: Remove a target user from an existing invite (asks for approval)
-- `discord_get_invite`: Get an invite by its code. Under an allowlist, setting target_message_id requires target_channel_id so the message can be checked.
-- `discord_get_invite_target_users_job_status`: Get the target users job status for an invite
-- `discord_list_channel_invites`: Get all active invites for a channel
-- `discord_list_guild_invites`: Get all active invites for a guild
-- `discord_list_invite_target_users`: Get the target users for an invite. The response is returned as CSV text in the csv field.
-- `discord_set_invite_target_users`: Set the target users for an invite using a CSV file. (asks for approval)
+- `discord_add_invite_target_user`: Add a single target user to an existing invite code so only authorized users can accept it. Target users can also be uploaded in bulk via CSV using discord_set_invite_target_users or discord_bulk_add_invite_target_users. Use discord_delete_invite_target_user to remove a user. Returns the added status, invite code, and user ID. (asks for approval)
+- `discord_bulk_add_invite_target_users`: Add multiple target users to an existing invite code in a single API call (up to 1000 user IDs). Target users can also be uploaded from a CSV file using discord_set_invite_target_users. Use discord_bulk_delete_invite_target_users to remove multiple users at once. Returns the added status, invite code, and count of users added. (asks for approval)
+- `discord_bulk_delete_invite_target_users`: Remove multiple target users from an existing invite code in a single API call (up to 1000 user IDs). Use discord_delete_invite_target_user to remove a single user, or discord_bulk_add_invite_target_users to add users. Returns the deleted status, invite code, and count of users removed. (asks for approval)
+- `discord_create_channel_invite`: Create a new invite code for a guild channel. Supports setting expiration, usage limits, temporary membership, target applications or stream users, and role granting. Use discord_get_invite to inspect an existing invite or discord_list_channel_invites to view all invites for a channel. Returns the created invite object. (asks for approval)
+- `discord_delete_invite`: Permanently delete and revoke an invite code from a guild channel. Deletion cannot be undone; use discord_create_channel_invite to generate a replacement invite. Returns the deleted invite object containing its final metadata. (asks for approval)
+- `discord_delete_invite_target_user`: Remove a single target user from an existing invite code. To remove multiple target users at once, use discord_bulk_delete_invite_target_users. Use discord_add_invite_target_user to grant an authorized user access to this invite. Returns the deleted status, invite code, and removed user ID. (asks for approval)
+- `discord_get_invite`: Fetch invite metadata by invite code, optionally including member and online presence counts. Under a guild allowlist, setting target_message_id requires target_channel_id so message access can be validated. Use discord_delete_invite to revoke an invite. Returns the invite object with channel, guild, and expiration details.
+- `discord_get_invite_target_users_job_status`: Check the status of an asynchronous target user CSV processing job for an invite. The job status transitions from queued (0) or processing (1) to completed (2) or failed (3). Use discord_set_invite_target_users to initiate a CSV upload. Returns the job status object with total_users, processed_users, and error_message.
+- `discord_list_channel_invites`: List all active invite codes for a specific guild channel, including usage statistics and expiration timestamps. Use discord_list_guild_invites to view all active invites across the entire guild. Returns an array of invite objects with inviter and use counts.
+- `discord_list_guild_invites`: List all active invite codes across all channels in a guild, including inviter details and usage counts. Use discord_list_channel_invites to restrict results to a single channel. Returns an array of invite objects.
+- `discord_list_invite_target_users`: Fetch the list of authorized target user IDs for an invite code. The response is returned as CSV text with one user ID snowflake per line (no header). Use discord_set_invite_target_users to replace the target users with a new CSV file. Returns the CSV string in the csv field.
+- `discord_set_invite_target_users`: Replace the authorized target users for an invite by uploading a CSV file. The CSV file must contain user snowflake IDs separated by newlines with no header. Triggering this upload starts an asynchronous processing job; poll progress with discord_get_invite_target_users_job_status. Returns the updated status and invite code. (asks for approval)
 
 </details>
 <!-- tools:end -->

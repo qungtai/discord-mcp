@@ -5,7 +5,8 @@ import { inviteCode, targetUserIds } from "./schemas.js";
 
 export const bulkAddInviteTargetUsers = defineTool({
   name: "discord_bulk_add_invite_target_users",
-  description: "Add multiple target users to an existing invite",
+  description:
+    "Add multiple target users to an existing invite code in a single API call (up to 1000 user IDs). Target users can also be uploaded from a CSV file using discord_set_invite_target_users. Use discord_bulk_delete_invite_target_users to remove multiple users at once. Returns the added status, invite code, and count of users added.",
   operationIds: ["bulk_add_invite_target_users"],
   toolset: "invites",
   scope: { invite: "code" },

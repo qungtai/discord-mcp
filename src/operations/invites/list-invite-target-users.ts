@@ -6,7 +6,7 @@ import { inviteCode } from "./schemas.js";
 export const listInviteTargetUsers = defineTool({
   name: "discord_list_invite_target_users",
   description:
-    "Get the target users for an invite. The response is returned as CSV text in the csv field.",
+    "Fetch the list of authorized target user IDs for an invite code. The response is returned as CSV text with one user ID snowflake per line (no header). Use discord_set_invite_target_users to replace the target users with a new CSV file. Returns the CSV string in the csv field.",
   operationIds: ["get_invite_target_users"],
   toolset: "invites",
   scope: { invite: "code" },

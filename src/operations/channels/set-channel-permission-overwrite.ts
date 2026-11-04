@@ -5,7 +5,8 @@ import { permissionBits, reason, snowflake } from "../schemas.js";
 
 export const setChannelPermissionOverwrite = defineTool({
   name: "discord_set_channel_permission_overwrite",
-  description: "Set or update permission overwrite for a channel",
+  description:
+    "Set or edit a permission overwrite for a role or member in a channel. Overwrites combine allow and deny bitfields, with member overwrites taking precedence over role overwrites. Use discord_delete_channel_permission_overwrite to remove an overwrite completely. Returns the updated status with channel and overwrite IDs.",
   operationIds: ["set_channel_permission_overwrite"],
   toolset: "channels",
   scope: { channel: "channel_id" },
@@ -13,12 +14,20 @@ export const setChannelPermissionOverwrite = defineTool({
   effect: "destructive",
   idempotent: true,
   input: z.object({
-    channel_id: snowflake,
-    overwrite_id: snowflake,
-    type: z.literal([0, 1]).describe("0 for role, 1 for member"),
-    allow: permissionBits.optional(),
-    deny: permissionBits.optional(),
-    reason,
+    channel_id: snowflake.describe("Snowflake ID of the channel where the overwrite applies"),
+    overwrite_id: snowflake.describe(
+      "Snowflake ID of the role or member to apply the overwrite to",
+    ),
+    type: z
+      .literal([0, 1])
+      .describe("Target entity type of the overwrite: 0 for role, 1 for member"),
+    allow: permissionBits
+      .optional()
+      .describe("Decimal permission bitfield string representing permissions explicitly allowed"),
+    deny: permissionBits
+      .optional()
+      .describe("Decimal permission bitfield string representing permissions explicitly denied"),
+    reason: reason.describe("Reason for setting the permission overwrite in the guild audit log"),
   }),
   output: z.object({
     channel_id: snowflake,
