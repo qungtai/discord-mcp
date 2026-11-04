@@ -6,16 +6,22 @@ import { AllowedMentionsTypes, MessageFlags } from "discord-api-types/v10";
 import { z } from "zod/v4";
 import { PToolError } from "../core/tool-error.js";
 
-export const snowflake = z.string().regex(/^\d+$/, "Expected a Discord snowflake");
+export const snowflake = z
+  .string()
+  .regex(/^\d+$/, "Expected a Discord snowflake")
+  .describe("Discord snowflake ID as a numeric string");
 
 export const codeParam = (name: string) =>
-  z.string().regex(/^[\w-]+$/, `Expected a ${name} code without path segments`);
+  z
+    .string()
+    .regex(/^[\w-]+$/, `Expected a ${name} code without path segments`)
+    .describe(`${name} code without URL path segments, the part after the last slash of the link`);
 
 export const dataUri = z
   .string()
-  .regex(
-    /^data:image\/(?:png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/,
-    "Expected a base64 data URI",
+  .regex(/^data:image\/(?:png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/, "Expected a base64 data URI")
+  .describe(
+    "Image payload formatted as an RFC 2397 base64 data URI (data:image/{png|jpeg|gif|webp};base64,...)",
   );
 
 export const messageFlags = z
@@ -29,7 +35,9 @@ export const messageFlags = z
     },
   )
   .optional()
-  .describe("Message flags bitfield");
+  .describe(
+    "Message flags bitfield integer; only SUPPRESS_EMBEDS (4) and SUPPRESS_NOTIFICATIONS (4096) are supported",
+  );
 
 // A Discord response interface has no index signature, so it does not satisfy a loose object type.
 // Widening the input type keeps every field typed on output and lets tools return Discord types
@@ -109,41 +117,109 @@ export const member = resource(
 // Outgoing mentions default to no pings unless requested. A constant default is safe to advertise.
 export const allowedMentions = z
   .strictObject({
-    parse: z.array(z.enum(AllowedMentionsTypes)).optional(),
-    roles: z.array(snowflake).optional(),
-    users: z.array(snowflake).optional(),
-    replied_user: z.boolean().optional(),
+    parse: z
+      .array(z.enum(AllowedMentionsTypes))
+      .optional()
+      .describe(
+        "Allowed mention types to parse from message text: 'roles', 'users', or 'everyone'",
+      ),
+    roles: z
+      .array(snowflake)
+      .optional()
+      .describe("Array of role IDs that can be mentioned in message content (up to 100)"),
+    users: z
+      .array(snowflake)
+      .optional()
+      .describe("Array of user IDs that can be mentioned in message content (up to 100)"),
+    replied_user: z
+      .boolean()
+      .optional()
+      .describe("Whether to mention the author of the message being replied to; defaults to false"),
   })
-  .default({ parse: [] });
-export const fileUpload = z.strictObject({
-  path: z
-    .string()
-    .describe(
-      "Absolute path of the file to upload. Hidden files and folders are refused unless DISCORD_MCP_FILE_ROOTS is set",
-    ),
-  filename: z.string().optional(),
-  description: z.string().optional(),
-  is_spoiler: z.boolean().optional(),
-  title: z.string().optional(),
-  content_type: z.string().optional(),
-});
-export const attachmentUpdate = z.strictObject({
-  id: snowflake,
-  description: z.string().optional(),
-  is_spoiler: z.boolean().optional(),
-});
-// Sent as X-Audit-Log-Reason, never in the body.
-export const reason = z.string().max(512).optional().describe("Audit log reason");
+  .default({ parse: [] })
+  .describe(
+    "Allowed mentions object controlling which users and roles receive ping notifications; defaults to no pings",
+  );
 
-export const permissionBits = z.string().regex(/^\d+$/, "Expected a permission bitfield");
-export const rateLimitPerUser = z.number().int().min(0).max(21600);
-export const autoArchiveDuration = z.union([
-  z.literal(60),
-  z.literal(1440),
-  z.literal(4320),
-  z.literal(10080),
-]);
-export const threadTagSetting = z.enum(["match_all", "match_some"]);
+export const fileUpload = z
+  .strictObject({
+    path: z
+      .string()
+      .describe(
+        "Absolute path of the file to upload. Hidden files and folders are refused unless DISCORD_MCP_FILE_ROOTS is set",
+      ),
+    filename: z
+      .string()
+      .optional()
+      .describe("Override filename sent to Discord; defaults to the basename of path"),
+    description: z
+      .string()
+      .optional()
+      .describe("Accessibility alt-text description for the attachment (up to 1024 characters)"),
+    is_spoiler: z
+      .boolean()
+      .optional()
+      .describe("Whether to mark the attachment as a spoiler; defaults to false"),
+    title: z.string().optional().describe("Display title for the uploaded file"),
+    content_type: z
+      .string()
+      .optional()
+      .describe("MIME type of the file; detected from the file content when omitted"),
+  })
+  .describe("Local file upload specification with path and optional metadata");
+
+export const attachmentUpdate = z
+  .strictObject({
+    id: snowflake.describe("ID of the existing message attachment to retain or modify"),
+    description: z
+      .string()
+      .optional()
+      .describe(
+        "Updated alt-text description for the attachment (up to 1024 characters); omit to leave unchanged",
+      ),
+    is_spoiler: z
+      .boolean()
+      .optional()
+      .describe(
+        "Whether to mark or unmark the existing attachment as a spoiler; defaults to unchanged",
+      ),
+  })
+  .describe(
+    "Attachment update descriptor for keeping, redescribing, or marking attachments as spoilers",
+  );
+
+// Sent as X-Audit-Log-Reason, never in the body.
+export const reason = z
+  .string()
+  .max(512)
+  .optional()
+  .describe("Audit log reason sent in the X-Audit-Log-Reason header (up to 512 characters)");
+
+export const permissionBits = z
+  .string()
+  .regex(/^\d+$/, "Expected a permission bitfield")
+  .describe("Discord permission bitfield encoded as a decimal numeric string");
+
+export const rateLimitPerUser = z
+  .number()
+  .int()
+  .min(0)
+  .max(21600)
+  .describe(
+    "Slowmode delay in seconds for channel members between messages (0 to 21600 seconds, 6 hours)",
+  );
+
+export const autoArchiveDuration = z
+  .union([z.literal(60), z.literal(1440), z.literal(4320), z.literal(10080)])
+  .describe(
+    "Duration in minutes of inactivity before thread automatically archives: 60 (1 hour), 1440 (1 day), 4320 (3 days), or 10080 (7 days)",
+  );
+
+export const threadTagSetting = z
+  .enum(["match_all", "match_some"])
+  .describe(
+    "Tag filter mode: 'match_all' requires every selected tag, 'match_some' matches any one tag",
+  );
 
 export interface SearchNotReady {
   message?: string;

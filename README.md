@@ -273,12 +273,12 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 <details>
 <summary>core (6 tools)</summary>
 
-- `discord_get_my_user`: Get the current bot user
-- `discord_get_user`: Get a user by ID
-- `discord_leave_guild`: Leave a guild (asks for approval)
-- `discord_list_my_connections`: List the bot user's connections
-- `discord_list_my_guilds`: List the guilds the bot is a member of. Page with after=next_after. Under DISCORD_MCP_ALLOWED_GUILDS, paging is not available; every allowed guild is returned in one call.
-- `discord_update_my_user`: Update the current bot's username, avatar, or banner (asks for approval)
+- `discord_get_my_user`: Fetch the bot's own user object: id, username, global name, avatar, banner and flags. Use it to confirm which account the token belongs to; to look up any other user by ID use discord_get_user. Returns the user object.
+- `discord_get_user`: Fetch a Discord user profile by snowflake user ID, returning their username, global name, avatar, accent color, banner, and bot status. Use this when you have a specific user ID to resolve; to inspect the authenticated bot account use discord_get_my_user, and to find guild member data including roles and join dates use discord_get_guild_member. Returns the user object.
+- `discord_leave_guild`: Remove the authenticated bot from a guild by server ID. The bot ceases to be a member immediately and requires a new invite URL with bot scopes to rejoin. Use this when the bot is instructed to depart a server; to kick or remove another guild member instead use discord_delete_guild_member. Returns deleted: true and the guild ID. (asks for approval)
+- `discord_list_my_connections`: List the external accounts (for example GitHub, Twitch, YouTube, Steam) linked to the account behind the credential, with each connection's name, type, verified flag and visibility. Discord requires an OAuth2 token with the connections scope for this endpoint, so a plain bot token can be refused; to list the guilds the bot is in use discord_list_my_guilds. Returns the connections array.
+- `discord_list_my_guilds`: List the Discord guilds (servers) the authenticated bot account belongs to. Use this to discover available guild IDs before calling guild-scoped tools, or to check membership counts. Page older results with before and newer results with after. Under DISCORD_MCP_ALLOWED_GUILDS, paging parameters must be omitted; every allowed guild is returned in a single call. Returns partial guild objects plus next_before and next_after, which are null when there is no further page.
+- `discord_update_my_user`: Update the authenticated bot's global username, avatar image, or banner image. Changes apply globally across every server the bot is in. Changing the username can randomize the discriminator. To modify guild-specific nickname or avatar instead, use discord_update_my_guild_member. Returns the updated bot user object. (asks for approval)
 
 </details>
 

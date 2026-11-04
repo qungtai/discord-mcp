@@ -68,6 +68,22 @@ export const getChannel = defineTool({
 - Outputs reuse the lenient shared schemas. Require IDs only.
 - Throw `PToolError` with a category and remediation for tool-level failures. Do not catch Discord errors; the pipeline maps them.
 
+## Descriptions
+Follow the TDQS style guide rules for every tool:
+- **Authored tool description (`description` in `defineTool`)**:
+  - Two to four plain sentences, most important first, 200 to 600 characters.
+  - **Purpose**: what it does, to which Discord resource, and in which scope ("one message in a channel or thread", "every role in a guild").
+  - **Usage**: when to use it, and which tool to use instead for neighbouring jobs, by exact tool name ("To read recent history use discord_list_messages; to find messages by text use discord_search_guild_messages.").
+  - **Returns and paging**: what it returns and how to page, if not obvious ("Returns the message with author, attachments and embeds." "Page older messages with before=next_before.").
+  - **Discord rules**: rules an agent would otherwise get wrong, only when they exist ("Only messages the bot sent can be edited." "Messages older than 14 days cannot be bulk deleted.").
+  - Do not write required permissions, read-only status, approval prompts, or retry safety in the authored description: the server automatically appends a standardized behavior sentence covering bot permissions and side effects based on descriptor properties and runtime approval mode.
+- **Parameter descriptions (`.describe()` on every input field)**:
+  - Every input property, including nested object fields and array items that are objects, gets a `.describe()`.
+  - State what the value means in the tool, not just its type ("ID of the channel or thread that holds the message", not "Channel ID").
+  - Clarify formats and constraints in plain language: snowflake IDs are numeric strings; timestamps are ISO 8601; colors are integers; bitfields are decimal strings.
+  - Specify defaults when omitted and parameter interactions ("Use either before or after, not both." "Ignored unless type is 12.").
+  - Keep each parameter description to one short sentence where possible.
+
 ## Tests
 - Use `harness()` from `test/support/harness.ts`, which goes through a real MCP client.
 - For each tool: assert the exact method, URL and request body as literals (`toEqual` on the body) and the exact `structuredContent`.
