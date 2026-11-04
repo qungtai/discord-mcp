@@ -5,7 +5,8 @@ import { reason, snowflake } from "../schemas.js";
 
 export const bulkBanUsersFromGuild = defineTool({
   name: "discord_bulk_ban_users_from_guild",
-  description: "Ban up to 200 users from a guild and optionally delete their messages",
+  description:
+    "Ban a list of up to 200 users from a guild simultaneously and optionally purge their messages up to 7 days (604800 seconds). The bot cannot ban the guild owner or members above its highest role. failed_users also lists users who were already banned; Discord returns error 500000 when nobody could be banned. Returns lists of successfully banned and failed user IDs. To ban a single user, use discord_ban_user_from_guild.",
   operationIds: ["bulk_ban_users_from_guild"],
   toolset: "moderation",
   scope: { guild: "guild_id" },
@@ -17,9 +18,21 @@ export const bulkBanUsersFromGuild = defineTool({
     failed_users: z.array(snowflake),
   }),
   input: z.object({
-    guild_id: snowflake,
-    user_ids: z.array(snowflake).min(1).max(200),
-    delete_message_seconds: z.number().int().min(0).max(604800).optional(),
+    guild_id: snowflake.describe("ID of the guild"),
+    user_ids: z
+      .array(snowflake)
+      .min(1)
+      .max(200)
+      .describe("Array of 1 to 200 user IDs to ban from the guild"),
+    delete_message_seconds: z
+      .number()
+      .int()
+      .min(0)
+      .max(604800)
+      .optional()
+      .describe(
+        "Number of seconds of recent messages by banned users to delete (0 to 604800 seconds / 7 days, default 0)",
+      ),
     reason,
   }),
   execute: ({ guild_id, reason, ...body }, { discord }) =>

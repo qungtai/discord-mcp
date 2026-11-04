@@ -9,7 +9,8 @@ const countOutput = z.object({
 
 export const countGuildScheduledEventUsers = defineTool({
   name: "discord_count_guild_scheduled_event_users",
-  description: "Get user counts for a guild scheduled event and its exceptions",
+  description:
+    "Get total interested user counts for a guild scheduled event and its recurrence exceptions. Returns overall event count and an exception counts map keyed by exception ID. To list individual subscribed users instead, use discord_list_guild_scheduled_event_users.",
   operationIds: ["count_guild_scheduled_event_users"],
   toolset: "events",
   scope: { guild: "guild_id" },
@@ -17,9 +18,13 @@ export const countGuildScheduledEventUsers = defineTool({
   effect: "read",
   idempotent: true,
   input: z.object({
-    guild_id: snowflake,
-    guild_scheduled_event_id: snowflake,
-    guild_scheduled_event_exception_ids: z.array(snowflake).max(10).optional(),
+    guild_id: snowflake.describe("ID of the guild"),
+    guild_scheduled_event_id: snowflake.describe("ID of the scheduled event"),
+    guild_scheduled_event_exception_ids: z
+      .array(snowflake)
+      .max(10)
+      .optional()
+      .describe("Array of up to 10 event exception IDs to fetch counts for"),
   }),
   output: countOutput,
   execute: async (
