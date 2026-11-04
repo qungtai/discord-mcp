@@ -1,12 +1,6 @@
+import { AllowedMentionsTypes } from "discord-api-types/v10";
 import { z } from "zod/v4";
-import {
-  allowedMentions,
-  channelObject,
-  member,
-  message,
-  resource,
-  snowflake,
-} from "../schemas.js";
+import { channelObject, member, message, resource, snowflake } from "../schemas.js";
 
 export const threadMetadata = z
   .looseObject({
@@ -45,15 +39,35 @@ export const forumInitialMessage = z.strictObject({
     .string()
     .max(4000)
     .optional()
-    .describe("Text content of the first post or message (up to 4000 characters)"),
+    .describe(
+      "Text of the first post. At least one of content, embeds, sticker_ids or components is required.",
+    ),
   embeds: z
     .array(z.record(z.string(), z.unknown()))
     .max(10)
     .optional()
     .describe("Up to 10 rich embed objects to include in the starter post"),
-  allowed_mentions: allowedMentions.describe(
-    "Allowed mentions specification controlling who receives mention notifications",
-  ),
+  allowed_mentions: z
+    .strictObject({
+      parse: z
+        .array(z.enum(AllowedMentionsTypes))
+        .optional()
+        .describe("Mention types Discord may parse from the text: roles, users or everyone"),
+      roles: z
+        .array(snowflake)
+        .optional()
+        .describe("IDs of roles that may be mentioned (up to 100)"),
+      users: z
+        .array(snowflake)
+        .optional()
+        .describe("IDs of users that may be mentioned (up to 100)"),
+      replied_user: z
+        .boolean()
+        .optional()
+        .describe("Whether to mention the author of the replied-to message"),
+    })
+    .default({ parse: [] })
+    .describe("Controls which mentions in the first post send a ping"),
   sticker_ids: z
     .array(snowflake)
     .max(3)

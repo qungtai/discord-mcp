@@ -42,7 +42,7 @@ export const searchThreads = defineTool({
     tag_setting: threadTagSetting
       .optional()
       .describe(
-        "Tag matching strategy: 'all' to match all specified tags, or 'any' to match any tag",
+        "How tag matches combine: 'match_all' requires a thread to have every tag in tag, 'match_some' requires at least one",
       ),
     archived: z
       .boolean()
@@ -51,18 +51,15 @@ export const searchThreads = defineTool({
     sort_by: z
       .enum(["relevance", "creation_time", "last_message_time", "archive_time"])
       .optional()
-      .describe("Field to sort search results by (defaults to relevance)"),
-    sort_order: z
-      .enum(["asc", "desc"])
-      .optional()
-      .describe("Sort order direction: 'asc' or 'desc' (defaults to desc)"),
+      .describe("Field to sort results by"),
+    sort_order: z.enum(["asc", "desc"]).optional().describe("Sort direction"),
     limit: z
       .number()
       .int()
       .min(1)
       .max(25)
       .optional()
-      .describe("Maximum number of threads to return per page (1-25, defaults to 25)"),
+      .describe("Maximum number of threads to return per page (1-25)"),
     offset: z
       .number()
       .int()

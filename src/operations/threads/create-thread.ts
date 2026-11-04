@@ -7,7 +7,7 @@ import { forumInitialMessage, thread } from "./schemas.js";
 export const createThread = defineTool({
   name: "discord_create_thread",
   description:
-    "Create a new thread without a starter message, or start a new forum or media channel post. Announcement threads (type 10) broadcast across servers, public threads (11) are visible to everyone with channel access, and private threads (12) restrict access to explicitly invited members. In forum or media channels, provide message to create the initial post.",
+    "Create a new thread without a starter message, or start a new post in a forum or media channel. Type 10 is an announcement thread (announcement channels only), 11 is a public thread visible to anyone who can view the parent channel, and 12 is a private thread visible only to invited members and moderators; type defaults to 12 when omitted. In forum or media channels pass message to create the first post. Returns the created thread.",
   operationIds: ["create_thread"],
   toolset: "threads",
   scope: { channel: "channel_id" },

@@ -7,7 +7,7 @@ import { thread } from "./schemas.js";
 export const createThreadFromMessage = defineTool({
   name: "discord_create_thread_from_message",
   description:
-    "Create a new public or announcement thread originating from an existing message in a text or announcement channel. The type of thread matches the parent channel type. Returns the created thread object. To create a standalone thread without a starter message, use discord_create_thread.",
+    "Create a new public or announcement thread from an existing message in a text or announcement channel. The new thread gets the same ID as the source message, so a message can have only one thread. Not supported in forum or media channels. Returns the created thread. To create a standalone thread without a starter message, use discord_create_thread.",
   operationIds: ["create_thread_from_message"],
   toolset: "threads",
   scope: { channel: "channel_id", message: "message_id" },

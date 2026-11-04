@@ -7,7 +7,7 @@ import { threadList } from "./schemas.js";
 export const listActiveGuildThreads = defineTool({
   name: "discord_list_active_guild_threads",
   description:
-    "List all active unarchived threads in a guild that the bot has permission to view, including public and joined private threads. Returns thread objects along with thread member objects for the bot. To find older archived threads, use discord_list_public_archived_threads or discord_list_private_archived_threads.",
+    "List every active (unarchived) thread in a guild, public and private, newest ID first. Returns threads and the bot's thread member entry for each one it has joined. To find archived threads use discord_list_public_archived_threads or discord_list_private_archived_threads.",
   operationIds: ["get_active_guild_threads"],
   toolset: "threads",
   scope: { guild: "guild_id" },

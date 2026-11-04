@@ -7,7 +7,7 @@ import { threadMember } from "./schemas.js";
 export const getThreadMember = defineTool({
   name: "discord_get_thread_member",
   description:
-    "Fetch membership details for one user in a thread, including their join timestamp and flags. Set with_member to true to include full guild member details. To list all members of a thread, use discord_list_thread_members.",
+    "Fetch membership details for one user in a thread, including their join timestamp and flags. Fails with 404 if the user is not a member. Set with_member to true to include full guild member details. To list all members of a thread, use discord_list_thread_members.",
   operationIds: ["get_thread_member"],
   toolset: "threads",
   scope: { channel: "channel_id" },

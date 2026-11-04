@@ -29,7 +29,7 @@ export const listMyPrivateArchivedThreads = defineTool({
       .min(2)
       .max(100)
       .optional()
-      .describe("Maximum number of threads to return (2-100, defaults to 50)"),
+      .describe("Maximum number of threads to return (2-100)"),
   }),
   output: threadList,
   execute: async ({ channel_id, ...query }, { discord }) => {

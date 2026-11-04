@@ -7,7 +7,7 @@ import { reactionIds } from "./schemas.js";
 export const listMessageReactionsByEmoji = defineTool({
   name: "discord_list_message_reactions_by_emoji",
   description:
-    "List users who reacted with a specific emoji on a message. Returns an array of user objects and a next_after cursor. Page older reactions in ascending order using after=next_after. To add the bot's reaction, use discord_add_my_message_reaction.",
+    "List the users who reacted to a message with one emoji, ordered by user ID. Returns users and next_after; pass it as after to get the next page, and stop when a page comes back empty. To add the bot's own reaction, use discord_add_my_message_reaction.",
   operationIds: ["list_message_reactions_by_emoji"],
   toolset: "reactions",
   scope: { channel: "channel_id", message: "message_id" },
