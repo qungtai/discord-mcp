@@ -5,7 +5,8 @@ import { reason, snowflake } from "../schemas.js";
 
 export const bulkDeleteMessages = defineTool({
   name: "discord_bulk_delete_messages",
-  description: "Delete multiple messages (2-100, younger than 14 days) at once from a channel",
+  description:
+    "Delete multiple messages from a channel in a single request. Messages older than 14 days cannot be deleted this way and are rejected by Discord. To delete a single message use discord_delete_message.",
   operationIds: ["bulk_delete_messages"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_ids" },
@@ -18,12 +19,13 @@ export const bulkDeleteMessages = defineTool({
     message_ids: z.array(snowflake),
   }),
   input: z.object({
-    channel_id: snowflake,
+    channel_id: snowflake.describe("ID of the channel containing the messages to delete"),
     message_ids: z
-      .array(snowflake)
+      .array(snowflake.describe("Message snowflake ID to delete"))
       .min(2, "Bulk delete requires at least 2 messages")
       .max(100, "Bulk delete cannot exceed 100 messages")
-      .refine((ids) => new Set(ids).size === ids.length, "Message IDs must be unique"),
+      .refine((ids) => new Set(ids).size === ids.length, "Message IDs must be unique")
+      .describe("Array of 2 to 100 unique message IDs younger than 14 days to delete"),
     reason,
   }),
   execute: async ({ channel_id, message_ids, reason }, { discord }) => {

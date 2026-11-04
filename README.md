@@ -285,21 +285,21 @@ Permissions integer for all implemented toolsets: `3115458644933879`.
 <details>
 <summary>messages (15 tools)</summary>
 
-- `discord_bulk_delete_messages`: Delete multiple messages (2-100, younger than 14 days) at once from a channel (asks for approval)
-- `discord_create_pin`: Pin a message in a channel
-- `discord_crosspost_message`: Crosspost (publish) a message in an announcement channel to following channels
-- `discord_delete_message`: Delete a message from a channel (asks for approval)
-- `discord_delete_pin`: Unpin a message in a channel
-- `discord_download_attachment`: Download a message attachment into DISCORD_MCP_DOWNLOAD_DIR
-- `discord_edit_message`: Edit a message's content, embeds and attachment metadata, or add attachments
-- `discord_end_poll`: Immediately end a poll on a message
-- `discord_get_message`: Get a message
-- `discord_list_messages`: List messages, newest first. Page with before=next_before
-- `discord_list_pins`: List pinned messages in a channel
-- `discord_list_poll_answer_voters`: Get a list of users that voted for a specific poll answer
-- `discord_search_guild_messages`: Search messages across a guild. Page with offset=next_offset
-- `discord_send_message`: Send a message
-- `discord_trigger_typing_indicator`: Trigger the typing indicator in a channel
+- `discord_bulk_delete_messages`: Delete multiple messages from a channel in a single request. Messages older than 14 days cannot be deleted this way and are rejected by Discord. To delete a single message use discord_delete_message. (asks for approval)
+- `discord_create_pin`: Pin a message in a channel or thread so it stays highlighted and easy to find. Each channel can hold at most 50 pinned messages. To inspect pinned messages use discord_list_pins, and to unpin use discord_delete_pin.
+- `discord_crosspost_message`: Crosspost (publish) a message in an announcement channel to all channels in following servers. Use this only for announcement channels (type 5); normal text channels cannot be crossposted. Returns the crossposted message object.
+- `discord_delete_message`: Permanently delete a single message from a channel or thread. To delete between 2 and 100 recent messages at once use discord_bulk_delete_messages. Returns a confirmation object with the deleted message and channel IDs. (asks for approval)
+- `discord_delete_pin`: Unpin a pinned message from a channel or thread. To add a pin use discord_create_pin, and to list all current pinned messages use discord_list_pins. Returns a confirmation object with the unpinned message and channel IDs.
+- `discord_download_attachment`: Download a message attachment from Discord into the local directory DISCORD_MCP_DOWNLOAD_DIR. Requires the message ID and the specific attachment ID. Returns local file path, size, content type and SHA-256 hash.
+- `discord_edit_message`: Edit a message previously sent by the bot: replace its content or embeds, and keep, redescribe, or remove its attachments. Discord only allows a bot to edit messages it authored; to post a new message use discord_send_message. Returns the updated message object.
+- `discord_end_poll`: Immediately end a poll on a message before its scheduled duration finishes. Discord only permits the user or bot that created the poll to expire it early. Returns the message containing the finalized poll results.
+- `discord_get_message`: Fetch one message by ID from a channel or thread, with its author, content, attachments, embeds, reactions and poll. Use it when you already have the message ID; to read recent history use discord_list_messages, and to find messages by text use discord_search_guild_messages.
+- `discord_list_messages`: List messages from a channel or thread, newest first. Provide before, after, or around snowflake IDs to paginate or center the search window. To fetch a specific message by ID use discord_get_message, and to search messages by text or author across an entire server use discord_search_guild_messages. Page older messages with before=next_before.
+- `discord_list_pins`: List pinned messages in a channel or thread with their pin timestamps, newest pin first. Each channel supports up to 50 pins. To pin a new message use discord_create_pin, and to unpin use discord_delete_pin. Page older pins with before=next_before.
+- `discord_list_poll_answer_voters`: Get a paginated list of users that voted for a specific answer on a poll message. Use it after fetching a poll message with discord_get_message to see who selected each answer. Page subsequent voters with after=next_after.
+- `discord_search_guild_messages`: Search messages across an entire guild using full-text search, author, channel, attachment, link and mention filters. Filter conditions combine conjunctively with AND semantics. If the guild index is newly created or busy building, Discord may respond that the index is not ready with a retry_after delay. Page through search matches with offset=next_offset.
+- `discord_send_message`: Send a new message to a channel or thread. Supports text content, rich embeds, interactive polls, local file uploads, replies to existing messages, stickers, and delivery flags (such as suppressing embeds or silent notifications without push pings). To modify an existing message instead use discord_edit_message.
+- `discord_trigger_typing_indicator`: Trigger the typing indicator in a channel or thread to show the bot is composing a response. The indicator automatically expires after 10 seconds or when a message is sent. Use discord_send_message to send the actual message.
 
 </details>
 

@@ -10,7 +10,8 @@ import { messageBody, messageIds, messageResult } from "./schemas.js";
 
 export const editMessage = defineTool({
   name: "discord_edit_message",
-  description: "Edit a message's content, embeds and attachment metadata, or add attachments",
+  description:
+    "Edit a message previously sent by the bot: replace its content or embeds, and keep, redescribe, or remove its attachments. Discord only allows a bot to edit messages it authored; to post a new message use discord_send_message. Returns the updated message object.",
   operationIds: ["get_message", "update_message"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },
@@ -24,8 +25,16 @@ export const editMessage = defineTool({
   input: z.object({
     ...messageIds,
     ...messageBody,
-    add_files: z.array(fileUpload).optional(),
-    update_attachments: z.array(attachmentUpdate).optional(),
+    add_files: z
+      .array(fileUpload)
+      .optional()
+      .describe("New files to upload and attach to the message"),
+    update_attachments: z
+      .array(attachmentUpdate)
+      .optional()
+      .describe(
+        "List of existing attachments to retain, update descriptions for, or mark as spoilers (attachments omitted from this list are removed)",
+      ),
   }),
   execute: async ({ channel_id, message_id, add_files, update_attachments, ...p }, ctx) => {
     const route = Routes.channelMessage(channel_id, message_id);

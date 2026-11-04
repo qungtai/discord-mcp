@@ -7,7 +7,8 @@ import { messageIds } from "./schemas.js";
 
 export const downloadAttachment = defineTool({
   name: "discord_download_attachment",
-  description: "Download a message attachment into DISCORD_MCP_DOWNLOAD_DIR",
+  description:
+    "Download a message attachment from Discord into the local directory DISCORD_MCP_DOWNLOAD_DIR. Requires the message ID and the specific attachment ID. Returns local file path, size, content type and SHA-256 hash.",
   operationIds: ["get_message"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },
@@ -22,7 +23,10 @@ export const downloadAttachment = defineTool({
     content_type: z.string().nullable(),
     sha256: z.string(),
   }),
-  input: z.object({ ...messageIds, attachment_id: snowflake }),
+  input: z.object({
+    ...messageIds,
+    attachment_id: snowflake.describe("ID of the attachment on the message to download"),
+  }),
   execute: async (p, { discord, files }) => {
     const { attachments } = await discord<RESTGetAPIChannelMessageResult>({
       method: "GET",

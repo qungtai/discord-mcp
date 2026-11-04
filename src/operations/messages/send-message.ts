@@ -7,7 +7,8 @@ import { messageBody, messageResult, poll } from "./schemas.js";
 
 export const sendMessage = defineTool({
   name: "discord_send_message",
-  description: "Send a message",
+  description:
+    "Send a new message to a channel or thread. Supports text content, rich embeds, interactive polls, local file uploads, replies to existing messages, stickers, and delivery flags (such as suppressing embeds or silent notifications without push pings). To modify an existing message instead use discord_edit_message.",
   operationIds: ["create_message"],
   toolset: "messages",
   scope: { channel: "channel_id" },
@@ -30,20 +31,35 @@ export const sendMessage = defineTool({
   idempotent: false,
   output: messageResult,
   input: z.object({
-    channel_id: snowflake,
+    channel_id: snowflake.describe("ID of the channel or thread to send the message in"),
     ...messageBody,
     // Replies only: the referenced message is looked up in channel_id, so it needs no scope.
     message_reference: z
       .strictObject({
-        message_id: snowflake,
-        fail_if_not_exists: z.boolean().optional(),
+        message_id: snowflake.describe("ID of the original message being replied to"),
+        fail_if_not_exists: z
+          .boolean()
+          .optional()
+          .describe(
+            "Whether to fail sending if the referenced message does not exist (default true)",
+          ),
       })
-      .optional(),
-    files: z.array(fileUpload).default([]),
+      .optional()
+      .describe("Message reference object for replying to an earlier message"),
+    files: z.array(fileUpload).default([]).describe("Local files to upload as message attachments"),
     poll: poll.optional(),
-    tts: z.boolean().optional(),
-    flags: messageFlags,
-    sticker_ids: z.array(snowflake).max(3).optional(),
+    tts: z
+      .boolean()
+      .optional()
+      .describe("Whether this message should be spoken using text-to-speech (default false)"),
+    flags: messageFlags.describe(
+      "Message flags bitfield (e.g. 4096 for SUPPRESS_EMBEDDS, 4096 to suppress notifications silent)",
+    ),
+    sticker_ids: z
+      .array(snowflake.describe("Sticker snowflake ID"))
+      .max(3)
+      .optional()
+      .describe("Array of up to 3 sticker IDs to attach to the message"),
     nonce: z
       .string()
       .max(25)

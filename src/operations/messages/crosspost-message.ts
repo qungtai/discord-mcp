@@ -6,7 +6,8 @@ import { messageIds } from "./schemas.js";
 
 export const crosspostMessage = defineTool({
   name: "discord_crosspost_message",
-  description: "Crosspost (publish) a message in an announcement channel to following channels",
+  description:
+    "Crosspost (publish) a message in an announcement channel to all channels in following servers. Use this only for announcement channels (type 5); normal text channels cannot be crossposted. Returns the crossposted message object.",
   operationIds: ["crosspost_message"],
   toolset: "messages",
   scope: { channel: "channel_id", message: "message_id" },
