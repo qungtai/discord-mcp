@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.qungtai/discord-mcp",
   "description": "A community MCP server for the Discord REST API with traceable coverage",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "repository": {
     "source": "github",
     "url": "https://github.com/qungtai/discord-mcp",
@@ -12,7 +12,7 @@
     {
       "registryType": "npm",
       "identifier": "@qungtai/discord-mcp",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },
@@ -34,7 +34,7 @@
           "description": "Comma-separated list of enabled toolsets. Available: core, messages, reactions, threads, channels, webhooks, guild, members, roles, moderation, events, invites.",
           "isRequired": false,
           "isSecret": false,
-          "default": "core,messages"
+          "default": "core,messages,reactions,threads"
         },
         {
           "name": "DISCORD_MCP_READ_ONLY",

@@ -28,7 +28,7 @@ export const TOOLSETS = [
   "utility",
   "realtime",
 ] as const;
-export const DEFAULT_TOOLSETS: readonly Toolset[] = ["core", "messages"];
+export const DEFAULT_TOOLSETS: readonly Toolset[] = ["core", "messages", "reactions", "threads"];
 export type Toolset = (typeof TOOLSETS)[number];
 export type CredentialProfile = "bot" | "webhook" | "oauth_user" | "app_owner";
 export type Permission = keyof typeof PermissionFlagsBits;

@@ -6,9 +6,15 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-05
+
 ### Added
 
 - `glama.json` at the repository root declaring the GitHub users allowed to administer this server's Glama listing.
+
+### Changed
+
+- The default toolsets are now `core,messages,reactions,threads` (40 tools) instead of `core,messages` (21 tools), so a server started without `DISCORD_MCP_TOOLSETS` can react to messages and create and manage threads. Set `DISCORD_MCP_TOOLSETS=core,messages` to keep the previous default.
 
 ### Fixed
 
@@ -140,7 +146,8 @@ follows [Semantic Versioning](https://semver.org/).
   sent, and the approval prompt truncates long argument values and redacts
   token-shaped strings.
 
-[Unreleased]: https://github.com/qungtai/discord-mcp/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/qungtai/discord-mcp/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/qungtai/discord-mcp/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/qungtai/discord-mcp/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/qungtai/discord-mcp/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/qungtai/discord-mcp/releases/tag/v0.1.0

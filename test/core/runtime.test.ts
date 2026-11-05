@@ -124,7 +124,7 @@ describe("policy configuration", () => {
     });
     expect([p.allowedGuilds, p.toolsets, p.readOnly, p.approval, p.allowDms]).toEqual([
       ["1", "2"],
-      ["core", "messages"],
+      ["core", "messages", "reactions", "threads"],
       true,
       "elicitation",
       true,
