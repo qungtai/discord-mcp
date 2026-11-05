@@ -1,6 +1,6 @@
 {
   "name": "@qungtai/discord-mcp",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "mcpName": "io.github.qungtai/discord-mcp",
   "description": "A community MCP server for the Discord REST API with traceable coverage",
   "license": "MIT",
