@@ -238,11 +238,11 @@ Configure in your MCP client (on Linux with custom `--user`, also add `-e DISCOR
 
 ## Example prompts
 
-To run these prompts, enable the toolset each prompt needs with `DISCORD_MCP_TOOLSETS` (for example, `DISCORD_MCP_TOOLSETS="core,messages,threads,members,events,webhooks"`).
+To run these prompts, enable any toolset a prompt needs that is not already in the default with `DISCORD_MCP_TOOLSETS` (for example, `DISCORD_MCP_TOOLSETS="core,messages,reactions,threads,members,events,webhooks"`).
 
 - "Summarize the last 50 messages in channel 123456789012345678." (messages toolset)
 - "Post an announcement to channel 123456789012345678 with release notes and attach `/Users/name/Downloads/banner.png`." (messages toolset)
-- "Create a private thread named 'incident-402' in channel 123456789012345678 and add user 987654321098765432." (threads toolset)
+- "Create a private thread named 'incident-402' in channel 123456789012345678 and add user 987654321098765432."
 - "List all guild members who currently have role 555666777888999000." (members toolset)
 - "Schedule an upcoming community call event named 'Sprint Planning' starting tomorrow at 18:00 UTC in stage channel 123456789012345678." (events toolset)
 - "Send a release notification using webhook 111222333444555666 with the custom username 'Deploy Bot'." (webhooks toolset)

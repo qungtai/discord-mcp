@@ -1,6 +1,6 @@
 import { toJsonSchemaCompat } from "@modelcontextprotocol/sdk/server/zod-json-schema-compat.js";
 import { describe, expect, it } from "vitest";
-import { PToolRegistry } from "../../src/core/tool-registry.js";
+import { DEFAULT_TOOLSETS, PToolRegistry, type Toolset } from "../../src/core/tool-registry.js";
 
 interface PropertyOffender {
   tool: string;
@@ -125,5 +125,14 @@ describe("tool definitions quality", () => {
       citedToolOffenders,
       `Tools citing non-existent tools:\n${JSON.stringify(citedToolOffenders, null, 2)}`,
     ).toEqual([]);
+  });
+
+  it("default toolsets hold the counts README states", async () => {
+    const registry = await PToolRegistry.load();
+    const count = (toolsets: readonly Toolset[]) =>
+      registry.list().filter((tool) => toolsets.includes(tool.toolset)).length;
+
+    expect(count(DEFAULT_TOOLSETS)).toBe(40);
+    expect(count(["core", "messages"])).toBe(21);
   });
 });
