@@ -3,6 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@qungtai/discord-mcp)](https://www.npmjs.com/package/@qungtai/discord-mcp)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](package.json)
+[![qungtai/discord-mcp MCP server](https://glama.ai/mcp/servers/qungtai/discord-mcp/badges/score.svg)](https://glama.ai/mcp/servers/qungtai/discord-mcp)
 
 A community Model Context Protocol (MCP) server for the Discord REST API.
 
